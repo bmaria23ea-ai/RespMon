@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Monitor Respiratorio</title>
+<link rel="manifest" href="data:application/json,%7B%22name%22%3A%22Monitor%20Respiratorio%22%2C%22short_name%22%3A%22RespMonitor%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2307080f%22%2C%22theme_color%22%3A%22%2300e5cc%22%7D">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
+:root{
+  --bg:#07080f;--bg1:#0c0f1a;--bg2:#111525;--bg3:#161c30;
+  --line:#1c2640;--line2:#243050;
+  --cyan:#00e5cc;--cyan2:#00b8a4;--cyan-d:rgba(0,229,204,.07);
+  --blue:#4db8ff;--blue-d:rgba(77,184,255,.08);
+  --red:#ff4466;--red-d:rgba(255,68,102,.09);
+  --yellow:#ffb400;--yellow-d:rgba(255,180,0,.08);
+  --txt:#b8cfe8;--txt2:#6a88aa;--txt3:#384e68;
+  --mono:'JetBrains Mono',monospace;--head:'Syne',sans-serif;
+  --hd:52px;--tb:56px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--head);font-size:13px;overflow:hidden;-webkit-text-size-adjust:100%}
+
+/* ── App shell ── */
+.app{display:flex;flex-direction:column;height:100%}
+
+/* ── Header ── */
+header{height:var(--hd);background:var(--bg1);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0;z-index:10}
+.logo-mark{width:28px;height:28px;background:var(--cyan);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-mark svg{width:14px;height:14px}
+.logo-name{font-size:13px;font-weight:700;letter-spacing:-.3px;color:#fff}
+.logo-tag{font-size:8px;color:var(--txt3);font-family:var(--mono);letter-spacing:1.5px;text-transform:uppercase}
+.hd-right{margin-left:auto}
+.ble-btn{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;padding:6px 12px;border-radius:99px;border:1px solid var(--line2);color:var(--txt2);background:var(--bg2);cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;outline:none}
+.ble-btn.connecting{border-color:rgba(255,180,0,.5);color:var(--yellow)}
+.ble-btn.connected{border-color:rgba(0,229,204,.4);color:var(--cyan);background:var(--cyan-d)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--txt3);transition:all .3s;flex-shrink:0}
+.dot.on{background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:blink 1.5s infinite}
+.dot.warn{background:var(--yellow);box-shadow:0 0 6px var(--yellow);animation:blink .8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── Content area ── */
+.content{flex:1;overflow:hidden;position:relative}
+.tab-panel{position:absolute;inset:0;overflow-y:auto;display:none;flex-direction:column;-webkit-overflow-scrolling:touch}
+.tab-panel.active{display:flex}
+
+/* ── Tab bar ── */
+.tabs{height:var(--tb);background:var(--bg1);border-top:1px solid var(--line);display:flex;flex-shrink:0}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--txt3);transition:color .15s;-webkit-tap-highlight-color:transparent;font-size:9px;font-family:var(--mono);letter-spacing:.5px;text-transform:uppercase;padding-bottom:2px}
+.tab svg{width:18px;height:18px;flex-shrink:0}
+.tab svg *{transition:stroke .15s}
+.tab.active{color:var(--cyan)}
+.tab.active svg *{stroke:var(--cyan)}
+
+/* ── Sessions tab ── */
+.search-bar{padding:10px 12px;background:var(--bg1);border-bottom:1px solid var(--line);flex-shrink:0;position:sticky;top:0;z-index:5}
+.sw{position:relative}
+.sw input{width:100%;background:var(--bg3);border:1px solid var(--line2);border-radius:7px;color:var(--txt);font-family:var(--mono);font-size:11px;padding:7px 10px 7px 30px;outline:none;-webkit-appearance:none;transition:border-color .15s}
+.sw input:focus{border-color:var(--cyan)}
+.si-ico{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--txt3);pointer-events:none}
+.ses-count{padding:7px 14px;font-family:var(--mono);font-size:9px;color:var(--txt3);letter-spacing:1px;border-bottom:1px solid var(--line);flex-shrink:0;display:flex;justify-content:space-between;align-items:center}
+.io-btns{display:flex;gap:6px}
+.io-btn{font-family:var(--mono);font-size:9px;color:var(--cyan);background:var(--cyan-d);border:1px solid rgba(0,229,204,.15);border-radius:5px;padding:3px 8px;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none}
+.io-btn:active{background:rgba(0,229,204,.15)}
+.ses-list{padding:6px}
+.si-item{padding:11px 12px;border-radius:8px;cursor:pointer;border:1px solid transparent;margin-bottom:3px;-webkit-tap-highlight-color:transparent;transition:background .1s}
+.si-item:active{background:var(--bg3)}
+.si-top{display:flex;align-items:center;gap:5px;margin-bottom:3px;flex-wrap:wrap}
+.si-id{font-family:var(--mono);font-size:9px;color:var(--txt3)}
+.pill{display:inline-flex;align-items:center;gap:3px;font-family:var(--mono);font-size:8px;padding:1px 6px;border-radius:99px}
+.pill.live{color:var(--cyan);background:var(--cyan-d);border:1px solid rgba(0,229,204,.2)}
+.pd{width:3px;height:3px;border-radius:50%;background:var(--cyan);animation:blink 1s infinite}
+.pill.apnea{color:var(--red);background:var(--red-d);border:1px solid rgba(255,68,102,.2)}
+.si-name{font-size:13px;font-weight:600;color:#fff;margin-bottom:2px}
+.si-name.empty{color:var(--txt3);font-weight:400;font-style:italic;font-size:12px}
+.si-meta{font-family:var(--mono);font-size:9px;color:var(--txt3)}
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--txt3);padding:48px 20px;text-align:center}
+.empty-icon{font-size:44px;opacity:.15}
+.empty-title{font-size:13px;color:var(--txt2);font-weight:500}
+.empty-sub{font-family:var(--mono);font-size:10px;line-height:1.6}
+
+/* ── Live tab ── */
+.live-panel{padding:12px;display:flex;flex-direction:column;gap:10px}
+.connect-card{background:var(--bg1);border:1px solid var(--line);border-radius:12px;padding:28px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.cc-icon{font-size:40px}
+.cc-title{font-size:16px;font-weight:700;color:#fff}
+.cc-sub{font-size:11px;font-family:var(--mono);color:var(--txt3);line-height:1.6}
+.big-btn{padding:12px 28px;border-radius:8px;font-family:var(--head);font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s;-webkit-tap-highlight-color:transparent;outline:none}
+.big-btn.cyan{background:var(--cyan);color:#000}
+.big-btn.cyan:active{background:var(--cyan2)}
+.big-btn.red{background:var(--red-d);color:var(--red);border:1px solid rgba(255,68,102,.3)}
+.big-btn.red:active{background:rgba(255,68,102,.15)}
+
+.live-hd{background:var(--bg1);border:1px solid var(--line);border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:10px}
+.live-ses-tag{font-family:var(--mono);font-size:9px;color:var(--cyan);text-transform:uppercase;letter-spacing:1px;margin-bottom:1px}
+.live-name{font-size:13px;font-weight:600;color:#fff}
+.live-name.empty{color:var(--txt3);font-weight:400;font-style:italic;font-size:12px}
+
+/* ── Stats grid ── */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.stat{background:var(--bg1);border:1px solid var(--line);border-radius:8px;padding:9px 10px;display:flex;flex-direction:column;gap:2px}
+.sl{font-family:var(--mono);font-size:7.5px;letter-spacing:1px;text-transform:uppercase;color:var(--txt3)}
+.sv{font-family:var(--mono);font-size:22px;font-weight:500;line-height:1.1;color:#fff}
+.sv.c{color:var(--cyan)}.sv.b{color:var(--blue)}.sv.r{color:var(--red)}
+.su{font-family:var(--mono);font-size:7.5px;color:var(--txt3)}
+
+/* ── Section ── */
+.section{background:var(--bg1);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.sechd{padding:9px 13px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;background:var(--bg2)}
+.sectitle{font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--txt2);flex:1}
+.badge{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:99px}
+.badge.c{background:var(--cyan-d);color:var(--cyan);border:1px solid rgba(0,229,204,.2)}
+.badge.r{background:var(--red-d);color:var(--red);border:1px solid rgba(255,68,102,.25)}
+
+/* ── Bars ── */
+.bars{padding:12px 14px;display:flex;flex-direction:column;gap:9px}
+.br{display:flex;align-items:center;gap:9px}
+.bl{font-family:var(--mono);font-size:8.5px;color:var(--txt3);width:60px;flex-shrink:0}
+.bt{flex:1;height:6px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.bf{height:100%;border-radius:4px;transition:width .7s cubic-bezier(.4,0,.2,1)}
+.bf.i{background:linear-gradient(90deg,#1a6fb0,var(--blue))}
+.bf.e{background:linear-gradient(90deg,var(--cyan2),var(--cyan))}
+.bf.a{background:linear-gradient(90deg,#b02040,var(--red))}
+.bv{font-family:var(--mono);font-size:9.5px;color:var(--txt2);width:32px;text-align:right;flex-shrink:0}
+.no-apnea{padding:10px 14px;font-family:var(--mono);font-size:10px;color:var(--txt3)}
+
+/* ── Event stream (live) ── */
+.ev-stream{max-height:210px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.ev-row{padding:8px 12px;border-bottom:1px solid rgba(28,38,64,.5);display:flex;align-items:center;gap:8px}
+.ev-row:last-child{border-bottom:none}
+.tag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:8.5px;font-weight:500;flex-shrink:0}
+.tag.inhala{background:var(--blue-d);color:var(--blue);border:1px solid rgba(77,184,255,.2)}
+.tag.exhala{background:var(--cyan-d);color:var(--cyan);border:1px solid rgba(0,229,204,.2)}
+.tag.apnea_terap{background:var(--yellow-d);color:var(--yellow);border:1px solid rgba(255,180,0,.3)}
+.tag.apnea_patol{background:var(--red-d);color:var(--red);border:1px solid rgba(255,68,102,.35);font-weight:700}
+.ev-ts{font-family:var(--mono);font-size:9px;color:var(--txt3);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev-val{font-family:var(--mono);font-size:12px;color:#fff;white-space:nowrap}
+
+/* ── Alert bar ── */
+.alert-bar{display:flex;align-items:center;gap:10px;padding:9px 13px;background:var(--red-d);border-bottom:1px solid rgba(255,68,102,.2);font-size:11px}
+.alert-bar strong{color:var(--red)}
+
+/* ── Table ── */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse}
+thead th{padding:7px 10px;text-align:left;font-family:var(--mono);font-size:7.5px;letter-spacing:1px;text-transform:uppercase;color:var(--txt3);background:var(--bg2);border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;z-index:2}
+tbody tr{border-bottom:1px solid rgba(28,38,64,.5)}
+tbody tr:last-child{border-bottom:none}
+td{padding:7px 10px;font-size:11px;color:var(--txt);white-space:nowrap}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:6px;font-family:var(--head);font-size:11px;font-weight:600;cursor:pointer;border:1px solid transparent;-webkit-tap-highlight-color:transparent;outline:none}
+.btn-p{background:var(--cyan);color:#000;border-color:var(--cyan)}.btn-p:active{background:var(--cyan2)}
+.btn-g{background:transparent;color:var(--txt2);border-color:var(--line2)}.btn-g:active{background:var(--bg3)}
+.btn-danger{background:var(--red-d);color:var(--red);border-color:rgba(255,68,102,.3);width:100%;justify-content:center;margin-top:4px}
+.btn-danger:active{background:rgba(255,68,102,.15)}
+
+/* ── Sheet overlay ── */
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;display:none;flex-direction:column;justify-content:flex-end;opacity:0;transition:opacity .25s}
+.sheet-overlay.open{display:flex}
+.sheet-overlay.visible{opacity:1}
+.sheet{background:var(--bg1);border-radius:18px 18px 0 0;max-height:92dvh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.sheet-overlay.visible .sheet{transform:translateY(0)}
+.sheet-handle-wrap{padding:10px;display:flex;justify-content:center;flex-shrink:0;cursor:pointer}
+.sheet-handle{width:36px;height:4px;background:var(--line2);border-radius:2px}
+.sheet-scroll{flex:1;overflow-y:auto;padding:0 14px 32px;-webkit-overflow-scrolling:touch}
+
+/* ── Sheet content ── */
+.sheet-hd{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.ses-num{flex-shrink:0;width:42px;height:42px;border-radius:9px;background:var(--cyan-d);border:1px solid rgba(0,229,204,.2);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.sn-lbl{font-family:var(--mono);font-size:7px;color:var(--cyan);letter-spacing:1px;text-transform:uppercase}
+.sn-val{font-family:var(--mono);font-size:17px;font-weight:500;color:var(--cyan);line-height:1}
+.ses-info{flex:1;min-width:0}
+.ses-big{font-size:14px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ses-big.empty{color:var(--txt3);font-weight:400;font-style:italic;font-size:12px}
+.ses-dates{font-family:var(--mono);font-size:9px;color:var(--txt3);margin-top:2px}
+.ses-notes{font-size:11px;color:var(--txt2);margin-top:3px}
+
+/* ── Assign form ── */
+.abox{background:var(--bg2);border:1px solid var(--line2);border-radius:8px;padding:12px;display:none;flex-direction:column;gap:10px;margin-bottom:10px}
+.abox.open{display:flex}
+.abox-title{font-size:10px;font-family:var(--mono);letter-spacing:1px;text-transform:uppercase;color:var(--txt2)}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-family:var(--mono);font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:var(--txt3)}
+.field input,.field textarea{background:var(--bg3);border:1px solid var(--line2);border-radius:5px;color:var(--txt);font-family:var(--head);font-size:13px;padding:8px 10px;outline:none;-webkit-appearance:none;transition:border-color .15s;width:100%}
+.field input:focus,.field textarea:focus{border-color:var(--cyan)}
+.field textarea{resize:none;min-height:64px}
+.fbtns{display:flex;gap:7px}
+
+/* ── Apnea toast ── */
+.apnea-toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;border-radius:8px;padding:9px 18px;font-family:var(--mono);font-size:11px;font-weight:700;z-index:200;display:none;white-space:nowrap;box-shadow:0 4px 24px rgba(255,68,102,.5);animation:pulse-r .8s infinite alternate}
+@keyframes pulse-r{from{box-shadow:0 4px 15px rgba(255,68,102,.3)}to{box-shadow:0 4px 28px rgba(255,68,102,.7)}}
+
+/* ── Scrollbars ── */
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- Header -->
+<header>
+  <div class="logo-mark">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round">
+      <polyline points="2,12 5,12 7,5 9,19 11,10 13,15 15,12 22,12"/>
+    </svg>
+  </div>
+  <div>
+    <div class="logo-name">Monitor Respiratorio</div>
+    <div class="logo-tag">Android · BLE</div>
+  </div>
+  <div class="hd-right">
+    <button class="ble-btn" id="bleBtn" onclick="toggleBLE()">
+      <div class="dot" id="dot"></div>
+      <span id="bleStatus">Conectar</span>
+    </button>
+  </div>
+</header>
+
+<!-- Content -->
+<div class="content">
+
+  <!-- SESIONES -->
+  <div class="tab-panel active" id="panel-sessions">
+    <div class="search-bar">
+      <div class="sw">
+        <span class="si-ico">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </span>
+        <input type="text" id="searchInput" placeholder="Buscar paciente..." oninput="onSearch(this.value)">
+      </div>
+    </div>
+    <div class="ses-count">
+      <span id="sesCount">0 sesiones</span>
+      <div class="io-btns">
+        <button class="io-btn" onclick="importJSON()">⬆ Importar</button>
+        <button class="io-btn" onclick="exportJSON()">⬇ Exportar</button>
+      </div>
+    </div>
+    <div class="ses-list" id="sesList"></div>
+  </div>
+
+  <!-- EN VIVO -->
+  <div class="tab-panel" id="panel-live">
+    <div class="live-panel" id="livePanel"></div>
+  </div>
+
+</div>
+
+<!-- Tab bar -->
+<div class="tabs">
+  <div class="tab active" id="tab-sessions" onclick="switchTab('sessions')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>
+    </svg>
+    Sesiones
+  </div>
+  <div class="tab" id="tab-live" onclick="switchTab('live')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="2,12 5,12 7,5 9,19 11,10 13,15 15,12 22,12"/>
+    </svg>
+    En Vivo
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<!-- Apnea toast -->
+<div class="apnea-toast" id="apneaToast">🚨 APNEA PATOLÓGICA</div>
+
+<!-- Session detail sheet -->
+<div class="sheet-overlay" id="sheetOverlay" onclick="onOverlayClick(event)">
+  <div class="sheet" id="sheet">
+    <div class="sheet-handle-wrap" onclick="closeSheet()"><div class="sheet-handle"></div></div>
+    <div class="sheet-scroll" id="sheetContent"></div>
+  </div>
+</div>
+
+<!-- Hidden file input for import -->
+<input type="file" id="fileInput" accept=".json" style="display:none" onchange="handleImport(event)">
+
+<script>
+'use strict';
+// ══════════════════════════════════════════════════
+//  API — Turso via PHP backend
+// ══════════════════════════════════════════════════
+const API_URL = 'https://TU-BACKEND.onrender.com/api/sesiones.php';
+const API_KEY = 'TU_ROM_API_KEY';   // mismo valor que ROM_API_KEY en Render
+const AH = { 'X-API-Key': API_KEY };
+
+async function apiFetch(path, opts={}) {
+  try {
+    const r = await fetch(API_URL + path, {
+      ...opts,
+      headers: { ...AH, ...(opts.headers||{}) }
+    });
+    if (!r.ok) { console.error('[API]', r.status, path); return null; }
+    return r.json();
+  } catch(e) { console.error('[API]', e, path); return null; }
+}
+
+// Cache en memoria para la sesión actual (evita refetch constante)
+const cache = { sessions: null, events: {} };
+
+const DB = {
+  // ── Sesiones ──
+  async getSessions() {
+    if (cache.sessions) return cache.sessions;
+    const d = await apiFetch('');
+    cache.sessions = Array.isArray(d) ? d : [];
+    return cache.sessions;
+  },
+  invalidateSessions() { cache.sessions = null; },
+
+  async saveSessions(arr) {
+    // No usado directamente — las mutaciones van por métodos específicos
+    cache.sessions = arr;
+  },
+
+  // ── Eventos ──
+  async getEvents(sid) {
+    if (cache.events[sid]) return cache.events[sid];
+    const d = await apiFetch('?sid='+sid+'&action=events');
+    cache.events[sid] = Array.isArray(d) ? d : [];
+    return cache.events[sid];
+  },
+  invalidateEvents(sid) { delete cache.events[sid]; },
+
+  async saveEvents(sid, arr) {
+    cache.events[sid] = arr; // solo actualiza cache local
+  },
+
+  // ── IDs ──
+  async nextSessionId() {
+    const d = await apiFetch('?action=nextid');
+    return d ? d.nextId : 1;
+  },
+  async nextEventId() {
+    const d = await apiFetch('?action=nexteventid');
+    return d ? d.nextId : 1;
+  },
+
+  // ── Mutaciones ──
+  async createSession(ses) {
+    const r = await apiFetch('', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(ses) });
+    this.invalidateSessions();
+    return r?.ok;
+  },
+  async updateSession(sid, patch) {
+    await apiFetch('?sid='+sid, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify(patch) });
+    this.invalidateSessions();
+  },
+  async deleteSession(sid) {
+    await apiFetch('?sid='+sid, { method:'DELETE' });
+    this.invalidateSessions();
+    this.invalidateEvents(sid);
+  },
+  async addEvent(sid, ev) {
+    await apiFetch('?sid='+sid+'&action=event', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(ev) });
+    this.invalidateEvents(sid);
+  },
+};
+
+// ══════════════════════════════════════════════════
+//  BLE CONSTANTS
+// ══════════════════════════════════════════════════
+const BLE_DEVICE_NAME = 'RespMonitor';
+const NUS_SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+const NUS_TX_UUID      = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+const TIPOS_VALIDOS    = ['INHALA','EXHALA','APNEA_TERAP','APNEA_PATOL'];
+
+// ══════════════════════════════════════════════════
+//  APP STATE
+// ══════════════════════════════════════════════════
+const app = {
+  bleDevice:   null,
+  bleChar:     null,
+  connected:   false,
+  currentSid:  null,
+  buffer:      '',
+  liveEvents:  [],   // newest first, max 100
+  liveStats:   { ciclos:0, apneas:0, avgTi:'—', avgTe:'—', avgIe:'—', avgAp:null, maxAp:null, bpm:'—' },
+  searchQuery: '',
+};
+
+// ══════════════════════════════════════════════════
+//  BLE
+// ══════════════════════════════════════════════════
+async function toggleBLE() {
+  if (app.connected) { disconnectBLE(); }
+  else               { await connectBLE(); }
+}
+
+async function connectBLE() {
+  if (!navigator.bluetooth) {
+    alert('Web Bluetooth no está disponible.\nUsá Chrome en Android (no Samsung Internet ni Firefox).');
+    return;
+  }
+  setBLEUI('connecting');
+  try {
+    const device = await navigator.bluetooth.requestDevice({
+      filters: [{ name: BLE_DEVICE_NAME }],
+      optionalServices: [NUS_SERVICE_UUID]
+    });
+    app.bleDevice = device;
+    device.addEventListener('gattserverdisconnected', onBLEDisconnected);
+
+    const server  = await device.gatt.connect();
+    const service = await server.getPrimaryService(NUS_SERVICE_UUID);
+    const char    = await service.getCharacteristic(NUS_TX_UUID);
+    app.bleChar   = char;
+
+    char.addEventListener('characteristicvaluechanged', onBLEData);
+    await char.startNotifications();
+
+    app.connected = true;
+    app.buffer    = '';
+    setBLEUI('connected', device.name || BLE_DEVICE_NAME);
+    renderLivePanel();
+  } catch(e) {
+    console.error('[BLE]', e);
+    setBLEUI('disconnected');
+    if (!e.message?.includes('cancelled') && !e.message?.includes('chosen')) {
+      alert('Error al conectar:\n' + e.message);
+    }
+  }
+}
+
+function disconnectBLE() {
+  try {
+    if (app.bleDevice?.gatt?.connected) app.bleDevice.gatt.disconnect();
+  } catch{}
+  onBLEDisconnected();
+}
+
+function onBLEDisconnected() {
+  if (app.currentSid !== null) {
+    closeCurrentSession();
+  }
+  app.connected  = false;
+  app.liveEvents = [];
+  app.liveStats  = { ciclos:0, apneas:0, avgTi:'—', avgTe:'—', avgIe:'—', avgAp:null, maxAp:null, bpm:'—' };
+  setBLEUI('disconnected');
+  renderLivePanel();
+  renderSessionList();
+}
+
+function onBLEData(event) {
+  const chunk = new TextDecoder('utf-8', { fatal: false }).decode(event.target.value);
+  app.buffer += chunk;
+  let nl;
+  while ((nl = app.buffer.indexOf('\n')) !== -1) {
+    const line = app.buffer.slice(0, nl).trim();
+    app.buffer  = app.buffer.slice(nl + 1);
+    if (line) processLine(line);
+  }
+}
+
+async function processLine(line) {
+  const parts = line.split(',');
+  if (parts.length !== 3) return;
+
+  let [tipo, valStr, ieStr] = parts;
+  tipo = tipo.trim().toUpperCase();
+
+  if (tipo === 'INICIO') {
+    // New session signaled by ESP32 after calibration
+    if (app.currentSid !== null) await closeCurrentSession();
+    app.currentSid  = await createSession();
+    app.liveEvents  = [];
+    app.liveStats   = { ciclos:0, apneas:0, avgTi:'—', avgTe:'—', avgIe:'—', avgAp:null, maxAp:null, bpm:'—' };
+    renderLivePanel();
+    renderSessionList();
+    return;
+  }
+
+  if (!TIPOS_VALIDOS.includes(tipo)) return;
+
+  const valor_s = parseFloat(valStr);
+  const ie      = parseFloat(ieStr);
+  if (isNaN(valor_s)) return;
+
+  // Auto-create session if ESP32 never sent INICIO (e.g. already calibrated)
+  if (app.currentSid === null) {
+    app.currentSid = await createSession();
+    app.liveEvents = [];
+    renderLivePanel();
+  }
+
+  const ts = new Date().toLocaleTimeString('es', { hour12: false });
+  const evId = await DB.nextEventId();
+  const ev = {
+    id:        evId,
+    sesion_id: app.currentSid,
+    timestamp: ts,
+    tipo,
+    valor_s:   Math.round(valor_s * 1000) / 1000,
+    ie_ratio:  isNaN(ie) ? 0 : Math.round(ie * 1000) / 1000
+  };
+
+  // Persist evento en Turso
+  await DB.addEvent(app.currentSid, ev);
+
+  // Actualizar contadores de la sesión
+  const events = await DB.getEvents(app.currentSid);
+  const ciclos = events.filter(e=>e.tipo==='INHALA').length;
+  const apneas = events.filter(e=>e.tipo.startsWith('APNEA')).length;
+  await DB.updateSession(app.currentSid, { total_ciclos: ciclos, total_apneas: apneas });
+
+  // Live state (newest first)
+  app.liveEvents.unshift(ev);
+  if (app.liveEvents.length > 100) app.liveEvents.pop();
+  recomputeLiveStats(events);
+
+  // Patological apnea alert
+  if (tipo === 'APNEA_PATOL') triggerApneaAlert();
+
+  // Update live UI (partial update if possible)
+  const statsEl  = document.getElementById('liveStats');
+  const barsEl   = document.getElementById('liveBars');
+  const streamEl = document.getElementById('liveStream');
+  const cntEl    = document.getElementById('liveEvBadge');
+  if (statsEl && barsEl && streamEl) {
+    statsEl.innerHTML  = buildStatsHTML(app.liveStats);
+    barsEl.innerHTML   = buildBarsHTML(app.liveStats);
+    streamEl.innerHTML = buildStreamHTML();
+    if (cntEl) cntEl.textContent = app.liveEvents.length;
+  } else {
+    renderLivePanel();
+  }
+
+  // Refresh sessions tab if visible
+  if (document.getElementById('panel-sessions').classList.contains('active')) {
+    renderSessionList();
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  SESSION MANAGEMENT
+// ══════════════════════════════════════════════════
+async function createSession() {
+  const id  = await DB.nextSessionId();
+  const now = new Date();
+  const ts  = now.toLocaleDateString('es',{day:'2-digit',month:'2-digit',year:'numeric'}) + ' '
+             + now.toLocaleTimeString('es',{hour12:false,hour:'2-digit',minute:'2-digit'});
+  const ses = { id, paciente:'', notas:'', inicio:ts, fin:null, total_ciclos:0, total_apneas:0 };
+  await DB.createSession(ses);
+  cache.sessions = null;
+  return id;
+}
+
+async function closeCurrentSession() {
+  const sid = app.currentSid;
+  if (sid === null) return;
+  const now = new Date();
+  const ts  = now.toLocaleDateString('es',{day:'2-digit',month:'2-digit',year:'numeric'}) + ' '
+             + now.toLocaleTimeString('es',{hour12:false,hour:'2-digit',minute:'2-digit'});
+  const evs = await DB.getEvents(sid);
+  const ciclos = evs.filter(e => e.tipo === 'INHALA').length;
+  const apneas = evs.filter(e => e.tipo.startsWith('APNEA')).length;
+  await DB.updateSession(sid, { fin: ts, total_ciclos: ciclos, total_apneas: apneas });
+  app.currentSid = null;
+  renderSessionList();
+}
+
+function recomputeLiveStats(events) {
+  const inhales = events.filter(e => e.tipo === 'INHALA');
+  const exhales = events.filter(e => e.tipo === 'EXHALA');
+  const apneas  = events.filter(e => e.tipo.startsWith('APNEA'));
+
+  const avg = arr => arr.length ? arr.reduce((s,e)=>s+e.valor_s,0)/arr.length : 0;
+  const max = arr => arr.length ? Math.max(...arr.map(e=>e.valor_s)) : 0;
+
+  const avgTi = avg(inhales);
+  const avgTe = avg(exhales);
+  const avgAp = avg(apneas);
+  const maxAp = max(apneas);
+  const ieVals = events.filter(e=>e.ie_ratio>0).map(e=>e.ie_ratio);
+  const avgIe  = ieVals.length ? ieVals.reduce((s,v)=>s+v,0)/ieVals.length : 0;
+  const bpm    = (avgTi && avgTe) ? (60/(avgTi+avgTe)).toFixed(1) : '—';
+
+  app.liveStats = {
+    ciclos: inhales.length,
+    apneas: apneas.length,
+    avgTi:  avgTi ? avgTi.toFixed(2) : '—',
+    avgTe:  avgTe ? avgTe.toFixed(2) : '—',
+    avgIe:  avgIe ? avgIe.toFixed(2) : '—',
+    avgAp:  avgAp ? avgAp.toFixed(1) : null,
+    maxAp:  maxAp ? maxAp.toFixed(1) : null,
+    bpm
+  };
+}
+
+function computeStatsFromEvents(events) {
+  const inhales = events.filter(e=>e.tipo==='INHALA');
+  const exhales = events.filter(e=>e.tipo==='EXHALA');
+  const apneas  = events.filter(e=>e.tipo.startsWith('APNEA'));
+  const avg = arr => arr.length ? arr.reduce((s,e)=>s+e.valor_s,0)/arr.length : null;
+  const max = arr => arr.length ? Math.max(...arr.map(e=>e.valor_s)) : null;
+  const ieVals = events.filter(e=>e.ie_ratio>0).map(e=>e.ie_ratio);
+  return {
+    avg_ti: avg(inhales) != null ? +avg(inhales).toFixed(2) : null,
+    avg_te: avg(exhales) != null ? +avg(exhales).toFixed(2) : null,
+    avg_ap: avg(apneas)  != null ? +avg(apneas).toFixed(1)  : null,
+    max_ap: max(apneas)  != null ? +max(apneas).toFixed(1)  : null,
+    avg_ie: ieVals.length ? +(ieVals.reduce((s,v)=>s+v,0)/ieVals.length).toFixed(2) : null,
+    n_terap: events.filter(e=>e.tipo==='APNEA_TERAP').length,
+    n_patol: events.filter(e=>e.tipo==='APNEA_PATOL').length,
+  };
+}
+
+// ══════════════════════════════════════════════════
+//  BLE UI HELPERS
+// ══════════════════════════════════════════════════
+function setBLEUI(status, name) {
+  const btn = document.getElementById('bleBtn');
+  const dot = document.getElementById('dot');
+  const txt = document.getElementById('bleStatus');
+  btn.className = 'ble-btn';
+  dot.className = 'dot';
+  if (status === 'connecting') {
+    btn.classList.add('connecting'); dot.classList.add('warn');
+    txt.textContent = 'Conectando...';
+  } else if (status === 'connected') {
+    btn.classList.add('connected'); dot.classList.add('on');
+    txt.textContent = name || 'Conectado';
+  } else {
+    txt.textContent = 'Conectar';
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  TAB NAVIGATION
+// ══════════════════════════════════════════════════
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  if (name === 'live')     renderLivePanel();
+  if (name === 'sessions') renderSessionList();
+}
+
+// ══════════════════════════════════════════════════
+//  SESSIONS LIST
+// ══════════════════════════════════════════════════
+async function renderSessionList() {
+  const sessions = await DB.getSessions();
+  const q = app.searchQuery.toLowerCase();
+  const list = q ? sessions.filter(s=>(s.paciente||'').toLowerCase().includes(q)) : sessions;
+
+  document.getElementById('sesCount').textContent =
+    list.length + ' sesión' + (list.length!==1?'es':'');
+
+  const el = document.getElementById('sesList');
+  if (!list.length) {
+    el.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🫁</div>
+        <div class="empty-title">${q ? 'Sin resultados' : 'Sin sesiones aún'}</div>
+        <div class="empty-sub">${q ? 'Probá con otro nombre' : 'Conectá el ESP32 para<br>empezar a monitorear'}</div>
+      </div>`;
+    return;
+  }
+  el.innerHTML = list.map(s => `
+    <div class="si-item" onclick="openSheet(${s.id})">
+      <div class="si-top">
+        <span class="si-id">#${s.id}</span>
+        ${!s.fin ? '<span class="pill live"><span class="pd"></span>EN VIVO</span>' : ''}
+        ${s.total_apneas > 0 ? `<span class="pill apnea">⚠ ${s.total_apneas}</span>` : ''}
+      </div>
+      <div class="si-name ${!s.paciente?'empty':''}">${s.paciente||'Sin asignar'}</div>
+      <div class="si-meta">${s.inicio||'—'} · ${s.total_ciclos} ciclos</div>
+    </div>
+  `).join('');
+}
+
+let searchTimer;
+function onSearch(v) {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { app.searchQuery = v; renderSessionList(); }, 250);
+}
+
+// ══════════════════════════════════════════════════
+//  LIVE PANEL
+// ══════════════════════════════════════════════════
+async function renderLivePanel() {
+  const el = document.getElementById('livePanel');
+  if (!el) return;
+
+  if (!app.connected && app.currentSid === null) {
+    el.innerHTML = `
+      <div class="connect-card">
+        <div class="cc-icon">📡</div>
+        <div class="cc-title">Sin dispositivo</div>
+        <div class="cc-sub">Conectá el ESP32 <strong style="color:var(--txt)">"RespMonitor"</strong><br>para comenzar a monitorear en tiempo real</div>
+        <button class="big-btn cyan" onclick="connectBLE()">Conectar por BLE</button>
+      </div>`;
+    return;
+  }
+
+  if (app.connected && app.currentSid === null) {
+    el.innerHTML = `
+      <div class="connect-card">
+        <div class="cc-icon" style="animation:blink 1.5s infinite">🫁</div>
+        <div class="cc-title" style="color:var(--cyan)">Conectado</div>
+        <div class="cc-sub">Esperando que el ESP32 termine<br>la calibración (~8 segundos)...</div>
+        <button class="big-btn red" onclick="disconnectBLE()">Desconectar</button>
+      </div>`;
+    return;
+  }
+
+  const sessions = await DB.getSessions();
+  const ses = sessions.find(s => s.id === app.currentSid);
+  const s = app.liveStats;
+
+  el.innerHTML = `
+    <div class="live-hd">
+      <div style="flex:1;min-width:0">
+        <div class="live-ses-tag">SES #${app.currentSid} · ${app.connected?'<span style="color:var(--cyan)">EN VIVO</span>':'FINALIZADA'}</div>
+        <div class="live-name ${ses?.paciente?'':'empty'}">${ses?.paciente||'Sin paciente asignado'}</div>
+      </div>
+      ${app.connected ? `<button class="big-btn red" style="font-size:11px;padding:7px 12px;flex-shrink:0" onclick="disconnectBLE()">Desconectar</button>` : ''}
+    </div>
+
+    <div class="stats-grid" id="liveStats">
+      ${buildStatsHTML(s)}
+    </div>
+
+    <div class="section">
+      <div class="sechd"><div class="sectitle">Distribución de tiempos</div></div>
+      <div id="liveBars">${buildBarsHTML(s)}</div>
+    </div>
+
+    <div class="section">
+      <div class="sechd">
+        <div class="sectitle">Últimos eventos</div>
+        <div class="badge c" id="liveEvBadge">${app.liveEvents.length}</div>
+      </div>
+      <div class="ev-stream" id="liveStream">${buildStreamHTML()}</div>
+    </div>
+  `;
+}
+
+function buildStatsHTML(s) {
+  return `
+    <div class="stat"><div class="sl">Ciclos</div><div class="sv c">${s.ciclos||0}</div><div class="su">inhalaciones</div></div>
+    <div class="stat"><div class="sl">Frec. resp.</div><div class="sv b">${s.bpm||'—'}</div><div class="su">rpm prom</div></div>
+    <div class="stat"><div class="sl">Apneas</div><div class="sv ${(s.apneas||0)>0?'r':''}">${s.apneas||0}</div><div class="su">${s.maxAp?'máx '+s.maxAp+'s':''}&nbsp;</div></div>
+    <div class="stat"><div class="sl">T. Inhal.</div><div class="sv">${s.avgTi||'—'}</div><div class="su">seg prom</div></div>
+    <div class="stat"><div class="sl">T. Exhal.</div><div class="sv c">${s.avgTe||'—'}</div><div class="su">seg prom</div></div>
+    <div class="stat"><div class="sl">Rel. I:E</div><div class="sv">${s.avgIe&&s.avgIe!=='—'?'1:'+s.avgIe:'—'}</div><div class="su">&nbsp;</div></div>
+  `;
+}
+
+function buildBarsHTML(s) {
+  const ti = parseFloat(s.avgTi) || 0;
+  const te = parseFloat(s.avgTe) || 0;
+  const ap = parseFloat(s.avgAp) || 0;
+  if (!ti && !te) return '<div class="no-apnea">Esperando datos...</div>';
+  const mx = Math.max(ti, te, ap, 0.1);
+  const pct = v => ((v/mx)*100).toFixed(1)+'%';
+  return `<div class="bars">
+    ${ti?`<div class="br"><div class="bl">Inhalación</div><div class="bt"><div class="bf i" style="width:${pct(ti)}"></div></div><div class="bv">${ti} s</div></div>`:''}
+    ${te?`<div class="br"><div class="bl">Exhalación</div><div class="bt"><div class="bf e" style="width:${pct(te)}"></div></div><div class="bv">${te} s</div></div>`:''}
+    ${ap?`<div class="br"><div class="bl">Apnea prom</div><div class="bt"><div class="bf a" style="width:${pct(ap)}"></div></div><div class="bv">${ap} s</div></div>`:'<div class="no-apnea">Sin apneas ✓</div>'}
+  </div>`;
+}
+
+function buildStreamHTML() {
+  if (!app.liveEvents.length) {
+    return '<div style="padding:20px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--txt3)">Sin eventos aún</div>';
+  }
+  return app.liveEvents.slice(0, 30).map(e => `
+    <div class="ev-row">
+      <span class="tag ${e.tipo.toLowerCase()}">${
+        e.tipo==='APNEA_TERAP'?'⏸ TERAP':
+        e.tipo==='APNEA_PATOL'?'🚨 PATOL':e.tipo
+      }</span>
+      <span class="ev-ts">${e.timestamp}</span>
+      <span class="ev-val">${e.valor_s.toFixed(2)}<span style="font-size:9px;color:var(--txt3)"> s</span></span>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════════════
+//  APNEA ALERT
+// ══════════════════════════════════════════════════
+let apneaTimer;
+function triggerApneaAlert() {
+  const el = document.getElementById('apneaToast');
+  el.style.display = 'block';
+  clearTimeout(apneaTimer);
+  apneaTimer = setTimeout(() => { el.style.display = 'none'; }, 6000);
+  if (navigator.vibrate) navigator.vibrate([400, 150, 400, 150, 400]);
+}
+
+// ══════════════════════════════════════════════════
+//  SESSION DETAIL SHEET
+// ══════════════════════════════════════════════════
+let currentSheetSid = null;
+let assignOpen = false;
+
+function openSheet(sid) {
+  currentSheetSid = sid;
+  assignOpen = false;
+  const overlay = document.getElementById('sheetOverlay');
+  overlay.classList.add('open');
+  renderSheetContent(sid);
+  requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('visible')));
+}
+
+function closeSheet() {
+  const overlay = document.getElementById('sheetOverlay');
+  overlay.classList.remove('visible');
+  setTimeout(() => { overlay.classList.remove('open'); currentSheetSid = null; }, 280);
+}
+
+function onOverlayClick(e) {
+  if (e.target === document.getElementById('sheetOverlay')) closeSheet();
+}
+
+async function renderSheetContent(sid) {
+  const sessions = await DB.getSessions();
+  const s = sessions.find(s => s.id === sid);
+  if (!s) return;
+  const events = await DB.getEvents(sid);
+  const st = computeStatsFromEvents(events);
+  const ciclos = events.filter(e=>e.tipo==='INHALA').length || s.total_ciclos;
+  const nAp = st.n_terap + st.n_patol;
+  const bpm = (st.avg_ti && st.avg_te) ? (60/(st.avg_ti+st.avg_te)).toFixed(1) : '—';
+  const mx  = Math.max(st.avg_ti||0, st.avg_te||0, st.avg_ap||0, 0.1);
+  const pct = v => ((v||0)/mx*100).toFixed(1)+'%';
+
+  document.getElementById('sheetContent').innerHTML = `
+    <div class="sheet-hd">
+      <div class="ses-num">
+        <span class="sn-lbl">SES</span>
+        <span class="sn-val">${s.id}</span>
+      </div>
+      <div class="ses-info">
+        <div class="ses-big ${!s.paciente?'empty':''}">${s.paciente||'Sin paciente asignado'}</div>
+        <div class="ses-dates">${s.inicio||'—'}${s.fin?' → '+s.fin:' → <span style="color:var(--cyan)">EN CURSO</span>'}</div>
+        ${s.notas?`<div class="ses-notes">${s.notas}</div>`:''}
+      </div>
+      <button class="btn btn-g" onclick="toggleAssignForm()" style="flex-shrink:0;padding:6px 10px">✏️</button>
+    </div>
+
+    <div class="abox ${assignOpen?'open':''}" id="assignForm">
+      <div class="abox-title">Asignar paciente — Sesión #${s.id}</div>
+      <div class="field"><label>Nombre del paciente</label>
+        <input id="fn" type="text" placeholder="Ej: Juan García" value="${(s.paciente||'').replace(/"/g,'&quot;')}">
+      </div>
+      <div class="field"><label>Notas clínicas</label>
+        <textarea id="fno" placeholder="Diagnóstico, observaciones...">${s.notas||''}</textarea>
+      </div>
+      <div class="fbtns">
+        <button class="btn btn-p" onclick="saveAssign(${s.id})">Guardar</button>
+        <button class="btn btn-g" onclick="toggleAssignForm()">Cancelar</button>
+      </div>
+    </div>
+
+    <div class="stats-grid" style="margin-bottom:10px">
+      <div class="stat"><div class="sl">Ciclos resp.</div><div class="sv c">${ciclos}</div><div class="su">inhalaciones</div></div>
+      <div class="stat"><div class="sl">Frec. resp.</div><div class="sv b">${bpm}</div><div class="su">rpm prom.</div></div>
+      <div class="stat"><div class="sl">Apneas</div><div class="sv ${nAp>0?'r':''}">${nAp}</div><div class="su">${st.max_ap?'máx '+st.max_ap+' s':'sin eventos ✓'}</div></div>
+      <div class="stat"><div class="sl">T. Inhal.</div><div class="sv">${st.avg_ti??'—'}</div><div class="su">seg prom</div></div>
+      <div class="stat"><div class="sl">T. Exhal.</div><div class="sv c">${st.avg_te??'—'}</div><div class="su">seg prom</div></div>
+      <div class="stat"><div class="sl">Rel. I:E</div><div class="sv">${st.avg_ie?'1:'+st.avg_ie:'—'}</div><div class="su">&nbsp;</div></div>
+    </div>
+
+    <div class="section" style="margin-bottom:10px">
+      <div class="sechd"><div class="sectitle">Distribución de tiempos</div></div>
+      <div class="bars">
+        <div class="br"><div class="bl">Inhalación</div><div class="bt"><div class="bf i" style="width:${pct(st.avg_ti)}"></div></div><div class="bv">${st.avg_ti??0} s</div></div>
+        <div class="br"><div class="bl">Exhalación</div><div class="bt"><div class="bf e" style="width:${pct(st.avg_te)}"></div></div><div class="bv">${st.avg_te??0} s</div></div>
+        ${st.avg_ap
+          ? `<div class="br"><div class="bl">Apnea prom</div><div class="bt"><div class="bf a" style="width:${pct(st.avg_ap)}"></div></div><div class="bv">${st.avg_ap} s</div></div>`
+          : '<div class="no-apnea">Sin apneas ✓</div>'
+        }
+        ${st.n_terap>0?`<div style="padding:4px 0 0;font-family:var(--mono);font-size:9px;color:var(--yellow)">⏸ Terapéuticas: ${st.n_terap}</div>`:''}
+        ${st.n_patol>0?`<div style="padding:2px 0 0;font-family:var(--mono);font-size:9px;color:var(--red)">🚨 Patológicas: ${st.n_patol}</div>`:''}
+      </div>
+    </div>
+
+    <div class="section" style="margin-bottom:10px">
+      <div class="sechd">
+        <div class="sectitle">Eventos registrados</div>
+        <div class="badge ${nAp>0?'r':'c'}">${events.length}</div>
+      </div>
+      ${nAp>0?`<div class="alert-bar">
+        <span style="font-size:15px">${st.n_patol>0?'🚨':'⏸'}</span>
+        <div><strong>Apneas: ${nAp}</strong> — Máx: ${st.max_ap} s · Prom: ${st.avg_ap} s
+        ${st.n_terap>0?`· <span style="color:var(--yellow)">Terap: ${st.n_terap}</span>`:''}
+        ${st.n_patol>0?`· <span style="color:var(--red)">Patol: ${st.n_patol}</span>`:''}
+        </div></div>`:''}
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Hora</th><th>Tipo</th><th>Duración</th><th>I:E</th></tr></thead>
+          <tbody>
+            ${events.length
+              ? events.slice().reverse().slice(0,200).map(e=>`
+                  <tr style="${e.tipo==='APNEA_PATOL'?'background:rgba(255,68,102,.05)':e.tipo==='APNEA_TERAP'?'background:rgba(255,180,0,.04)':''}">
+                    <td style="font-family:var(--mono);font-size:9.5px;color:var(--txt3)">${e.timestamp}</td>
+                    <td><span class="tag ${e.tipo.toLowerCase()}">${
+                      e.tipo==='APNEA_TERAP'?'⏸ TERAP':
+                      e.tipo==='APNEA_PATOL'?'🚨 PATOL':e.tipo
+                    }</span></td>
+                    <td style="font-family:var(--mono);font-size:13px;color:#fff">${e.valor_s.toFixed(2)}<span style="font-size:9px;color:var(--txt3)"> s</span></td>
+                    <td>${e.ie_ratio>0
+                      ?`<span style="font-family:var(--mono);font-size:9px;padding:2px 5px;border-radius:3px;background:var(--blue-d);color:var(--blue);border:1px solid rgba(77,184,255,.15)">1:${e.ie_ratio.toFixed(2)}</span>`
+                      :'<span style="color:var(--txt3)">—</span>'
+                    }</td>
+                  </tr>`).join('')
+              : '<tr><td colspan="4" style="text-align:center;padding:24px;font-family:var(--mono);font-size:10px;color:var(--txt3)">Sin eventos registrados</td></tr>'
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <button class="btn btn-danger" onclick="deleteSession(${s.id})">🗑 Eliminar sesión</button>
+    <div style="height:8px"></div>
+  `;
+}
+
+function toggleAssignForm() {
+  assignOpen = !assignOpen;
+  const f = document.getElementById('assignForm');
+  if (f) {
+    f.classList.toggle('open', assignOpen);
+    if (assignOpen) setTimeout(() => document.getElementById('fn')?.focus(), 50);
+  }
+}
+
+async function saveAssign(sid) {
+  const paciente = document.getElementById('fn')?.value.trim() || '';
+  const notas    = document.getElementById('fno')?.value.trim() || '';
+  await DB.updateSession(sid, { paciente, notas });
+  assignOpen = false;
+  renderSheetContent(sid);
+  renderSessionList();
+}
+
+async function deleteSession(sid) {
+  if (!confirm(`¿Eliminar sesión #${sid}?\nEsta acción no se puede deshacer.`)) return;
+  await DB.deleteSession(sid);
+  closeSheet();
+  renderSessionList();
+}
+
+// ══════════════════════════════════════════════════
+//  EXPORT / IMPORT
+// ══════════════════════════════════════════════════
+async function exportJSON() {
+  const sessions = await DB.getSessions();
+  if (!sessions.length) { alert('No hay sesiones para exportar.'); return; }
+  const full = await Promise.all(sessions.map(async s => ({ ...s, eventos: await DB.getEvents(s.id) })));
+  const data = {
+    version:    2,
+    exportDate: new Date().toISOString(),
+    app:        'Monitor Respiratorio BLE',
+    sessions:   full
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = Object.assign(document.createElement('a'), {
+    href:     url,
+    download: 'monitor_resp_' + new Date().toISOString().slice(0,10) + '.json'
+  });
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importJSON() {
+  document.getElementById('fileInput').click();
+}
+
+function handleImport(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!Array.isArray(data.sessions)) { alert('Archivo inválido: falta el campo "sessions".'); return; }
+
+      const existing    = await DB.getSessions();
+      const existingIds = new Set(existing.map(s => s.id));
+      let imported = 0;
+
+      for (const item of data.sessions) {
+        const { eventos, ...sesData } = item;
+        if (!existingIds.has(sesData.id)) {
+          await DB.createSession(sesData);
+          if (Array.isArray(eventos)) {
+            for (const ev of eventos) await DB.addEvent(sesData.id, ev);
+          }
+          imported++;
+        }
+      }
+
+      DB.invalidateSessions();
+      renderSessionList();
+      alert(`✅ Importadas ${imported} sesiones nuevas.${imported < data.sessions.length ? `\n(${data.sessions.length-imported} ya existían)` : ''}`);
+    } catch(err) {
+      alert('Error al leer el archivo:\n' + err.message);
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+// ══════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════
+renderSessionList();
+renderLivePanel();
+</script>
+</body>
+</html>
