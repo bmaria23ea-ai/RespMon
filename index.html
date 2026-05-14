@@ -565,6 +565,51 @@ async function closeCurrentSession() {
   renderSessionList();
 }
 
+// Convierte "HH:MM:SS" → segundos totales
+function tsToSeconds(ts) {
+  if (!ts) return null;
+  const p = ts.split(':').map(Number);
+  if (p.length !== 3 || p.some(isNaN)) return null;
+  return p[0] * 3600 + p[1] * 60 + p[2];
+}
+
+// Calcula RPM real midiendo intervalos entre inhalaciones consecutivas.
+// Filtra intervalos fisiológicamente imposibles (< 2 s o > 60 s) para
+// ignorar reinicios de sesión y eventos duplicados del ESP32.
+// Con menos de 2 inhalaciones no hay intervalo → devuelve '—'.
+function calcRPM(inhales) {
+  if (inhales.length < 2) return '—';
+
+  // Ordenar por timestamp y convertir a segundos
+  const sorted = inhales
+    .map(e => tsToSeconds(e.timestamp))
+    .filter(s => s !== null)
+    .sort((a, b) => a - b);
+
+  if (sorted.length < 2) return '—';
+
+  const intervals = [];
+  for (let i = 1; i < sorted.length; i++) {
+    const diff = sorted[i] - sorted[i - 1];
+    // Rango fisiológico: entre 2 s (30 rpm máx) y 60 s (1 rpm mín)
+    if (diff >= 2 && diff <= 60) intervals.push(diff);
+  }
+
+  if (!intervals.length) return '—';
+
+  const avgInterval = intervals.reduce((s, v) => s + v, 0) / intervals.length;
+  const rpm = 60 / avgInterval;
+
+  // Clasificación visual con sufijo para orientar al clínico
+  let label = rpm.toFixed(1);
+  if      (rpm < 12)  label += ' ↓';   // bradipnea
+  else if (rpm <= 20) label += '';      // normal adulto sano
+  else if (rpm <= 28) label += ' ↑';   // límite adulto mayor
+  else                label += ' !!';  // taquipnea
+
+  return label;
+}
+
 function recomputeLiveStats(events) {
   const inhales = events.filter(e => e.tipo === 'INHALA');
   const exhales = events.filter(e => e.tipo === 'EXHALA');
@@ -579,7 +624,7 @@ function recomputeLiveStats(events) {
   const maxAp = max(apneas);
   const ieVals = events.filter(e=>e.ie_ratio>0).map(e=>e.ie_ratio);
   const avgIe  = ieVals.length ? ieVals.reduce((s,v)=>s+v,0)/ieVals.length : 0;
-  const bpm    = (avgTi && avgTe) ? (60/(avgTi+avgTe)).toFixed(1) : '—';
+  const bpm    = calcRPM(inhales);
 
   app.liveStats = {
     ciclos: inhales.length,
@@ -601,13 +646,14 @@ function computeStatsFromEvents(events) {
   const max = arr => arr.length ? Math.max(...arr.map(e=>e.valor_s)) : null;
   const ieVals = events.filter(e=>e.ie_ratio>0).map(e=>e.ie_ratio);
   return {
-    avg_ti: avg(inhales) != null ? +avg(inhales).toFixed(2) : null,
-    avg_te: avg(exhales) != null ? +avg(exhales).toFixed(2) : null,
-    avg_ap: avg(apneas)  != null ? +avg(apneas).toFixed(1)  : null,
-    max_ap: max(apneas)  != null ? +max(apneas).toFixed(1)  : null,
-    avg_ie: ieVals.length ? +(ieVals.reduce((s,v)=>s+v,0)/ieVals.length).toFixed(2) : null,
+    avg_ti:  avg(inhales) != null ? +avg(inhales).toFixed(2) : null,
+    avg_te:  avg(exhales) != null ? +avg(exhales).toFixed(2) : null,
+    avg_ap:  avg(apneas)  != null ? +avg(apneas).toFixed(1)  : null,
+    max_ap:  max(apneas)  != null ? +max(apneas).toFixed(1)  : null,
+    avg_ie:  ieVals.length ? +(ieVals.reduce((s,v)=>s+v,0)/ieVals.length).toFixed(2) : null,
     n_terap: events.filter(e=>e.tipo==='APNEA_TERAP').length,
     n_patol: events.filter(e=>e.tipo==='APNEA_PATOL').length,
+    rpm:     calcRPM(inhales),   // ← RPM real por intervalos entre inhalaciones
   };
 }
 
@@ -830,7 +876,7 @@ async function renderSheetContent(sid) {
   const st = computeStatsFromEvents(events);
   const ciclos = events.filter(e=>e.tipo==='INHALA').length || s.total_ciclos;
   const nAp = st.n_terap + st.n_patol;
-  const bpm = (st.avg_ti && st.avg_te) ? (60/(st.avg_ti+st.avg_te)).toFixed(1) : '—';
+  const bpm = st.rpm ?? '—';
   const mx  = Math.max(st.avg_ti||0, st.avg_te||0, st.avg_ap||0, 0.1);
   const pct = v => ((v||0)/mx*100).toFixed(1)+'%';
 
