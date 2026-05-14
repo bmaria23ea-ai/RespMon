@@ -565,51 +565,6 @@ async function closeCurrentSession() {
   renderSessionList();
 }
 
-// Convierte "HH:MM:SS" → segundos totales
-function tsToSeconds(ts) {
-  if (!ts) return null;
-  const p = ts.split(':').map(Number);
-  if (p.length !== 3 || p.some(isNaN)) return null;
-  return p[0] * 3600 + p[1] * 60 + p[2];
-}
-
-// Calcula RPM real midiendo intervalos entre inhalaciones consecutivas.
-// Filtra intervalos fisiológicamente imposibles (< 2 s o > 60 s) para
-// ignorar reinicios de sesión y eventos duplicados del ESP32.
-// Con menos de 2 inhalaciones no hay intervalo → devuelve '—'.
-function calcRPM(inhales) {
-  if (inhales.length < 2) return '—';
-
-  // Ordenar por timestamp y convertir a segundos
-  const sorted = inhales
-    .map(e => tsToSeconds(e.timestamp))
-    .filter(s => s !== null)
-    .sort((a, b) => a - b);
-
-  if (sorted.length < 2) return '—';
-
-  const intervals = [];
-  for (let i = 1; i < sorted.length; i++) {
-    const diff = sorted[i] - sorted[i - 1];
-    // Rango fisiológico: entre 2 s (30 rpm máx) y 60 s (1 rpm mín)
-    if (diff >= 2 && diff <= 60) intervals.push(diff);
-  }
-
-  if (!intervals.length) return '—';
-
-  const avgInterval = intervals.reduce((s, v) => s + v, 0) / intervals.length;
-  const rpm = 60 / avgInterval;
-
-  // Clasificación visual con sufijo para orientar al clínico
-  let label = rpm.toFixed(1);
-  if      (rpm < 12)  label += ' ↓';   // bradipnea
-  else if (rpm <= 20) label += '';      // normal adulto sano
-  else if (rpm <= 28) label += ' ↑';   // límite adulto mayor
-  else                label += ' !!';  // taquipnea
-
-  return label;
-}
-
 function recomputeLiveStats(events) {
   const inhales = events.filter(e => e.tipo === 'INHALA');
   const exhales = events.filter(e => e.tipo === 'EXHALA');
@@ -622,9 +577,20 @@ function recomputeLiveStats(events) {
   const avgTe = avg(exhales);
   const avgAp = avg(apneas);
   const maxAp = max(apneas);
-  const ieVals = events.filter(e=>e.ie_ratio>0).map(e=>e.ie_ratio);
+  // I:E solo desde EXHALAs — el ESP32 manda el ie_ratio real en cada EXHALA
+  const ieVals = exhales.filter(e=>e.ie_ratio>0).map(e=>e.ie_ratio);
   const avgIe  = ieVals.length ? ieVals.reduce((s,v)=>s+v,0)/ieVals.length : 0;
-  const bpm    = calcRPM(inhales);
+
+  // RPM fisiológico: 60 / (Ti + Te) — frecuencia respiratoria base sin contar pausas de apnea
+  let bpm = '—';
+  if (avgTi && avgTe) {
+    const rpm = 60 / (avgTi + avgTe);
+    bpm = rpm.toFixed(1);
+    if      (rpm < 12)  bpm += ' ↓';   // bradipnea
+    else if (rpm <= 20) bpm += '';      // normal adulto sano
+    else if (rpm <= 28) bpm += ' ↑';   // límite adulto mayor
+    else                bpm += ' !!';  // taquipnea
+  }
 
   app.liveStats = {
     ciclos: inhales.length,
@@ -644,7 +610,18 @@ function computeStatsFromEvents(events) {
   const apneas  = events.filter(e=>e.tipo.startsWith('APNEA'));
   const avg = arr => arr.length ? arr.reduce((s,e)=>s+e.valor_s,0)/arr.length : null;
   const max = arr => arr.length ? Math.max(...arr.map(e=>e.valor_s)) : null;
-  const ieVals = events.filter(e=>e.ie_ratio>0).map(e=>e.ie_ratio);
+  const ieVals = exhales.filter(e=>e.ie_ratio>0).map(e=>e.ie_ratio);
+  // RPM fisiológico: 60 / (Ti + Te)
+  let rpm = '—';
+  const ti = avg(inhales), te = avg(exhales);
+  if (ti && te) {
+    const r = 60 / (ti + te);
+    rpm = r.toFixed(1);
+    if      (r < 12)  rpm += ' ↓';
+    else if (r <= 20) rpm += '';
+    else if (r <= 28) rpm += ' ↑';
+    else              rpm += ' !!';
+  }
   return {
     avg_ti:  avg(inhales) != null ? +avg(inhales).toFixed(2) : null,
     avg_te:  avg(exhales) != null ? +avg(exhales).toFixed(2) : null,
@@ -653,7 +630,7 @@ function computeStatsFromEvents(events) {
     avg_ie:  ieVals.length ? +(ieVals.reduce((s,v)=>s+v,0)/ieVals.length).toFixed(2) : null,
     n_terap: events.filter(e=>e.tipo==='APNEA_TERAP').length,
     n_patol: events.filter(e=>e.tipo==='APNEA_PATOL').length,
-    rpm:     calcRPM(inhales),   // ← RPM real por intervalos entre inhalaciones
+    rpm,
   };
 }
 
