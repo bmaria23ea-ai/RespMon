@@ -1025,19 +1025,6 @@ function handleImport(event) {
           }
           imported++;
         }
-      }
-
-      DB.invalidateSessions();
-      renderSessionList();
-      alert(`✅ Importadas ${imported} sesiones nuevas.${imported < data.sessions.length ? `\n(${data.sessions.length-imported} ya existían)` : ''}`);
-    } catch(err) {
-      alert('Error al leer el archivo:\n' + err.message);
-    }
-    event.target.value = '';
-  };
-  reader.readAsText(file);
-}
-
 // ══════════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════════
