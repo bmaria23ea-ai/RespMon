@@ -1,25 +1,25 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Monitor Respiratorio</title>
-<link rel="manifest" href="data:application/json,%7B%22name%22%3A%22Monitor%20Respiratorio%22%2C%22short_name%22%3A%22RespMonitor%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2307080f%22%2C%22theme_color%22%3A%22%2300e5cc%22%7D">
+<title>Respiratory Monitor</title>
+<link rel="manifest" href="data:application/json,%7B%22name%22%3A%22Respiratory%20Monitor%22%2C%22short_name%22%3A%22RespMonitor%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2307080f%22%2C%22theme_color%22%3A%22%2300e5cc%22%7D">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 :root{
-  --bg:#07080f;--bg1:#0c0f1a;--bg2:#111525;--bg3:#161c30;
-  --line:#1c2640;--line2:#243050;
+  --bg:#ffffff;--bg1:#f5f7fa;--bg2:#eef0f5;--bg3:#e4e8f0;
+  --line:#d0d8e8;--line2:#b8c4d8;
   --cyan:#00e5cc;--cyan2:#00b8a4;--cyan-d:rgba(0,229,204,.07);
   --blue:#4db8ff;--blue-d:rgba(77,184,255,.08);
   --red:#ff4466;--red-d:rgba(255,68,102,.09);
   --yellow:#ffb400;--yellow-d:rgba(255,180,0,.08);
-  --txt:#b8cfe8;--txt2:#6a88aa;--txt3:#384e68;
+  --txt:#0d1117;--txt2:#1a2535;--txt3:#2d3748;
   --mono:'JetBrains Mono',monospace;--head:'Syne',sans-serif;
   --hd:52px;--tb:56px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--head);font-size:13px;overflow:hidden;-webkit-text-size-adjust:100%}
+html,body{height:100%;background:var(--bg);color:#0d1117;font-family:var(--head);font-size:13px;overflow:hidden;-webkit-text-size-adjust:100%}
 
 /* ── App shell ── */
 .app{display:flex;flex-direction:column;height:100%}
@@ -28,12 +28,12 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--he
 header{height:var(--hd);background:var(--bg1);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0;z-index:10}
 .logo-mark{width:28px;height:28px;background:var(--cyan);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .logo-mark svg{width:14px;height:14px}
-.logo-name{font-size:13px;font-weight:700;letter-spacing:-.3px;color:#fff}
-.logo-tag{font-size:8px;color:var(--txt3);font-family:var(--mono);letter-spacing:1.5px;text-transform:uppercase}
+.logo-name{font-size:13px;font-weight:700;letter-spacing:-.3px;color:#0d1117}
+.logo-tag{font-size:8px;color:#2d3748;font-family:var(--mono);letter-spacing:1.5px;text-transform:uppercase}
 .hd-right{margin-left:auto}
-.ble-btn{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;padding:6px 12px;border-radius:99px;border:1px solid var(--line2);color:var(--txt2);background:var(--bg2);cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;outline:none}
-.ble-btn.connecting{border-color:rgba(255,180,0,.5);color:var(--yellow)}
-.ble-btn.connected{border-color:rgba(0,229,204,.4);color:var(--cyan);background:var(--cyan-d)}
+.ble-btn{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;padding:6px 12px;border-radius:99px;border:1px solid var(--line2);color:#0d1117;background:var(--bg2);cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;outline:none}
+.ble-btn.connecting{border-color:rgba(255,180,0,.5);color:#5a3e00}
+.ble-btn.connected{border-color:rgba(0,229,204,.4);color:#0d1117;background:var(--cyan-d)}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--txt3);transition:all .3s;flex-shrink:0}
 .dot.on{background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:blink 1.5s infinite}
 .dot.warn{background:var(--yellow);box-shadow:0 0 6px var(--yellow);animation:blink .8s infinite}
@@ -46,117 +46,117 @@ header{height:var(--hd);background:var(--bg1);border-bottom:1px solid var(--line
 
 /* ── Tab bar ── */
 .tabs{height:var(--tb);background:var(--bg1);border-top:1px solid var(--line);display:flex;flex-shrink:0}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--txt3);transition:color .15s;-webkit-tap-highlight-color:transparent;font-size:9px;font-family:var(--mono);letter-spacing:.5px;text-transform:uppercase;padding-bottom:2px}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:#2d3748;transition:color .15s;-webkit-tap-highlight-color:transparent;font-size:9px;font-family:var(--mono);letter-spacing:.5px;text-transform:uppercase;padding-bottom:2px}
 .tab svg{width:18px;height:18px;flex-shrink:0}
 .tab svg *{transition:stroke .15s}
-.tab.active{color:var(--cyan)}
-.tab.active svg *{stroke:var(--cyan)}
+.tab.active{color:#0d5c6e}
+.tab.active svg *{stroke:#0d5c6e}
 
 /* ── Sessions tab ── */
 .search-bar{padding:10px 12px;background:var(--bg1);border-bottom:1px solid var(--line);flex-shrink:0;position:sticky;top:0;z-index:5}
 .sw{position:relative}
-.sw input{width:100%;background:var(--bg3);border:1px solid var(--line2);border-radius:7px;color:var(--txt);font-family:var(--mono);font-size:11px;padding:7px 10px 7px 30px;outline:none;-webkit-appearance:none;transition:border-color .15s}
+.sw input{width:100%;background:var(--bg3);border:1px solid var(--line2);border-radius:7px;color:#0d1117;font-family:var(--mono);font-size:11px;padding:7px 10px 7px 30px;outline:none;-webkit-appearance:none;transition:border-color .15s}
 .sw input:focus{border-color:var(--cyan)}
-.si-ico{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--txt3);pointer-events:none}
-.ses-count{padding:7px 14px;font-family:var(--mono);font-size:9px;color:var(--txt3);letter-spacing:1px;border-bottom:1px solid var(--line);flex-shrink:0;display:flex;justify-content:space-between;align-items:center}
+.si-ico{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:#2d3748;pointer-events:none}
+.ses-count{padding:7px 14px;font-family:var(--mono);font-size:9px;color:#0d1117;letter-spacing:1px;border-bottom:1px solid var(--line);flex-shrink:0;display:flex;justify-content:space-between;align-items:center}
 .io-btns{display:flex;gap:6px}
-.io-btn{font-family:var(--mono);font-size:9px;color:var(--cyan);background:var(--cyan-d);border:1px solid rgba(0,229,204,.15);border-radius:5px;padding:3px 8px;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none}
+.io-btn{font-family:var(--mono);font-size:9px;color:#0d1117;background:var(--cyan-d);border:1px solid rgba(0,229,204,.15);border-radius:5px;padding:3px 8px;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none}
 .io-btn:active{background:rgba(0,229,204,.15)}
 .ses-list{padding:6px}
 .si-item{padding:11px 12px;border-radius:8px;cursor:pointer;border:1px solid transparent;margin-bottom:3px;-webkit-tap-highlight-color:transparent;transition:background .1s}
 .si-item:active{background:var(--bg3)}
 .si-top{display:flex;align-items:center;gap:5px;margin-bottom:3px;flex-wrap:wrap}
-.si-id{font-family:var(--mono);font-size:9px;color:var(--txt3)}
+.si-id{font-family:var(--mono);font-size:9px;color:#2d3748}
 .pill{display:inline-flex;align-items:center;gap:3px;font-family:var(--mono);font-size:8px;padding:1px 6px;border-radius:99px}
-.pill.live{color:var(--cyan);background:var(--cyan-d);border:1px solid rgba(0,229,204,.2)}
+.pill.live{color:#0d5c6e;background:var(--cyan-d);border:1px solid rgba(0,229,204,.2)}
 .pd{width:3px;height:3px;border-radius:50%;background:var(--cyan);animation:blink 1s infinite}
-.pill.apnea{color:var(--red);background:var(--red-d);border:1px solid rgba(255,68,102,.2)}
-.si-name{font-size:13px;font-weight:600;color:#fff;margin-bottom:2px}
-.si-name.empty{color:var(--txt3);font-weight:400;font-style:italic;font-size:12px}
-.si-meta{font-family:var(--mono);font-size:9px;color:var(--txt3)}
-.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--txt3);padding:48px 20px;text-align:center}
+.pill.apnea{color:#8b0000;background:var(--red-d);border:1px solid rgba(255,68,102,.2)}
+.si-name{font-size:13px;font-weight:600;color:#0d1117;margin-bottom:2px}
+.si-name.empty{color:#2d3748;font-weight:400;font-style:italic;font-size:12px}
+.si-meta{font-family:var(--mono);font-size:9px;color:#2d3748}
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#2d3748;padding:48px 20px;text-align:center}
 .empty-icon{font-size:44px;opacity:.15}
-.empty-title{font-size:13px;color:var(--txt2);font-weight:500}
-.empty-sub{font-family:var(--mono);font-size:10px;line-height:1.6}
+.empty-title{font-size:13px;color:#0d1117;font-weight:500}
+.empty-sub{font-family:var(--mono);font-size:10px;line-height:1.6;color:#2d3748}
 
 /* ── Live tab ── */
 .live-panel{padding:12px;display:flex;flex-direction:column;gap:10px}
 .connect-card{background:var(--bg1);border:1px solid var(--line);border-radius:12px;padding:28px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
 .cc-icon{font-size:40px}
-.cc-title{font-size:16px;font-weight:700;color:#fff}
-.cc-sub{font-size:11px;font-family:var(--mono);color:var(--txt3);line-height:1.6}
+.cc-title{font-size:16px;font-weight:700;color:#0d1117}
+.cc-sub{font-size:11px;font-family:var(--mono);color:#2d3748;line-height:1.6}
 .big-btn{padding:12px 28px;border-radius:8px;font-family:var(--head);font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s;-webkit-tap-highlight-color:transparent;outline:none}
-.big-btn.cyan{background:var(--cyan);color:#000}
+.big-btn.cyan{background:var(--cyan);color:#0d1117}
 .big-btn.cyan:active{background:var(--cyan2)}
-.big-btn.red{background:var(--red-d);color:var(--red);border:1px solid rgba(255,68,102,.3)}
+.big-btn.red{background:var(--red-d);color:#8b0000;border:1px solid rgba(255,68,102,.3)}
 .big-btn.red:active{background:rgba(255,68,102,.15)}
 
 .live-hd{background:var(--bg1);border:1px solid var(--line);border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:10px}
-.live-ses-tag{font-family:var(--mono);font-size:9px;color:var(--cyan);text-transform:uppercase;letter-spacing:1px;margin-bottom:1px}
-.live-name{font-size:13px;font-weight:600;color:#fff}
-.live-name.empty{color:var(--txt3);font-weight:400;font-style:italic;font-size:12px}
+.live-ses-tag{font-family:var(--mono);font-size:9px;color:#0d5c6e;text-transform:uppercase;letter-spacing:1px;margin-bottom:1px}
+.live-name{font-size:13px;font-weight:600;color:#0d1117}
+.live-name.empty{color:#2d3748;font-weight:400;font-style:italic;font-size:12px}
 
 /* ── Stats grid ── */
 .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .stat{background:var(--bg1);border:1px solid var(--line);border-radius:8px;padding:9px 10px;display:flex;flex-direction:column;gap:2px}
-.sl{font-family:var(--mono);font-size:7.5px;letter-spacing:1px;text-transform:uppercase;color:var(--txt3)}
-.sv{font-family:var(--mono);font-size:22px;font-weight:500;line-height:1.1;color:#fff}
-.sv.c{color:var(--cyan)}.sv.b{color:var(--blue)}.sv.r{color:var(--red)}
-.su{font-family:var(--mono);font-size:7.5px;color:var(--txt3)}
+.sl{font-family:var(--mono);font-size:7.5px;letter-spacing:1px;text-transform:uppercase;color:#1a2535}
+.sv{font-family:var(--mono);font-size:22px;font-weight:500;line-height:1.1;color:#0d1117}
+.sv.c{color:#0d1117}.sv.b{color:#0d1117}.sv.r{color:var(--red)}
+.su{font-family:var(--mono);font-size:7.5px;color:#1a2535}
 
 /* ── Section ── */
 .section{background:var(--bg1);border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .sechd{padding:9px 13px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;background:var(--bg2)}
-.sectitle{font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--txt2);flex:1}
+.sectitle{font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#0d1117;flex:1}
 .badge{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:99px}
-.badge.c{background:var(--cyan-d);color:var(--cyan);border:1px solid rgba(0,229,204,.2)}
-.badge.r{background:var(--red-d);color:var(--red);border:1px solid rgba(255,68,102,.25)}
+.badge.c{background:var(--cyan-d);color:#0d1117;border:1px solid rgba(0,229,204,.2)}
+.badge.r{background:var(--red-d);color:#8b0000;border:1px solid rgba(255,68,102,.25)}
 
 /* ── Bars ── */
 .bars{padding:12px 14px;display:flex;flex-direction:column;gap:9px}
 .br{display:flex;align-items:center;gap:9px}
-.bl{font-family:var(--mono);font-size:8.5px;color:var(--txt3);width:60px;flex-shrink:0}
+.bl{font-family:var(--mono);font-size:8.5px;color:#0d1117;width:60px;flex-shrink:0}
 .bt{flex:1;height:6px;background:var(--bg3);border-radius:4px;overflow:hidden}
 .bf{height:100%;border-radius:4px;transition:width .7s cubic-bezier(.4,0,.2,1)}
 .bf.i{background:linear-gradient(90deg,#1a6fb0,var(--blue))}
 .bf.e{background:linear-gradient(90deg,var(--cyan2),var(--cyan))}
 .bf.a{background:linear-gradient(90deg,#b02040,var(--red))}
-.bv{font-family:var(--mono);font-size:9.5px;color:var(--txt2);width:32px;text-align:right;flex-shrink:0}
-.no-apnea{padding:10px 14px;font-family:var(--mono);font-size:10px;color:var(--txt3)}
+.bv{font-family:var(--mono);font-size:9.5px;color:#0d1117;width:32px;text-align:right;flex-shrink:0}
+.no-apnea{padding:10px 14px;font-family:var(--mono);font-size:10px;color:#2d3748}
 
 /* ── Event stream (live) ── */
 .ev-stream{max-height:210px;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.ev-row{padding:8px 12px;border-bottom:1px solid rgba(28,38,64,.5);display:flex;align-items:center;gap:8px}
+.ev-row{padding:8px 12px;border-bottom:1px solid rgba(180,195,220,.5);display:flex;align-items:center;gap:8px}
 .ev-row:last-child{border-bottom:none}
 .tag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:8.5px;font-weight:500;flex-shrink:0}
-.tag.inhala{background:var(--blue-d);color:var(--blue);border:1px solid rgba(77,184,255,.2)}
-.tag.exhala{background:var(--cyan-d);color:var(--cyan);border:1px solid rgba(0,229,204,.2)}
-.tag.apnea_terap{background:var(--yellow-d);color:var(--yellow);border:1px solid rgba(255,180,0,.3)}
-.tag.apnea_patol{background:var(--red-d);color:var(--red);border:1px solid rgba(255,68,102,.35);font-weight:700}
-.ev-ts{font-family:var(--mono);font-size:9px;color:var(--txt3);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ev-val{font-family:var(--mono);font-size:12px;color:#fff;white-space:nowrap}
+.tag.inhala{background:var(--blue-d);color:#0d5c6e;border:1px solid rgba(77,184,255,.2)}
+.tag.exhala{background:var(--cyan-d);color:#0d5c6e;border:1px solid rgba(0,229,204,.2)}
+.tag.apnea_terap{background:var(--yellow-d);color:#5a3e00;border:1px solid rgba(255,180,0,.3)}
+.tag.apnea_patol{background:var(--red-d);color:#8b0000;border:1px solid rgba(255,68,102,.35);font-weight:700}
+.ev-ts{font-family:var(--mono);font-size:9px;color:#2d3748;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev-val{font-family:var(--mono);font-size:12px;color:#0d1117;white-space:nowrap}
 
 /* ── Alert bar ── */
-.alert-bar{display:flex;align-items:center;gap:10px;padding:9px 13px;background:var(--red-d);border-bottom:1px solid rgba(255,68,102,.2);font-size:11px}
-.alert-bar strong{color:var(--red)}
+.alert-bar{display:flex;align-items:center;gap:10px;padding:9px 13px;background:var(--red-d);border-bottom:1px solid rgba(255,68,102,.2);font-size:11px;color:#8b0000}
+.alert-bar strong{color:#8b0000}
 
 /* ── Table ── */
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse}
-thead th{padding:7px 10px;text-align:left;font-family:var(--mono);font-size:7.5px;letter-spacing:1px;text-transform:uppercase;color:var(--txt3);background:var(--bg2);border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;z-index:2}
-tbody tr{border-bottom:1px solid rgba(28,38,64,.5)}
+thead th{padding:7px 10px;text-align:left;font-family:var(--mono);font-size:7.5px;letter-spacing:1px;text-transform:uppercase;color:#0d1117;background:var(--bg2);border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;z-index:2}
+tbody tr{border-bottom:1px solid rgba(180,195,220,.5)}
 tbody tr:last-child{border-bottom:none}
-td{padding:7px 10px;font-size:11px;color:var(--txt);white-space:nowrap}
+td{padding:7px 10px;font-size:11px;color:#0d1117;white-space:nowrap}
 
 /* ── Buttons ── */
 .btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:6px;font-family:var(--head);font-size:11px;font-weight:600;cursor:pointer;border:1px solid transparent;-webkit-tap-highlight-color:transparent;outline:none}
 .btn-p{background:var(--cyan);color:#000;border-color:var(--cyan)}.btn-p:active{background:var(--cyan2)}
-.btn-g{background:transparent;color:var(--txt2);border-color:var(--line2)}.btn-g:active{background:var(--bg3)}
-.btn-danger{background:var(--red-d);color:var(--red);border-color:rgba(255,68,102,.3);width:100%;justify-content:center;margin-top:4px}
+.btn-g{background:transparent;color:#0d1117;border-color:var(--line2)}.btn-g:active{background:var(--bg3)}
+.btn-danger{background:var(--red-d);color:#8b0000;border-color:rgba(255,68,102,.3);width:100%;justify-content:center;margin-top:4px}
 .btn-danger:active{background:rgba(255,68,102,.15)}
 
 /* ── Sheet overlay ── */
-.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;display:none;flex-direction:column;justify-content:flex-end;opacity:0;transition:opacity .25s}
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.40);z-index:100;display:none;flex-direction:column;justify-content:flex-end;opacity:0;transition:opacity .25s}
 .sheet-overlay.open{display:flex}
 .sheet-overlay.visible{opacity:1}
 .sheet{background:var(--bg1);border-radius:18px 18px 0 0;max-height:92dvh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
@@ -168,47 +168,47 @@ td{padding:7px 10px;font-size:11px;color:var(--txt);white-space:nowrap}
 /* ── Sheet content ── */
 .sheet-hd{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .ses-num{flex-shrink:0;width:42px;height:42px;border-radius:9px;background:var(--cyan-d);border:1px solid rgba(0,229,204,.2);display:flex;flex-direction:column;align-items:center;justify-content:center}
-.sn-lbl{font-family:var(--mono);font-size:7px;color:var(--cyan);letter-spacing:1px;text-transform:uppercase}
-.sn-val{font-family:var(--mono);font-size:17px;font-weight:500;color:var(--cyan);line-height:1}
+.sn-lbl{font-family:var(--mono);font-size:7px;color:#0d5c6e;letter-spacing:1px;text-transform:uppercase}
+.sn-val{font-family:var(--mono);font-size:17px;font-weight:500;color:#0d1117;line-height:1}
 .ses-info{flex:1;min-width:0}
-.ses-big{font-size:14px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ses-big.empty{color:var(--txt3);font-weight:400;font-style:italic;font-size:12px}
-.ses-dates{font-family:var(--mono);font-size:9px;color:var(--txt3);margin-top:2px}
-.ses-notes{font-size:11px;color:var(--txt2);margin-top:3px}
+.ses-big{font-size:14px;font-weight:700;color:#0d1117;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ses-big.empty{color:#2d3748;font-weight:400;font-style:italic;font-size:12px}
+.ses-dates{font-family:var(--mono);font-size:9px;color:#2d3748;margin-top:2px}
+.ses-notes{font-size:11px;color:#0d1117;margin-top:3px}
 
 /* ── Assign form ── */
 .abox{background:var(--bg2);border:1px solid var(--line2);border-radius:8px;padding:12px;display:none;flex-direction:column;gap:10px;margin-bottom:10px}
 .abox.open{display:flex}
-.abox-title{font-size:10px;font-family:var(--mono);letter-spacing:1px;text-transform:uppercase;color:var(--txt2)}
+.abox-title{font-size:10px;font-family:var(--mono);letter-spacing:1px;text-transform:uppercase;color:#0d1117}
 .field{display:flex;flex-direction:column;gap:4px}
-.field label{font-family:var(--mono);font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:var(--txt3)}
-.field input,.field textarea,.field select{background:var(--bg3);border:1px solid var(--line2);border-radius:5px;color:var(--txt);font-family:var(--head);font-size:13px;padding:8px 10px;outline:none;-webkit-appearance:none;transition:border-color .15s;width:100%}
+.field label{font-family:var(--mono);font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:#0d1117}
+.field input,.field textarea,.field select{background:var(--bg3);border:1px solid var(--line2);border-radius:5px;color:#0d1117;font-family:var(--head);font-size:13px;padding:8px 10px;outline:none;-webkit-appearance:none;transition:border-color .15s;width:100%}
 .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--cyan)}
 .field textarea{resize:none;min-height:64px}
 .field select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236a88aa'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
 .fbtns{display:flex;gap:7px}
-/* ── Ejercicio badge en lista de sesiones ── */
-.pill.ej{color:var(--blue);background:var(--blue-d);border:1px solid rgba(77,184,255,.2)}
-/* ── Métricas clínicas con semáforo ── */
+/* ── Exercise badge in session list ── */
+.pill.ej{color:#0d1117;background:var(--blue-d);border:1px solid rgba(77,184,255,.2)}
+/* ── Clinical metrics with traffic light ── */
 .stat.ok  {border-color:rgba(0,229,204,.3);background:rgba(0,229,204,.04)}
 .stat.warn{border-color:rgba(255,180,0,.35);background:rgba(255,180,0,.05)}
 .stat.bad {border-color:rgba(255,68,102,.35);background:rgba(255,68,102,.05)}
-.sv.ok  {color:var(--cyan)}
-.sv.warn{color:var(--yellow)}
-.sv.bad {color:var(--red)}
+.sv.ok  {color:#0d1117}
+.sv.warn{color:#5a3e00}
+.sv.bad {color:#8b0000}
 /* ── Rango objetivo badge ── */
-.rango{font-family:var(--mono);font-size:8px;color:var(--txt3);margin-top:1px}
-.rango.ok  {color:var(--cyan2)}
-.rango.warn{color:var(--yellow)}
-.rango.bad {color:var(--red)}
-/* ── Ejercicio info card ── */
+.rango{font-family:var(--mono);font-size:8px;color:#2d3748;margin-top:1px}
+.rango.ok  {color:#0d5c6e}
+.rango.warn{color:#5a3e00}
+.rango.bad {color:#8b0000}
+/* ── Exercise info card ── */
 .ej-card{background:var(--bg2);border:1px solid var(--line2);border-radius:8px;padding:10px 12px;margin-bottom:10px;display:flex;flex-direction:column;gap:4px}
-.ej-card-title{font-family:var(--mono);font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--blue)}
-.ej-card-name{font-size:12px;font-weight:600;color:#fff}
-.ej-card-obj{font-family:var(--mono);font-size:9px;color:var(--txt3);line-height:1.5}
+.ej-card-title{font-family:var(--mono);font-size:8px;letter-spacing:1px;text-transform:uppercase;color:#0d1117}
+.ej-card-name{font-size:12px;font-weight:600;color:#0d1117}
+.ej-card-obj{font-family:var(--mono);font-size:9px;color:#2d3748;line-height:1.5}
 
 /* ── Apnea toast ── */
-.apnea-toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;border-radius:8px;padding:9px 18px;font-family:var(--mono);font-size:11px;font-weight:700;z-index:200;display:none;white-space:nowrap;box-shadow:0 4px 24px rgba(255,68,102,.5);animation:pulse-r .8s infinite alternate}
+.apnea-toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:var(--red);color:#0d1117;border-radius:8px;padding:9px 18px;font-family:var(--mono);font-size:11px;font-weight:700;z-index:200;display:none;white-space:nowrap;box-shadow:0 4px 24px rgba(255,68,102,.5);animation:pulse-r .8s infinite alternate}
 @keyframes pulse-r{from{box-shadow:0 4px 15px rgba(255,68,102,.3)}to{box-shadow:0 4px 28px rgba(255,68,102,.7)}}
 
 /* ── Scrollbars ── */
@@ -228,13 +228,13 @@ td{padding:7px 10px;font-size:11px;color:var(--txt);white-space:nowrap}
     </svg>
   </div>
   <div>
-    <div class="logo-name">Monitor Respiratorio</div>
+    <div class="logo-name">Respiratory Monitor</div>
     <div class="logo-tag">Android · BLE</div>
   </div>
   <div class="hd-right">
     <button class="ble-btn" id="bleBtn" onclick="toggleBLE()">
       <div class="dot" id="dot"></div>
-      <span id="bleStatus">Conectar</span>
+      <span id="bleStatus">Connect</span>
     </button>
   </div>
 </header>
@@ -242,7 +242,7 @@ td{padding:7px 10px;font-size:11px;color:var(--txt);white-space:nowrap}
 <!-- Content -->
 <div class="content">
 
-  <!-- SESIONES -->
+  <!-- SESSIONS -->
   <div class="tab-panel active" id="panel-sessions">
     <div class="search-bar">
       <div class="sw">
@@ -251,20 +251,20 @@ td{padding:7px 10px;font-size:11px;color:var(--txt);white-space:nowrap}
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
         </span>
-        <input type="text" id="searchInput" placeholder="Buscar paciente..." oninput="onSearch(this.value)">
+        <input type="text" id="searchInput" placeholder="Search patient..." oninput="onSearch(this.value)">
       </div>
     </div>
     <div class="ses-count">
-      <span id="sesCount">0 sesiones</span>
+      <span id="sesCount">0 sessions</span>
       <div class="io-btns">
-        <button class="io-btn" onclick="importJSON()">⬆ Importar</button>
-        <button class="io-btn" onclick="exportJSON()">⬇ Exportar</button>
+        <button class="io-btn" onclick="importJSON()">⬆ Import</button>
+        <button class="io-btn" onclick="exportJSON()">⬇ Export</button>
       </div>
     </div>
     <div class="ses-list" id="sesList"></div>
   </div>
 
-  <!-- EN VIVO -->
+  <!-- LIVE -->
   <div class="tab-panel" id="panel-live">
     <div class="live-panel" id="livePanel"></div>
   </div>
@@ -277,20 +277,20 @@ td{padding:7px 10px;font-size:11px;color:var(--txt);white-space:nowrap}
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>
     </svg>
-    Sesiones
+    Sessions
   </div>
   <div class="tab" id="tab-live" onclick="switchTab('live')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <polyline points="2,12 5,12 7,5 9,19 11,10 13,15 15,12 22,12"/>
     </svg>
-    En Vivo
+    Live
   </div>
 </div>
 
 </div><!-- /app -->
 
 <!-- Apnea toast -->
-<div class="apnea-toast" id="apneaToast">🚨 APNEA PATOLÓGICA</div>
+<div class="apnea-toast" id="apneaToast">🚨 PATHOLOGICAL APNEA</div>
 
 <!-- Session detail sheet -->
 <div class="sheet-overlay" id="sheetOverlay" onclick="onOverlayClick(event)">
@@ -321,7 +321,7 @@ async function apiFetch(path, opts={}) {
   } catch(e) { console.error('[API]', e, path); return null; }
 }
 
-// Cache en memoria para la sesión actual (evita refetch constante)
+// In-memory cache for current session (avoids constant refetch)
 const cache = { sessions: null, events: {} };
 
 const DB = {
@@ -335,7 +335,7 @@ const DB = {
   invalidateSessions() { cache.sessions = null; },
 
   async saveSessions(arr) {
-    // No usado directamente — las mutaciones van por métodos específicos
+    // Not used directly — mutations go through specific methods
     cache.sessions = arr;
   },
 
@@ -349,7 +349,7 @@ const DB = {
   invalidateEvents(sid) { delete cache.events[sid]; },
 
   async saveEvents(sid, arr) {
-    cache.events[sid] = arr; // solo actualiza cache local
+    cache.events[sid] = arr; // only updates local cache
   },
 
   // ── IDs ──
@@ -415,7 +415,7 @@ async function toggleBLE() {
 
 async function connectBLE() {
   if (!navigator.bluetooth) {
-    alert('Web Bluetooth no está disponible.\nUsá Chrome en Android (no Samsung Internet ni Firefox).');
+    alert('Web Bluetooth is not available.\nUse Chrome on Android (not Samsung Internet or Firefox).');
     return;
   }
   setBLEUI('connecting');
@@ -443,7 +443,7 @@ async function connectBLE() {
     console.error('[BLE]', e);
     setBLEUI('disconnected');
     if (!e.message?.includes('cancelled') && !e.message?.includes('chosen')) {
-      alert('Error al conectar:\n' + e.message);
+      alert('Connection error:\n' + e.message);
     }
   }
 }
@@ -510,9 +510,9 @@ async function processLine(line) {
       renderLivePanel();
     }
 
-    const ts = new Date().toLocaleTimeString('es', { hour12: false });
+    const ts = new Date().toLocaleTimeString('en', { hour12: false });
 
-    // Guardar INHALA y EXHALA como eventos separados en DB (compatibilidad con histórico)
+    // Save INHALA and EXHALA as separate events in DB (backward compat)
     const evInhalaId = await DB.nextEventId();
     const evInhala = { id: evInhalaId, sesion_id: app.currentSid, timestamp: ts,
                        tipo: 'INHALA', valor_s: Math.round(ti_s*1000)/1000,
@@ -525,8 +525,8 @@ async function processLine(line) {
                        ie_ratio: Math.round(ie*1000)/1000 };
     await DB.addEvent(app.currentSid, evExhala);
 
-    // Guardar metadatos de ciclo (pausa y RPMs) en un evento especial
-    // tipo CICLO_META para que el histórico pueda recalcular RPM correcto
+    // Save cycle metadata (pause and RPMs) in a special event
+    // type CICLO_META so history can recalculate correct RPM
     if (pausa_s > 0 || !isNaN(rpm_ciclo)) {
       const evMetaId = await DB.nextEventId();
       const evMeta = { id: evMetaId, sesion_id: app.currentSid, timestamp: ts,
@@ -535,13 +535,13 @@ async function processLine(line) {
       await DB.addEvent(app.currentSid, evMeta);
     }
 
-    // Actualizar contadores sesión
+    // Update session counters
     const events = await DB.getEvents(app.currentSid);
     const ciclos = events.filter(e=>e.tipo==='INHALA').length;
     const apneas = events.filter(e=>e.tipo.startsWith('APNEA')).length;
     await DB.updateSession(app.currentSid, { total_ciclos: ciclos, total_apneas: apneas });
 
-    // Actualizar estado live con los RPMs calculados en la ESP
+    // Update live state with RPMs calculated by ESP
     app.liveEvents.unshift(evInhala);
     app.liveEvents.unshift(evExhala);
     if (app.liveEvents.length > 100) app.liveEvents.splice(100);
@@ -566,7 +566,7 @@ async function processLine(line) {
     renderLivePanel();
   }
 
-  const ts = new Date().toLocaleTimeString('es', { hour12: false });
+  const ts = new Date().toLocaleTimeString('en', { hour12: false });
   const evId = await DB.nextEventId();
   const ev = {
     id:        evId,
@@ -615,8 +615,8 @@ function updateLiveUI() {
 async function createSession() {
   const id  = await DB.nextSessionId();
   const now = new Date();
-  const ts  = now.toLocaleDateString('es',{day:'2-digit',month:'2-digit',year:'numeric'}) + ' '
-             + now.toLocaleTimeString('es',{hour12:false,hour:'2-digit',minute:'2-digit'});
+  const ts  = now.toLocaleDateString('en',{day:'2-digit',month:'2-digit',year:'numeric'}) + ' '
+             + now.toLocaleTimeString('en',{hour12:false,hour:'2-digit',minute:'2-digit'});
   const ses = { id, paciente:'', notas:'', inicio:ts, fin:null, total_ciclos:0, total_apneas:0 };
   await DB.createSession(ses);
   cache.sessions = null;
@@ -627,8 +627,8 @@ async function closeCurrentSession() {
   const sid = app.currentSid;
   if (sid === null) return;
   const now = new Date();
-  const ts  = now.toLocaleDateString('es',{day:'2-digit',month:'2-digit',year:'numeric'}) + ' '
-             + now.toLocaleTimeString('es',{hour12:false,hour:'2-digit',minute:'2-digit'});
+  const ts  = now.toLocaleDateString('en',{day:'2-digit',month:'2-digit',year:'numeric'}) + ' '
+             + now.toLocaleTimeString('en',{hour12:false,hour:'2-digit',minute:'2-digit'});
   const evs = await DB.getEvents(sid);
   const ciclos = evs.filter(e => e.tipo === 'INHALA').length;
   const apneas = evs.filter(e => e.tipo.startsWith('APNEA')).length;
@@ -654,13 +654,13 @@ function recomputeLiveStats(events, rpmActivoEsp, rpmCicloEsp) {
   const ieVals = events.filter(e=>e.ie_ratio>0 && e.tipo==='INHALA').map(e=>e.ie_ratio);
   const avgIe  = ieVals.length ? ieVals.reduce((s,v)=>s+v,0)/ieVals.length : 0;
 
-  // RPM: usar los valores más recientes enviados por la ESP (fuente de verdad)
-  // Si no hay aún (primer ciclo), mostrar '—'
+  // RPM: use most recent values sent by ESP (source of truth)
+  // If not yet available (first cycle), show '—'
   let rpmActivo = '—', rpmCiclo = '—';
   if (rpmActivoEsp != null && !isNaN(rpmActivoEsp)) {
     rpmActivo = rpmActivoEsp.toFixed(1);
   } else if (app.liveStats.rpmActivo && app.liveStats.rpmActivo !== '—') {
-    rpmActivo = app.liveStats.rpmActivo; // mantener el último
+    rpmActivo = app.liveStats.rpmActivo; // keep last value
   }
   if (rpmCicloEsp != null && !isNaN(rpmCicloEsp)) {
     rpmCiclo = rpmCicloEsp.toFixed(1);
@@ -668,10 +668,10 @@ function recomputeLiveStats(events, rpmActivoEsp, rpmCicloEsp) {
     rpmCiclo = app.liveStats.rpmCiclo;
   }
 
-  // Pausa promedio (desde CICLO_META: valor_s = pausa_s)
+  // Average pause (from CICLO_META: valor_s = pausa_s)
   const avgPausa = metas.length ? avg(metas) : null;
 
-  // bpm legacy = rpmCiclo (para compatibilidad con el resto del código)
+  // bpm legacy = rpmCiclo (for backward compat)
   const bpm = rpmCiclo;
 
   app.liveStats = {
@@ -699,20 +699,20 @@ function computeStatsFromEvents(events) {
   const max = arr => arr.length ? Math.max(...arr.map(e=>e.valor_s)) : null;
   const ieVals = inhales.filter(e=>e.ie_ratio>0).map(e=>e.ie_ratio);
 
-  // RPM ciclo completo: promedio de los rpm_ciclo guardados en ie_ratio de CICLO_META
+  // Full cycle RPM: average of rpm_ciclo stored in ie_ratio of CICLO_META
   const rpmCicloVals = metas.filter(e=>e.ie_ratio>0).map(e=>e.ie_ratio);
   const avg_rpm_ciclo = rpmCicloVals.length
     ? +(rpmCicloVals.reduce((s,v)=>s+v,0)/rpmCicloVals.length).toFixed(1)
     : null;
 
-  // RPM ventilatorio activo: 60/(avgTi+avgTe) — solo tiempo respirando
+  // Active ventilatory RPM: 60/(avgTi+avgTe) — breathing time only
   const avgTi = avg(inhales);
   const avgTe = avg(exhales);
   const avg_rpm_activo = (avgTi && avgTe)
     ? +(60/(avgTi+avgTe)).toFixed(1)
     : null;
 
-  // Pausa promedio
+  // Average pause
   const avg_pausa = avg(metas) != null ? +avg(metas).toFixed(1) : null;
 
   return {
@@ -730,104 +730,104 @@ function computeStatsFromEvents(events) {
 }
 
 // ══════════════════════════════════════════════════
-//  DEFINICIÓN DE EJERCICIOS Y RANGOS CLÍNICOS
+//  EXERCISE DEFINITIONS AND CLINICAL RANGES
 // ══════════════════════════════════════════════════
 const EJERCICIOS = {
   1: {
-    nombre: 'Apnea controlada en sedestación',
-    objetivo: 'Mejorar tolerancia a la hipercapnia y control ventilatorio',
+    nombre: 'Controlled Apnea in Sitting Position',
+    objetivo: 'Improve tolerance to hypercapnia and ventilatory control',
     rangos: {
-      ti:    { min:1.5, max:4.0,  label:'Inhal. profunda',           unidad:'s' },
-      te:    { min:3.5, max:5.0,  label:'Espir. lenta ~4s',          unidad:'s' },
-      apnea: { min:3.0, max:8.0,  label:'Apnea objetivo',            unidad:'s' },
+      ti:    { min:1.5, max:4.0,  label:'Deep Inhale',           unidad:'s' },
+      te:    { min:3.5, max:5.0,  label:'Slow Exhale ~4s',          unidad:'s' },
+      apnea: { min:3.0, max:8.0,  label:'Target Apnea',            unidad:'s' },
       rpm:   null,
       ie:    null,
     },
-    nota: 'RPM no aplicable: las apneas alargan el ciclo por diseño.'
+    nota: 'RPM not applicable: apneas extend the cycle by design.'
   },
   2: {
-    nombre: 'Ventilación dirigida diafragmática',
-    objetivo: 'Reclutamiento basal y patrón diafragmático',
+    nombre: 'Directed Diaphragmatic Breathing',
+    objetivo: 'Basal recruitment and diaphragmatic pattern',
     rangos: {
-      ti:    { min:2.5, max:5.0,  label:'Inhal. diafragmática',      unidad:'s' },
-      te:    { min:3.5, max:7.0,  label:'Espir. labios fruncidos',   unidad:'s' },
+      ti:    { min:2.5, max:5.0,  label:'Diaphragmatic Inhale',      unidad:'s' },
+      te:    { min:3.5, max:7.0,  label:'Pursed-lip Exhale',   unidad:'s' },
       apnea: null,
-      rpm:   { min:6.0, max:10.0, label:'Cadencia lenta',            unidad:'rpm' },
-      ie:    { min:0.5, max:1.2,  label:'Rel. I:E',                  unidad:'' },
+      rpm:   { min:6.0, max:10.0, label:'Slow Cadence',            unidad:'rpm' },
+      ie:    { min:0.5, max:1.2,  label:'I:E Ratio',                  unidad:'' },
     },
-    nota: 'RPM >12 indica respiración apresurada.'
+    nota: 'RPM >12 indicates hurried breathing.'
   },
   3: {
-    nombre: 'Apnea intermitente con control postural',
-    objetivo: 'Entrenar musculatura inspiratoria y tolerancia al esfuerzo',
+    nombre: 'Intermittent Apnea with Postural Control',
+    objetivo: 'Train inspiratory muscles and exertion tolerance',
     rangos: {
-      ti:    { min:2.0, max:5.0,  label:'Inhal. profunda',           unidad:'s' },
-      te:    { min:2.0, max:5.0,  label:'Espir. activa',             unidad:'s' },
-      apnea: { min:6.0, max:8.0,  label:'Apnea objetivo',            unidad:'s' },
+      ti:    { min:2.0, max:5.0,  label:'Deep Inhale',           unidad:'s' },
+      te:    { min:2.0, max:5.0,  label:'Active Exhale',             unidad:'s' },
+      apnea: { min:6.0, max:8.0,  label:'Target Apnea',            unidad:'s' },
       rpm:   null,
       ie:    null,
     },
-    nota: 'Apnea más larga que Ej. 1. Observar tolerancia postural.'
+    nota: 'Longer apnea than Ex. 1. Observe postural tolerance.'
   },
   4: {
-    nombre: 'Respiración fraccionada inspiratoria',
-    objetivo: 'Mejorar capacidad inspiratoria y control motor respiratorio',
+    nombre: 'Fractional Inspiratory Breathing',
+    objetivo: 'Improve inspiratory capacity and respiratory motor control',
     rangos: {
-      ti:    { min:3.0, max:7.0,  label:'Inhal. fraccionada (3t)',   unidad:'s' },
-      te:    { min:3.0, max:6.0,  label:'Espir. continua',           unidad:'s' },
+      ti:    { min:3.0, max:7.0,  label:'Fractional Inhale (3 steps)',   unidad:'s' },
+      te:    { min:3.0, max:6.0,  label:'Continuous Exhale',           unidad:'s' },
       apnea: null,
-      rpm:   { min:5.0, max:9.0,  label:'Cadencia',                  unidad:'rpm' },
+      rpm:   { min:5.0, max:9.0,  label:'Cadence',                  unidad:'rpm' },
       ie:    null,
     },
-    nota: 'Ti largo por los 3 tiempos fraccionados. Normal >Ej. 2.'
+    nota: 'Long Ti due to 3 fractional steps. Normal >Ex. 2.'
   },
   5: {
-    nombre: 'Respiración fraccionada espiratoria',
-    objetivo: 'Favorecer vaciamiento pulmonar (atrapamiento aéreo)',
+    nombre: 'Fractional Expiratory Breathing',
+    objetivo: 'Promote lung emptying (air trapping)',
     rangos: {
-      ti:    { min:2.0, max:4.5,  label:'Inhal. profunda',           unidad:'s' },
-      te:    { min:4.0, max:9.0,  label:'Espir. en fases',           unidad:'s' },
+      ti:    { min:2.0, max:4.5,  label:'Deep Inhale',           unidad:'s' },
+      te:    { min:4.0, max:9.0,  label:'Phased Exhale',           unidad:'s' },
       apnea: null,
-      rpm:   { min:4.0, max:8.0,  label:'Cadencia',                  unidad:'rpm' },
-      ie:    { min:1.2, max:3.5,  label:'Rel. I:E (Te > Ti)',        unidad:'' },
+      rpm:   { min:4.0, max:8.0,  label:'Cadence',                  unidad:'rpm' },
+      ie:    { min:1.2, max:3.5,  label:'I:E Ratio (Te > Ti)',        unidad:'' },
     },
-    nota: 'Te elevado es positivo. I:E >1 es el objetivo terapéutico.'
+    nota: 'Elevated Te is positive. I:E >1 is the therapeutic goal.'
   },
   6: {
-    nombre: 'Apnea con contracción glótica',
-    objetivo: 'Entrenar músculos inspiratorios y coordinación glótica',
+    nombre: 'Apnea with Glottal Contraction',
+    objetivo: 'Train inspiratory muscles and glottal coordination',
     rangos: {
-      ti:    { min:1.5, max:4.0,  label:'Inhal.',                    unidad:'s' },
-      te:    { min:2.5, max:5.0,  label:'Espir. controlada',         unidad:'s' },
-      apnea: { min:6.0, max:8.0,  label:'Apnea glótica',             unidad:'s' },
+      ti:    { min:1.5, max:4.0,  label:'Inhale',                    unidad:'s' },
+      te:    { min:2.5, max:5.0,  label:'Controlled Exhale',         unidad:'s' },
+      apnea: { min:6.0, max:8.0,  label:'Glottal Apnea',             unidad:'s' },
       rpm:   null,
       ie:    null,
     },
-    nota: 'La apnea con cierre glótico es el parámetro clave.'
+    nota: 'Glottal closure apnea is the key parameter.'
   },
   7: {
-    nombre: 'Respiración con resistencia espiratoria',
-    objetivo: 'Fortalecer músculos espiratorios',
+    nombre: 'Expiratory Resistance Breathing',
+    objetivo: 'Strengthen expiratory muscles',
     rangos: {
-      ti:    { min:1.5, max:3.5,  label:'Inhal. por nariz',          unidad:'s' },
-      te:    { min:4.0, max:10.0, label:'Espir. contra resistencia', unidad:'s' },
+      ti:    { min:1.5, max:3.5,  label:'Nasal Inhale',          unidad:'s' },
+      te:    { min:4.0, max:10.0, label:'Exhale Against Resistance', unidad:'s' },
       apnea: null,
-      rpm:   { min:4.0, max:8.0,  label:'Cadencia',                  unidad:'rpm' },
-      ie:    { min:1.5, max:5.0,  label:'Rel. I:E (Te largo)',       unidad:'' },
+      rpm:   { min:4.0, max:8.0,  label:'Cadence',                  unidad:'rpm' },
+      ie:    { min:1.5, max:5.0,  label:'I:E Ratio (Long Te)',       unidad:'' },
     },
-    nota: 'Te largo es el objetivo. En EPOC puede llegar a 10s o más.'
+    nota: 'Long Te is the goal. In COPD it can reach 10s or more.'
   },
   8: {
-    nombre: 'Apnea alternada con respiración rítmica',
-    objetivo: 'Entrenar tolerancia respiratoria y capacidad vital',
+    nombre: 'Alternating Apnea with Rhythmic Breathing',
+    objetivo: 'Train respiratory tolerance and vital capacity',
     rangos: {
-      ti:    { min:2.0, max:5.0,  label:'Inhal. profunda',           unidad:'s' },
-      te:    { min:2.0, max:5.0,  label:'Espir. controlada',         unidad:'s' },
-      apnea: { min:4.0, max:10.0, label:'Apnea máxima voluntaria',   unidad:'s' },
+      ti:    { min:2.0, max:5.0,  label:'Deep Inhale',           unidad:'s' },
+      te:    { min:2.0, max:5.0,  label:'Controlled Exhale',         unidad:'s' },
+      apnea: { min:4.0, max:10.0, label:'Maximum Voluntary Apnea',   unidad:'s' },
       rpm:   null,
       ie:    null,
     },
-    nota: 'Apnea máxima voluntaria. Progresión: reducir respiraciones previas.'
+    nota: 'Maximum voluntary apnea. Progression: reduce prior breaths.'
   },
 };
 
@@ -863,12 +863,12 @@ function setBLEUI(status, name) {
   dot.className = 'dot';
   if (status === 'connecting') {
     btn.classList.add('connecting'); dot.classList.add('warn');
-    txt.textContent = 'Conectando...';
+    txt.textContent = 'Connecting...';
   } else if (status === 'connected') {
     btn.classList.add('connected'); dot.classList.add('on');
-    txt.textContent = name || 'Conectado';
+    txt.textContent = name || 'Connected';
   } else {
-    txt.textContent = 'Conectar';
+    txt.textContent = 'Connect';
   }
 }
 
@@ -893,15 +893,15 @@ async function renderSessionList() {
   const list = q ? sessions.filter(s=>(s.paciente||'').toLowerCase().includes(q)) : sessions;
 
   document.getElementById('sesCount').textContent =
-    list.length + ' sesión' + (list.length!==1?'es':'');
+    list.length + list.length !== 1 ? ' sessions' : ' session';
 
   const el = document.getElementById('sesList');
   if (!list.length) {
     el.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">🫁</div>
-        <div class="empty-title">${q ? 'Sin resultados' : 'Sin sesiones aún'}</div>
-        <div class="empty-sub">${q ? 'Probá con otro nombre' : 'Conectá el ESP32 para<br>empezar a monitorear'}</div>
+        <div class="empty-title">${q ? 'No results' : 'No sessions yet'}</div>
+        <div class="empty-sub">${q ? 'Try a different name' : 'Connect the ESP32 to<br>start monitoring'}</div>
       </div>`;
     return;
   }
@@ -913,11 +913,11 @@ async function renderSessionList() {
     <div class="si-item" onclick="openSheet(${s.id})">
       <div class="si-top">
         <span class="si-id">#${s.id}</span>
-        ${!s.fin ? '<span class="pill live"><span class="pd"></span>EN VIVO</span>' : ''}
+        ${!s.fin ? '<span class="pill live"><span class="pd"></span>LIVE</span>' : ''}
         ${ejDef ? `<span class="pill ej">Ej.${ejNum}</span>` : ''}
         ${s.total_apneas > 0 ? `<span class="pill apnea">⚠ ${s.total_apneas}</span>` : ''}
       </div>
-      <div class="si-name ${!s.paciente?'empty':''}">${s.paciente||'Sin asignar'}</div>
+      <div class="si-name ${!s.paciente?'empty':''}">${s.paciente||'Unassigned'}</div>
       <div class="si-meta">${s.inicio||'—'} · ${s.total_ciclos} ciclos${ejDef?' · '+ejDef.nombre.split(' ').slice(0,3).join(' ')+'…':''}</div>
     </div>
   `}).join('');
@@ -940,9 +940,9 @@ async function renderLivePanel() {
     el.innerHTML = `
       <div class="connect-card">
         <div class="cc-icon">📡</div>
-        <div class="cc-title">Sin dispositivo</div>
-        <div class="cc-sub">Conectá el ESP32 <strong style="color:var(--txt)">"RespMonitor"</strong><br>para comenzar a monitorear en tiempo real</div>
-        <button class="big-btn cyan" onclick="connectBLE()">Conectar por BLE</button>
+        <div class="cc-title">No device</div>
+        <div class="cc-sub">Connect the ESP32 <strong style="color:#0d1117">"RespMonitor"</strong><br>to start monitoring in real time</div>
+        <button class="big-btn cyan" onclick="connectBLE()">Connect via BLE</button>
       </div>`;
     return;
   }
@@ -951,9 +951,9 @@ async function renderLivePanel() {
     el.innerHTML = `
       <div class="connect-card">
         <div class="cc-icon" style="animation:blink 1.5s infinite">🫁</div>
-        <div class="cc-title" style="color:var(--cyan)">Conectado</div>
-        <div class="cc-sub">Esperando que el ESP32 termine<br>la calibración (~8 segundos)...</div>
-        <button class="big-btn red" onclick="disconnectBLE()">Desconectar</button>
+        <div class="cc-title" style="color:#0d1117">Connected</div>
+        <div class="cc-sub">Waiting for the ESP32 to finish<br>calibration (~8 seconds)...</div>
+        <button class="big-btn red" onclick="disconnectBLE()">Disconnect</button>
       </div>`;
     return;
   }
@@ -965,10 +965,10 @@ async function renderLivePanel() {
   el.innerHTML = `
     <div class="live-hd">
       <div style="flex:1;min-width:0">
-        <div class="live-ses-tag">SES #${app.currentSid} · ${app.connected?'<span style="color:var(--cyan)">EN VIVO</span>':'FINALIZADA'}</div>
-        <div class="live-name ${ses?.paciente?'':'empty'}">${ses?.paciente||'Sin paciente asignado'}</div>
+        <div class="live-ses-tag">SES #${app.currentSid} · ${app.connected?'<span style="color:#0d5c6e;font-weight:700">LIVE</span>':'FINISHED'}</div>
+        <div class="live-name ${ses?.paciente?'':'empty'}">${ses?.paciente||'No patient assigned'}</div>
       </div>
-      ${app.connected ? `<button class="big-btn red" style="font-size:11px;padding:7px 12px;flex-shrink:0" onclick="disconnectBLE()">Desconectar</button>` : ''}
+      ${app.connected ? `<button class="big-btn red" style="font-size:11px;padding:7px 12px;flex-shrink:0" onclick="disconnectBLE()">Disconnect</button>` : ''}
     </div>
 
     <div class="stats-grid" id="liveStats">
@@ -976,13 +976,13 @@ async function renderLivePanel() {
     </div>
 
     <div class="section">
-      <div class="sechd"><div class="sectitle">Distribución de tiempos</div></div>
+      <div class="sechd"><div class="sectitle">Time Distribution</div></div>
       <div id="liveBars">${buildBarsHTML(s)}</div>
     </div>
 
     <div class="section">
       <div class="sechd">
-        <div class="sectitle">Últimos eventos</div>
+        <div class="sectitle">Latest Events</div>
         <div class="badge c" id="liveEvBadge">${app.liveEvents.length}</div>
       </div>
       <div class="ev-stream" id="liveStream">${buildStreamHTML()}</div>
@@ -991,7 +991,7 @@ async function renderLivePanel() {
 }
 
 function buildStatsHTML(s) {
-  // Colorear RPM según rangos clínicos
+  // Color RPM by clinical ranges
   const rpmColor = v => {
     const n = parseFloat(v);
     if (isNaN(n)) return '';
@@ -1000,12 +1000,12 @@ function buildStatsHTML(s) {
     return 'c';                         // normal → cyan
   };
   return `
-    <div class="stat"><div class="sl">Ciclos</div><div class="sv c">${s.ciclos||0}</div><div class="su">completados</div></div>
-    <div class="stat"><div class="sl">RPM activo</div><div class="sv ${rpmColor(s.rpmActivo)}">${s.rpmActivo||'—'}</div><div class="su">sin pausas</div></div>
-    <div class="stat"><div class="sl">Apneas</div><div class="sv ${(s.apneas||0)>0?'r':''}">${s.apneas||0}</div><div class="su">${s.maxAp?'máx '+s.maxAp+'s':''}&nbsp;</div></div>
-    <div class="stat"><div class="sl">T. Inhal.</div><div class="sv">${s.avgTi||'—'}</div><div class="su">seg prom</div></div>
-    <div class="stat"><div class="sl">T. Exhal.</div><div class="sv c">${s.avgTe||'—'}</div><div class="su">seg prom</div></div>
-    <div class="stat"><div class="sl">Rel. I:E</div><div class="sv">${s.avgIe&&s.avgIe!=='—'?'1:'+s.avgIe:'—'}</div><div class="su">&nbsp;</div></div>
+    <div class="stat"><div class="sl">Cycles</div><div class="sv c">${s.ciclos||0}</div><div class="su">completed</div></div>
+    <div class="stat"><div class="sl">Active RPM</div><div class="sv ${rpmColor(s.rpmActivo)}">${s.rpmActivo||'—'}</div><div class="su">no pauses</div></div>
+    <div class="stat"><div class="sl">Apneas</div><div class="sv ${(s.apneas||0)>0?'r':''}">${s.apneas||0}</div><div class="su">${s.maxAp?'max '+s.maxAp+'s':''}&nbsp;</div></div>
+    <div class="stat"><div class="sl">T. Inhale</div><div class="sv">${s.avgTi||'—'}</div><div class="su">avg sec</div></div>
+    <div class="stat"><div class="sl">T. Exhale</div><div class="sv c">${s.avgTe||'—'}</div><div class="su">avg sec</div></div>
+    <div class="stat"><div class="sl">I:E Ratio</div><div class="sv">${s.avgIe&&s.avgIe!=='—'?'1:'+s.avgIe:'—'}</div><div class="su">&nbsp;</div></div>
   `;
 }
 
@@ -1014,29 +1014,29 @@ function buildBarsHTML(s) {
   const te = parseFloat(s.avgTe) || 0;
   const ap = parseFloat(s.avgAp) || 0;
   const pa = parseFloat(s.avgPausa) || 0;
-  if (!ti && !te) return '<div class="no-apnea">Esperando datos...</div>';
+  if (!ti && !te) return '<div class="no-apnea">Waiting for data...</div>';
   const mx = Math.max(ti, te, ap, pa, 0.1);
   const pct = v => ((v/mx)*100).toFixed(1)+'%';
   return `<div class="bars">
-    ${ti?`<div class="br"><div class="bl">Inhalación</div><div class="bt"><div class="bf i" style="width:${pct(ti)}"></div></div><div class="bv">${ti} s</div></div>`:''}
-    ${te?`<div class="br"><div class="bl">Exhalación</div><div class="bt"><div class="bf e" style="width:${pct(te)}"></div></div><div class="bv">${te} s</div></div>`:''}
-    ${pa?`<div class="br"><div class="bl">Pausa prom</div><div class="bt"><div class="bf" style="width:${pct(pa)};background:linear-gradient(90deg,#4a3a90,#8b7fd4)"></div></div><div class="bv">${pa} s</div></div>`:''}
-    ${ap?`<div class="br"><div class="bl">Apnea prom</div><div class="bt"><div class="bf a" style="width:${pct(ap)}"></div></div><div class="bv">${ap} s</div></div>`:'<div class="no-apnea">Sin apneas ✓</div>'}
+    ${ti?`<div class="br"><div class="bl">Inhalation</div><div class="bt"><div class="bf i" style="width:${pct(ti)}"></div></div><div class="bv">${ti} s</div></div>`:''}
+    ${te?`<div class="br"><div class="bl">Exhalation</div><div class="bt"><div class="bf e" style="width:${pct(te)}"></div></div><div class="bv">${te} s</div></div>`:''}
+    ${pa?`<div class="br"><div class="bl">Avg Pause</div><div class="bt"><div class="bf" style="width:${pct(pa)};background:linear-gradient(90deg,#4a3a90,#8b7fd4)"></div></div><div class="bv">${pa} s</div></div>`:''}
+    ${ap?`<div class="br"><div class="bl">Avg Apnea</div><div class="bt"><div class="bf a" style="width:${pct(ap)}"></div></div><div class="bv">${ap} s</div></div>`:'<div class="no-apnea">No apneas ✓</div>'}
   </div>`;
 }
 
 function buildStreamHTML() {
   if (!app.liveEvents.length) {
-    return '<div style="padding:20px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--txt3)">Sin eventos aún</div>';
+    return '<div style="padding:20px;text-align:center;font-family:var(--mono);font-size:10px;color:#2d3748">No events yet</div>';
   }
   return app.liveEvents.slice(0, 30).map(e => `
     <div class="ev-row">
       <span class="tag ${e.tipo.toLowerCase()}">${
-        e.tipo==='APNEA_TERAP'?'⏸ TERAP':
+        e.tipo==='APNEA_TERAP'?'⏸ THERAP':
         e.tipo==='APNEA_PATOL'?'🚨 PATOL':e.tipo
       }</span>
       <span class="ev-ts">${e.timestamp}</span>
-      <span class="ev-val">${e.valor_s.toFixed(2)}<span style="font-size:9px;color:var(--txt3)"> s</span></span>
+      <span class="ev-val">${e.valor_s.toFixed(2)}<span style="font-size:9px;color:#2d3748"> s</span></span>
     </div>
   `).join('');
 }
@@ -1089,21 +1089,21 @@ async function renderSheetContent(sid) {
   const mx  = Math.max(st.avg_ti||0, st.avg_te||0, st.avg_ap||0, st.avg_pausa||0, 0.1);
   const pct = v => ((v||0)/mx*100).toFixed(1)+'%';
 
-  // Leer ejercicio y notas desde metadatos
+  // Read exercise and notes from metadata
   const meta = parseSessionMeta(s);
   const ejNum = meta.ej || 0;
   const ejDef = EJERCICIOS[ejNum] || null;
   const notasTexto = meta.notas || '';
 
-  // Generar opciones del selector con el ejercicio actual seleccionado
+  // Generate selector options with current exercise selected
   const ejOpciones = `
-    <option value="0" ${!ejNum?'selected':''}>— Sin ejercicio asignado —</option>
+    <option value="0" ${!ejNum?'selected':''}>— No exercise assigned —</option>
     ${Object.entries(EJERCICIOS).filter(([k])=>k!='0').map(([k,v])=>
       `<option value="${k}" ${ejNum==k?'selected':''}>${k}. ${v.nombre}</option>`
     ).join('')}
   `;
 
-  // Construir métricas con semáforo clínico
+  // Build metrics with clinical traffic light
   function statCard(label, val, rango, unidad, sub) {
     const estado = ejDef ? evalRango(val, rango) : '';
     const valStr = val != null ? val : '—';
@@ -1117,10 +1117,10 @@ async function renderSheetContent(sid) {
     </div>`;
   }
 
-  // RPM: si el ejercicio tiene RPM como métrica relevante, mostrar con semáforo
-  // Si no (ej. 1, 3, 6, 8), mostrar con nota explicativa
+  // RPM: if exercise has RPM as relevant metric, show with traffic light
+  // If not (ex. 1, 3, 6, 8), show with explanatory note
   const rpmVal   = st.avg_rpm_ciclo ?? st.avg_rpm_activo ?? null;
-  const rpmLabel = st.avg_rpm_ciclo ? 'RPM real' : 'RPM activo';
+  const rpmLabel = st.avg_rpm_ciclo ? 'Real RPM' : 'Active RPM';
   const rpmRango = ejDef?.rangos?.rpm || null;
   const rpmEstado = ejDef ? (rpmRango ? evalRango(rpmVal, rpmRango) : '') : '';
 
@@ -1131,109 +1131,109 @@ async function renderSheetContent(sid) {
         <span class="sn-val">${s.id}</span>
       </div>
       <div class="ses-info">
-        <div class="ses-big ${!s.paciente?'empty':''}">${s.paciente||'Sin paciente asignado'}</div>
-        <div class="ses-dates">${s.inicio||'—'}${s.fin?' → '+s.fin:' → <span style="color:var(--cyan)">EN CURSO</span>'}</div>
+        <div class="ses-big ${!s.paciente?'empty':''}">${s.paciente||'No patient assigned'}</div>
+        <div class="ses-dates">${s.inicio||'—'}${s.fin?' → '+s.fin:' → <span style="color:#0d5c6e;font-weight:700">IN PROGRESS</span>'}</div>
         ${notasTexto?`<div class="ses-notes">${notasTexto}</div>`:''}
       </div>
       <button class="btn btn-g" onclick="toggleAssignForm()" style="flex-shrink:0;padding:6px 10px">✏️</button>
     </div>
 
     <div class="abox ${assignOpen?'open':''}" id="assignForm">
-      <div class="abox-title">Asignar — Sesión #${s.id}</div>
-      <div class="field"><label>Nombre del paciente</label>
-        <input id="fn" type="text" placeholder="Ej: Juan García" value="${(s.paciente||'').replace(/"/g,'&quot;')}">
+      <div class="abox-title">Assign — Session #${s.id}</div>
+      <div class="field"><label>Patient Name</label>
+        <input id="fn" type="text" placeholder="E.g.: John Smith" value="${(s.paciente||'').replace(/"/g,'&quot;')}">
       </div>
-      <div class="field"><label>Ejercicio realizado</label>
+      <div class="field"><label>Exercise Performed</label>
         <select id="fej">${ejOpciones}</select>
       </div>
-      <div class="field"><label>Notas clínicas</label>
-        <textarea id="fno" placeholder="Diagnóstico, observaciones...">${notasTexto}</textarea>
+      <div class="field"><label>Clinical Notes</label>
+        <textarea id="fno" placeholder="Diagnosis, observations...">${notasTexto}</textarea>
       </div>
       <div class="fbtns">
-        <button class="btn btn-p" onclick="saveAssign(${s.id})">Guardar</button>
-        <button class="btn btn-g" onclick="toggleAssignForm()">Cancelar</button>
+        <button class="btn btn-p" onclick="saveAssign(${s.id})">Save</button>
+        <button class="btn btn-g" onclick="toggleAssignForm()">Cancel</button>
       </div>
     </div>
 
     ${ejDef ? `
     <div class="ej-card">
-      <div class="ej-card-title">Ejercicio ${ejNum}</div>
+      <div class="ej-card-title">Exercise ${ejNum}</div>
       <div class="ej-card-name">${ejDef.nombre}</div>
       <div class="ej-card-obj">🎯 ${ejDef.objetivo}</div>
-      ${ejDef.nota ? `<div class="ej-card-obj" style="color:var(--txt3);border-top:1px solid var(--line);padding-top:4px;margin-top:2px">ℹ ${ejDef.nota}</div>` : ''}
+      ${ejDef.nota ? `<div class="ej-card-obj" style="color:#2d3748;border-top:1px solid var(--line);padding-top:4px;margin-top:2px">ℹ ${ejDef.nota}</div>` : ''}
     </div>` : ''}
 
     <div class="stats-grid" style="margin-bottom:10px">
-      ${statCard('Ciclos', ciclos, null, '', 'completados')}
+      ${statCard('Cycles', ciclos, null, '', 'completed')}
       ${ejDef && !rpmRango
-        ? `<div class="stat"><div class="sl">${rpmLabel}</div><div class="sv" style="font-size:16px">${rpmVal??'—'}</div><div class="rango" style="color:var(--txt3)">no aplica</div></div>`
+        ? `<div class="stat"><div class="sl">${rpmLabel}</div><div class="sv" style="font-size:16px">${rpmVal??'—'}</div><div class="rango" style="color:#2d3748">not applicable</div></div>`
         : statCard(rpmLabel, rpmVal, rpmRango, 'rpm', rpmRango?`${rpmRango.min}–${rpmRango.max} rpm`:'')
       }
       <div class="stat ${nAp>0?'bad':''}">
         <div class="sl">Apneas</div>
         <div class="sv ${nAp>0?'bad':''}">${nAp}</div>
-        <div class="su">${st.max_ap?'máx '+st.max_ap+' s':'sin eventos ✓'}</div>
+        <div class="su">${st.max_ap?'max '+st.max_ap+' s':'no events ✓'}</div>
       </div>
-      ${statCard('T. Inhal.', st.avg_ti, ejDef?.rangos?.ti, 's', 'seg prom')}
-      ${statCard('T. Exhal.', st.avg_te, ejDef?.rangos?.te, 's', 'seg prom')}
-      ${statCard('Rel. I:E', st.avg_ie ? '1:'+st.avg_ie : null, ejDef?.rangos?.ie, '', '')}
+      ${statCard('T. Inhale', st.avg_ti, ejDef?.rangos?.ti, 's', 'avg sec')}
+      ${statCard('T. Exhale', st.avg_te, ejDef?.rangos?.te, 's', 'avg sec')}
+      ${statCard('I:E Ratio', st.avg_ie ? '1:'+st.avg_ie : null, ejDef?.rangos?.ie, '', '')}
     </div>
 
     <div class="section" style="margin-bottom:10px">
-      <div class="sechd"><div class="sectitle">Distribución de tiempos</div></div>
+      <div class="sechd"><div class="sectitle">Time Distribution</div></div>
       <div class="bars">
-        <div class="br"><div class="bl">Inhalación</div><div class="bt"><div class="bf i" style="width:${pct(st.avg_ti)}"></div></div><div class="bv">${st.avg_ti??0} s</div></div>
-        <div class="br"><div class="bl">Exhalación</div><div class="bt"><div class="bf e" style="width:${pct(st.avg_te)}"></div></div><div class="bv">${st.avg_te??0} s</div></div>
+        <div class="br"><div class="bl">Inhalation</div><div class="bt"><div class="bf i" style="width:${pct(st.avg_ti)}"></div></div><div class="bv">${st.avg_ti??0} s</div></div>
+        <div class="br"><div class="bl">Exhalation</div><div class="bt"><div class="bf e" style="width:${pct(st.avg_te)}"></div></div><div class="bv">${st.avg_te??0} s</div></div>
         ${st.avg_pausa
-          ? `<div class="br"><div class="bl">Pausa prom</div><div class="bt"><div class="bf" style="width:${pct(st.avg_pausa)};background:linear-gradient(90deg,#4a3a90,#8b7fd4)"></div></div><div class="bv">${st.avg_pausa} s</div></div>`
+          ? `<div class="br"><div class="bl">Avg Pause</div><div class="bt"><div class="bf" style="width:${pct(st.avg_pausa)};background:linear-gradient(90deg,#4a3a90,#8b7fd4)"></div></div><div class="bv">${st.avg_pausa} s</div></div>`
           : ''
         }
         ${st.avg_ap
-          ? `<div class="br"><div class="bl">Apnea prom</div><div class="bt"><div class="bf a" style="width:${pct(st.avg_ap)}"></div></div><div class="bv">${st.avg_ap} s</div></div>`
-          : '<div class="no-apnea">Sin apneas ✓</div>'
+          ? `<div class="br"><div class="bl">Avg Apnea</div><div class="bt"><div class="bf a" style="width:${pct(st.avg_ap)}"></div></div><div class="bv">${st.avg_ap} s</div></div>`
+          : '<div class="no-apnea">No apneas ✓</div>'
         }
-        ${st.n_terap>0?`<div style="padding:4px 0 0;font-family:var(--mono);font-size:9px;color:var(--yellow)">⏸ Terapéuticas: ${st.n_terap}</div>`:''}
-        ${st.n_patol>0?`<div style="padding:2px 0 0;font-family:var(--mono);font-size:9px;color:var(--red)">🚨 Patológicas: ${st.n_patol}</div>`:''}
+        ${st.n_terap>0?`<div style="padding:4px 0 0;font-family:var(--mono);font-size:9px;color:#5a3e00">⏸ Therapeutic: ${st.n_terap}</div>`:''}
+        ${st.n_patol>0?`<div style="padding:2px 0 0;font-family:var(--mono);font-size:9px;color:var(--red)">🚨 Pathological: ${st.n_patol}</div>`:''}
       </div>
     </div>
 
     <div class="section" style="margin-bottom:10px">
       <div class="sechd">
-        <div class="sectitle">Eventos registrados</div>
+        <div class="sectitle">Recorded Events</div>
         <div class="badge ${nAp>0?'r':'c'}">${events.length}</div>
       </div>
       ${nAp>0?`<div class="alert-bar">
         <span style="font-size:15px">${st.n_patol>0?'🚨':'⏸'}</span>
-        <div><strong>Apneas: ${nAp}</strong> — Máx: ${st.max_ap} s · Prom: ${st.avg_ap} s
-        ${st.n_terap>0?`· <span style="color:var(--yellow)">Terap: ${st.n_terap}</span>`:''}
-        ${st.n_patol>0?`· <span style="color:var(--red)">Patol: ${st.n_patol}</span>`:''}
+        <div><strong>Apneas: ${nAp}</strong> — Max: ${st.max_ap} s · Avg: ${st.avg_ap} s
+        ${st.n_terap>0?`· <span style="color:#5a3e00">Therap: ${st.n_terap}</span>`:''}
+        ${st.n_patol>0?`· <span style="color:#8b0000">Pathol: ${st.n_patol}</span>`:''}
         </div></div>`:''}
       <div class="tbl-wrap">
         <table>
-          <thead><tr><th>Hora</th><th>Tipo</th><th>Duración</th><th>I:E</th></tr></thead>
+          <thead><tr><th>Time</th><th>Type</th><th>Duration</th><th>I:E</th></tr></thead>
           <tbody>
             ${events.length
               ? events.slice().reverse().slice(0,200).map(e=>`
                   <tr style="${e.tipo==='APNEA_PATOL'?'background:rgba(255,68,102,.05)':e.tipo==='APNEA_TERAP'?'background:rgba(255,180,0,.04)':''}">
-                    <td style="font-family:var(--mono);font-size:9.5px;color:var(--txt3)">${e.timestamp}</td>
+                    <td style="font-family:var(--mono);font-size:9.5px;color:#2d3748">${e.timestamp}</td>
                     <td><span class="tag ${e.tipo.toLowerCase()}">${
-                      e.tipo==='APNEA_TERAP'?'⏸ TERAP':
+                      e.tipo==='APNEA_TERAP'?'⏸ THERAP':
                       e.tipo==='APNEA_PATOL'?'🚨 PATOL':e.tipo
                     }</span></td>
-                    <td style="font-family:var(--mono);font-size:13px;color:#fff">${e.valor_s.toFixed(2)}<span style="font-size:9px;color:var(--txt3)"> s</span></td>
+                    <td style="font-family:var(--mono);font-size:13px;color:#0d1117">${e.valor_s.toFixed(2)}<span style="font-size:9px;color:#2d3748"> s</span></td>
                     <td>${e.ie_ratio>0
-                      ?`<span style="font-family:var(--mono);font-size:9px;padding:2px 5px;border-radius:3px;background:var(--blue-d);color:var(--blue);border:1px solid rgba(77,184,255,.15)">1:${e.ie_ratio.toFixed(2)}</span>`
-                      :'<span style="color:var(--txt3)">—</span>'
+                      ?`<span style="font-family:var(--mono);font-size:9px;padding:2px 5px;border-radius:3px;background:var(--blue-d);color:#0d5c6e;border:1px solid rgba(77,184,255,.15)">1:${e.ie_ratio.toFixed(2)}</span>`
+                      :'<span style="color:#2d3748">—</span>'
                     }</td>
                   </tr>`).join('')
-              : '<tr><td colspan="4" style="text-align:center;padding:24px;font-family:var(--mono);font-size:10px;color:var(--txt3)">Sin eventos registrados</td></tr>'
+              : '<tr><td colspan="4" style="text-align:center;padding:24px;font-family:var(--mono);font-size:10px;color:#2d3748">No events recorded</td></tr>'
             }
           </tbody>
         </table>
       </div>
     </div>
 
-    <button class="btn btn-danger" onclick="deleteSession(${s.id})">🗑 Eliminar sesión</button>
+    <button class="btn btn-danger" onclick="deleteSession(${s.id})">🗑 Delete Session</button>
     <div style="height:8px"></div>
   `;
 }
@@ -1259,7 +1259,7 @@ async function saveAssign(sid) {
 }
 
 async function deleteSession(sid) {
-  if (!confirm(`¿Eliminar sesión #${sid}?\nEsta acción no se puede deshacer.`)) return;
+  if (!confirm(`Delete session #${sid}?\nThis action cannot be undone.`)) return;
   await DB.deleteSession(sid);
   closeSheet();
   renderSessionList();
@@ -1270,19 +1270,19 @@ async function deleteSession(sid) {
 // ══════════════════════════════════════════════════
 async function exportJSON() {
   const sessions = await DB.getSessions();
-  if (!sessions.length) { alert('No hay sesiones para exportar.'); return; }
+  if (!sessions.length) { alert('No sessions to export.'); return; }
   const full = await Promise.all(sessions.map(async s => ({ ...s, eventos: await DB.getEvents(s.id) })));
   const data = {
     version:    2,
     exportDate: new Date().toISOString(),
-    app:        'Monitor Respiratorio BLE',
+    app:        'Respiratory Monitor BLE',
     sessions:   full
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
   const a    = Object.assign(document.createElement('a'), {
     href:     url,
-    download: 'monitor_resp_' + new Date().toISOString().slice(0,10) + '.json'
+    download: 'resp_monitor_' + new Date().toISOString().slice(0,10) + '.json'
   });
   document.body.appendChild(a);
   a.click();
@@ -1301,7 +1301,7 @@ function handleImport(event) {
   reader.onload = async e => {
     try {
       const data = JSON.parse(e.target.result);
-      if (!Array.isArray(data.sessions)) { alert('Archivo inválido: falta el campo "sessions".'); return; }
+      if (!Array.isArray(data.sessions)) { alert('Invalid file: missing "sessions" field.'); return; }
 
       const existing    = await DB.getSessions();
       const existingIds = new Set(existing.map(s => s.id));
@@ -1320,9 +1320,9 @@ function handleImport(event) {
 
       DB.invalidateSessions();
       renderSessionList();
-      alert(`✅ Importadas ${imported} sesiones nuevas.${imported < data.sessions.length ? `\n(${data.sessions.length-imported} ya existían)` : ''}`);
+      alert(`✅ Imported ${imported} new sessions.${imported < data.sessions.length ? `\n(${data.sessions.length-imported} already existed)` : ''}`);
     } catch(err) {
-      alert('Error al leer el archivo:\n' + err.message);
+      alert('Error reading file:\n' + err.message);
     }
     event.target.value = '';
   };
