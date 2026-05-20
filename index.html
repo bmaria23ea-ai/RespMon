@@ -525,13 +525,15 @@ async function processLine(line) {
                        ie_ratio: Math.round(ie*1000)/1000 };
     await DB.addEvent(app.currentSid, evExhala);
 
-    // CICLO_META: valor_s = ie_ratio real | ie_ratio = rpm_ciclo
-    const evMetaId = await DB.nextEventId();
-    const evMeta = { id: evMetaId, sesion_id: app.currentSid, timestamp: ts,
-                     tipo: 'CICLO_META',
-                     valor_s:  Math.round(ie*1000)/1000,
-                     ie_ratio: Math.round(rpm_ciclo*100)/100 };
-    await DB.addEvent(app.currentSid, evMeta);
+    // Guardar metadatos de ciclo (pausa y RPMs) en un evento especial
+    // tipo CICLO_META para que el histórico pueda recalcular RPM correcto
+    if (pausa_s > 0 || !isNaN(rpm_ciclo)) {
+      const evMetaId = await DB.nextEventId();
+      const evMeta = { id: evMetaId, sesion_id: app.currentSid, timestamp: ts,
+                       tipo: 'CICLO_META', valor_s: Math.round(pausa_s*1000)/1000,
+                       ie_ratio: Math.round(rpm_ciclo*100)/100 };
+      await DB.addEvent(app.currentSid, evMeta);
+    }
 
     // Actualizar contadores sesión
     const events = await DB.getEvents(app.currentSid);
@@ -649,11 +651,8 @@ function recomputeLiveStats(events, rpmActivoEsp, rpmCicloEsp) {
   const avgAp = avg(apneas);
   const maxAp = max(apneas);
 
-  // I:E desde CICLO_META.valor_s (ie por ciclo, rango 0.1-10)
-  const ieVals  = metas.filter(e=>e.valor_s>0.1 && e.valor_s<10).map(e=>e.valor_s);
-  const ieVals2 = inhales.filter(e=>e.ie_ratio>0.1 && e.ie_ratio<10).map(e=>e.ie_ratio);
-  const ieSource = ieVals.length ? ieVals : ieVals2;
-  const avgIe   = ieSource.length ? ieSource.reduce((s,v)=>s+v,0)/ieSource.length : 0;
+  const ieVals = events.filter(e=>e.ie_ratio>0 && e.tipo==='INHALA').map(e=>e.ie_ratio);
+  const avgIe  = ieVals.length ? ieVals.reduce((s,v)=>s+v,0)/ieVals.length : 0;
 
   // RPM: usar los valores más recientes enviados por la ESP (fuente de verdad)
   // Si no hay aún (primer ciclo), mostrar '—'
@@ -691,44 +690,42 @@ function recomputeLiveStats(events, rpmActivoEsp, rpmCicloEsp) {
 }
 
 function computeStatsFromEvents(events) {
-  // Filtrar solo ciclos con Ti>=0.7s y Te>=0.6s (fisiológicamente válidos)
-  // Los ciclos más cortos son artefactos que distorsionan promedios
-  const MIN_TI = 0.7, MIN_TE = 0.6;
-  const inhales = events.filter(e=>e.tipo==='INHALA' && e.valor_s>=MIN_TI);
-  const exhales = events.filter(e=>e.tipo==='EXHALA' && e.valor_s>=MIN_TE);
+  const inhales = events.filter(e=>e.tipo==='INHALA');
+  const exhales = events.filter(e=>e.tipo==='EXHALA');
   const apneas  = events.filter(e=>e.tipo.startsWith('APNEA'));
   const metas   = events.filter(e=>e.tipo==='CICLO_META');
 
   const avg = arr => arr.length ? arr.reduce((s,e)=>s+e.valor_s,0)/arr.length : null;
   const max = arr => arr.length ? Math.max(...arr.map(e=>e.valor_s)) : null;
+  const ieVals = inhales.filter(e=>e.ie_ratio>0).map(e=>e.ie_ratio);
 
-  // I:E desde CICLO_META.valor_s (ie real guardado por ciclo, rango 0.1-10)
-  const ieVals  = metas.filter(e=>e.valor_s>0.1 && e.valor_s<10).map(e=>e.valor_s);
-  const ieVals2 = events.filter(e=>e.tipo==='INHALA' && e.ie_ratio>0.1 && e.ie_ratio<10).map(e=>e.ie_ratio);
-  const ieSource = ieVals.length ? ieVals : ieVals2;
-
-  // RPM desde CICLO_META.ie_ratio (rpm_ciclo por ciclo, rango 1-60)
-  const rpmCicloVals = metas.filter(e=>e.ie_ratio>1 && e.ie_ratio<60).map(e=>e.ie_ratio);
+  // RPM ciclo completo: promedio de los rpm_ciclo guardados en ie_ratio de CICLO_META
+  const rpmCicloVals = metas.filter(e=>e.ie_ratio>0).map(e=>e.ie_ratio);
   const avg_rpm_ciclo = rpmCicloVals.length
     ? +(rpmCicloVals.reduce((s,v)=>s+v,0)/rpmCicloVals.length).toFixed(1)
     : null;
 
+  // RPM ventilatorio activo: 60/(avgTi+avgTe) — solo tiempo respirando
   const avgTi = avg(inhales);
   const avgTe = avg(exhales);
   const avg_rpm_activo = (avgTi && avgTe)
     ? +(60/(avgTi+avgTe)).toFixed(1)
     : null;
 
+  // Pausa promedio
+  const avg_pausa = avg(metas) != null ? +avg(metas).toFixed(1) : null;
+
   return {
     avg_ti:       avgTi != null ? +avgTi.toFixed(2) : null,
     avg_te:       avgTe != null ? +avgTe.toFixed(2) : null,
     avg_ap:       avg(apneas) != null ? +avg(apneas).toFixed(1) : null,
     max_ap:       max(apneas) != null ? +max(apneas).toFixed(1) : null,
-    avg_ie:       ieSource.length ? +(ieSource.reduce((s,v)=>s+v,0)/ieSource.length).toFixed(2) : null,
+    avg_ie:       ieVals.length ? +(ieVals.reduce((s,v)=>s+v,0)/ieVals.length).toFixed(2) : null,
     n_terap:      events.filter(e=>e.tipo==='APNEA_TERAP').length,
     n_patol:      events.filter(e=>e.tipo==='APNEA_PATOL').length,
     avg_rpm_ciclo,
     avg_rpm_activo,
+    avg_pausa,
   };
 }
 
@@ -1016,15 +1013,15 @@ function buildBarsHTML(s) {
   const ti = parseFloat(s.avgTi) || 0;
   const te = parseFloat(s.avgTe) || 0;
   const ap = parseFloat(s.avgAp) || 0;
-  const mx = parseFloat(s.maxAp) || 0;
+  const pa = parseFloat(s.avgPausa) || 0;
   if (!ti && !te) return '<div class="no-apnea">Esperando datos...</div>';
-  const maxV = Math.max(ti, te, ap, mx, 0.1);
-  const pct = v => ((v/maxV)*100).toFixed(1)+'%';
+  const mx = Math.max(ti, te, ap, pa, 0.1);
+  const pct = v => ((v/mx)*100).toFixed(1)+'%';
   return `<div class="bars">
     ${ti?`<div class="br"><div class="bl">Inhalación</div><div class="bt"><div class="bf i" style="width:${pct(ti)}"></div></div><div class="bv">${ti} s</div></div>`:''}
     ${te?`<div class="br"><div class="bl">Exhalación</div><div class="bt"><div class="bf e" style="width:${pct(te)}"></div></div><div class="bv">${te} s</div></div>`:''}
+    ${pa?`<div class="br"><div class="bl">Pausa prom</div><div class="bt"><div class="bf" style="width:${pct(pa)};background:linear-gradient(90deg,#4a3a90,#8b7fd4)"></div></div><div class="bv">${pa} s</div></div>`:''}
     ${ap?`<div class="br"><div class="bl">Apnea prom</div><div class="bt"><div class="bf a" style="width:${pct(ap)}"></div></div><div class="bv">${ap} s</div></div>`:'<div class="no-apnea">Sin apneas ✓</div>'}
-    ${mx && mx!==ap?`<div class="br"><div class="bl">Apnea máx</div><div class="bt"><div class="bf a" style="width:${pct(mx)};opacity:.55"></div></div><div class="bv">${mx} s</div></div>`:''}
   </div>`;
 }
 
@@ -1032,7 +1029,7 @@ function buildStreamHTML() {
   if (!app.liveEvents.length) {
     return '<div style="padding:20px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--txt3)">Sin eventos aún</div>';
   }
-  return app.liveEvents.filter(e=>e.tipo!=='CICLO_META').slice(0, 30).map(e => `
+  return app.liveEvents.slice(0, 30).map(e => `
     <div class="ev-row">
       <span class="tag ${e.tipo.toLowerCase()}">${
         e.tipo==='APNEA_TERAP'?'⏸ TERAP':
@@ -1187,13 +1184,13 @@ async function renderSheetContent(sid) {
       <div class="bars">
         <div class="br"><div class="bl">Inhalación</div><div class="bt"><div class="bf i" style="width:${pct(st.avg_ti)}"></div></div><div class="bv">${st.avg_ti??0} s</div></div>
         <div class="br"><div class="bl">Exhalación</div><div class="bt"><div class="bf e" style="width:${pct(st.avg_te)}"></div></div><div class="bv">${st.avg_te??0} s</div></div>
+        ${st.avg_pausa
+          ? `<div class="br"><div class="bl">Pausa prom</div><div class="bt"><div class="bf" style="width:${pct(st.avg_pausa)};background:linear-gradient(90deg,#4a3a90,#8b7fd4)"></div></div><div class="bv">${st.avg_pausa} s</div></div>`
+          : ''
+        }
         ${st.avg_ap
           ? `<div class="br"><div class="bl">Apnea prom</div><div class="bt"><div class="bf a" style="width:${pct(st.avg_ap)}"></div></div><div class="bv">${st.avg_ap} s</div></div>`
           : '<div class="no-apnea">Sin apneas ✓</div>'
-        }
-        ${st.max_ap && st.max_ap !== st.avg_ap
-          ? `<div class="br"><div class="bl">Apnea máx</div><div class="bt"><div class="bf a" style="width:${pct(st.max_ap)};opacity:.55"></div></div><div class="bv">${st.max_ap} s</div></div>`
-          : ''
         }
         ${st.n_terap>0?`<div style="padding:4px 0 0;font-family:var(--mono);font-size:9px;color:var(--yellow)">⏸ Terapéuticas: ${st.n_terap}</div>`:''}
         ${st.n_patol>0?`<div style="padding:2px 0 0;font-family:var(--mono);font-size:9px;color:var(--red)">🚨 Patológicas: ${st.n_patol}</div>`:''}
@@ -1216,7 +1213,7 @@ async function renderSheetContent(sid) {
           <thead><tr><th>Hora</th><th>Tipo</th><th>Duración</th><th>I:E</th></tr></thead>
           <tbody>
             ${events.length
-              ? events.filter(e=>e.tipo!=='CICLO_META').slice().reverse().slice(0,200).map(e=>`
+              ? events.slice().reverse().slice(0,200).map(e=>`
                   <tr style="${e.tipo==='APNEA_PATOL'?'background:rgba(255,68,102,.05)':e.tipo==='APNEA_TERAP'?'background:rgba(255,180,0,.04)':''}">
                     <td style="font-family:var(--mono);font-size:9.5px;color:var(--txt3)">${e.timestamp}</td>
                     <td><span class="tag ${e.tipo.toLowerCase()}">${
