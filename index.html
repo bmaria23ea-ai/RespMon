@@ -660,7 +660,10 @@ async function processLine(line) {
 //  STATS — solo promedios, el ESP calculó todo lo demás
 // ════════════════════════════════════════════════════════════════
 function recomputeLiveStats(events) {
-  const ciclos = events.filter(e => e.tipo === 'CICLO');
+  const ciclos = events
+    .filter(e => e.tipo === 'CICLO' || e.tipo === 'INHALA')
+    .map(normalizarCiclo)
+    .filter(c => c.ti_s > 0);
   if (!ciclos.length) { app.liveStats = null; return; }
 
   const avg = arr => arr.length ? arr.reduce((s,v)=>s+v,0)/arr.length : null;
@@ -697,9 +700,54 @@ function recomputeLiveStats(events) {
   };
 }
 
+// ── Normaliza un evento al formato nuevo independientemente de su origen ──
+// Formato nuevo:  { tipo:'CICLO', ti_s, te_s, pausa_s, rpm_activo, rpm_ciclo, ie, apnea_tipo, apnea_s }
+// Formato legacy: { tipo:'CICLO'|'INHALA', valor_s, ie_ratio }  ← firmware viejo
+function normalizarCiclo(e) {
+  // Ya tiene formato nuevo — solo verificar que los campos no sean undefined/NaN
+  if (e.ti_s != null && !isNaN(e.ti_s)) {
+    return {
+      ...e,
+      ti_s:       +e.ti_s       || 0,
+      te_s:       +e.te_s       || 0,
+      pausa_s:    +e.pausa_s    || 0,
+      rpm_activo: +e.rpm_activo || 0,
+      rpm_ciclo:  +e.rpm_ciclo  || 0,
+      ie:         +e.ie         || 0,
+      apnea_tipo: e.apnea_tipo  || 'NONE',
+      apnea_s:    +e.apnea_s    || 0,
+    };
+  }
+  // Formato legacy: tipo INHALA/EXHALA/CICLO con solo valor_s e ie_ratio
+  // valor_s = ti_s (se guardaba el Ti en valor_s)
+  // ie_ratio = ie
+  // No tenemos Te — estimamos Te = Ti * ie (ie = Te/Ti)
+  const ti  = +e.valor_s  || 0;
+  const ie  = +e.ie_ratio || 0;
+  const te  = ie > 0 ? +(ti * ie).toFixed(2) : 0;
+  const rpm = (ti + te) > 0 ? +(60 / (ti + te)).toFixed(1) : 0;
+  return {
+    ...e,
+    tipo:       'CICLO',
+    ti_s:       ti,
+    te_s:       te,
+    pausa_s:    0,
+    rpm_activo: rpm,
+    rpm_ciclo:  rpm,
+    ie:         ie,
+    apnea_tipo: 'NONE',
+    apnea_s:    0,
+    _legacy:    true,   // marcar para debug
+  };
+}
+
 // La misma función usada para el sheet de detalle de sesión
 function computeStatsFromEvents(events) {
-  const ciclos = events.filter(e => e.tipo === 'CICLO');
+  // Normalizar todos los eventos antes de calcular
+  const ciclos = events
+    .filter(e => e.tipo === 'CICLO' || e.tipo === 'INHALA')
+    .map(normalizarCiclo)
+    .filter(c => c.ti_s > 0);
   if (!ciclos.length) return null;
 
   const avg = arr => arr.length ? arr.reduce((s,v)=>s+v,0)/arr.length : null;
@@ -811,7 +859,7 @@ async function closeCurrentSession() {
   const ts  = now.toLocaleDateString('es',{day:'2-digit',month:'2-digit',year:'numeric'})
             + ' ' + now.toLocaleTimeString('es',{hour12:false,hour:'2-digit',minute:'2-digit'});
   const evs = await DB.getEvents(sid);
-  const ciclos = evs.filter(e=>e.tipo==='CICLO').length;
+  const ciclos = evs.filter(e=>e.tipo==='CICLO'||e.tipo==='INHALA').length;
   const apneas = evs.filter(e=>e.tipo==='CICLO' && e.apnea_tipo && e.apnea_tipo!=='NONE').length;
   await DB.updateSession(sid, { fin:ts, total_ciclos:ciclos, total_apneas:apneas });
   app.currentSid = null;
@@ -1033,7 +1081,8 @@ function buildBarsHTML(s) {
 function buildStreamHTML() {
   if (!app.liveCiclos.length)
     return '<div style="padding:20px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--txt3)">Sin ciclos aún</div>';
-  return app.liveCiclos.slice(0,30).map(c => {
+  return app.liveCiclos.slice(0,30).map(raw => {
+    const c  = normalizarCiclo(raw);
     const at = c.apnea_tipo||'NONE';
     const tagClass = at==='PATOL'?'patol':at==='TERAP'?'terap':'none';
     const tagLabel = at==='PATOL'?'🚨 PATOL':at==='TERAP'?'⏸ TERAP':'CICLO';
@@ -1180,7 +1229,7 @@ async function renderSheetContent(sid) {
     <div class="section" style="margin-bottom:10px">
       <div class="sechd">
         <div class="sectitle">Ciclos registrados</div>
-        <div class="badge ${nAp>0?'r':'c'}">${events.filter(e=>e.tipo==='CICLO').length}</div>
+        <div class="badge ${nAp>0?'r':'c'}">${events.filter(e=>e.tipo==='CICLO'||e.tipo==='INHALA').length}</div>
       </div>
       ${nAp>0?`<div class="alert-bar">
         <span style="font-size:15px">${st?.n_patol>0?'🚨':'⏸'}</span>
@@ -1193,7 +1242,7 @@ async function renderSheetContent(sid) {
           <thead><tr><th>Hora</th><th>Ti</th><th>Te</th><th>Pausa</th><th>RPM</th><th>I:E</th><th>Apnea</th></tr></thead>
           <tbody>
             ${events.filter(e=>e.tipo==='CICLO').length
-              ? events.filter(e=>e.tipo==='CICLO').slice().reverse().slice(0,200).map(c=>`
+              ? events.filter(e=>e.tipo==='CICLO'||e.tipo==='INHALA').map(normalizarCiclo).filter(c=>c.ti_s>0).slice().reverse().slice(0,200).map(c=>`
                 <tr style="${c.apnea_tipo==='PATOL'?'background:rgba(255,68,102,.05)':c.apnea_tipo==='TERAP'?'background:rgba(255,180,0,.04)':''}">
                   <td style="font-family:var(--mono);font-size:9.5px;color:var(--txt3)">${c.timestamp}</td>
                   <td style="font-family:var(--mono);font-size:12px">${c.ti_s}<span style="font-size:9px;color:var(--txt3)"> s</span></td>
