@@ -14,7 +14,6 @@
   --blue:#4db8ff;--blue-d:rgba(77,184,255,.08);
   --red:#ff4466;--red-d:rgba(255,68,102,.09);
   --yellow:#ffb400;--yellow-d:rgba(255,180,0,.08);
-  --purple:#a78bfa;--purple-d:rgba(167,139,250,.08);
   --txt:#b8cfe8;--txt2:#6a88aa;--txt3:#384e68;
   --mono:'JetBrains Mono',monospace;--head:'Syne',sans-serif;
   --hd:52px;--tb:56px;
@@ -22,6 +21,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--head);font-size:13px;overflow:hidden;-webkit-text-size-adjust:100%}
 
+/* ── App shell ── */
 .app{display:flex;flex-direction:column;height:100%}
 
 /* ── Header ── */
@@ -30,7 +30,7 @@ header{height:var(--hd);background:var(--bg1);border-bottom:1px solid var(--line
 .logo-mark svg{width:14px;height:14px}
 .logo-name{font-size:13px;font-weight:700;letter-spacing:-.3px;color:#fff}
 .logo-tag{font-size:8px;color:var(--txt3);font-family:var(--mono);letter-spacing:1.5px;text-transform:uppercase}
-.hd-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.hd-right{margin-left:auto}
 .ble-btn{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;padding:6px 12px;border-radius:99px;border:1px solid var(--line2);color:var(--txt2);background:var(--bg2);cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;outline:none}
 .ble-btn.connecting{border-color:rgba(255,180,0,.5);color:var(--yellow)}
 .ble-btn.connected{border-color:rgba(0,229,204,.4);color:var(--cyan);background:var(--cyan-d)}
@@ -39,7 +39,7 @@ header{height:var(--hd);background:var(--bg1);border-bottom:1px solid var(--line
 .dot.warn{background:var(--yellow);box-shadow:0 0 6px var(--yellow);animation:blink .8s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* ── Content ── */
+/* ── Content area ── */
 .content{flex:1;overflow:hidden;position:relative}
 .tab-panel{position:absolute;inset:0;overflow-y:auto;display:none;flex-direction:column;-webkit-overflow-scrolling:touch}
 .tab-panel.active{display:flex}
@@ -52,7 +52,7 @@ header{height:var(--hd);background:var(--bg1);border-bottom:1px solid var(--line
 .tab.active{color:var(--cyan)}
 .tab.active svg *{stroke:var(--cyan)}
 
-/* ── Sesiones ── */
+/* ── Sessions tab ── */
 .search-bar{padding:10px 12px;background:var(--bg1);border-bottom:1px solid var(--line);flex-shrink:0;position:sticky;top:0;z-index:5}
 .sw{position:relative}
 .sw input{width:100%;background:var(--bg3);border:1px solid var(--line2);border-radius:7px;color:var(--txt);font-family:var(--mono);font-size:11px;padding:7px 10px 7px 30px;outline:none;-webkit-appearance:none;transition:border-color .15s}
@@ -71,7 +71,6 @@ header{height:var(--hd);background:var(--bg1);border-bottom:1px solid var(--line
 .pill.live{color:var(--cyan);background:var(--cyan-d);border:1px solid rgba(0,229,204,.2)}
 .pd{width:3px;height:3px;border-radius:50%;background:var(--cyan);animation:blink 1s infinite}
 .pill.apnea{color:var(--red);background:var(--red-d);border:1px solid rgba(255,68,102,.2)}
-.pill.ej{color:var(--blue);background:var(--blue-d);border:1px solid rgba(77,184,255,.2)}
 .si-name{font-size:13px;font-weight:600;color:#fff;margin-bottom:2px}
 .si-name.empty{color:var(--txt3);font-weight:400;font-style:italic;font-size:12px}
 .si-meta{font-family:var(--mono);font-size:9px;color:var(--txt3)}
@@ -80,7 +79,7 @@ header{height:var(--hd);background:var(--bg1);border-bottom:1px solid var(--line
 .empty-title{font-size:13px;color:var(--txt2);font-weight:500}
 .empty-sub{font-family:var(--mono);font-size:10px;line-height:1.6}
 
-/* ── Live ── */
+/* ── Live tab ── */
 .live-panel{padding:12px;display:flex;flex-direction:column;gap:10px}
 .connect-card{background:var(--bg1);border:1px solid var(--line);border-radius:12px;padding:28px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
 .cc-icon{font-size:40px}
@@ -91,47 +90,19 @@ header{height:var(--hd);background:var(--bg1);border-bottom:1px solid var(--line
 .big-btn.cyan:active{background:var(--cyan2)}
 .big-btn.red{background:var(--red-d);color:var(--red);border:1px solid rgba(255,68,102,.3)}
 .big-btn.red:active{background:rgba(255,68,102,.15)}
-.big-btn.yellow{background:var(--yellow-d);color:var(--yellow);border:1px solid rgba(255,180,0,.3)}
-.big-btn.yellow:active{background:rgba(255,180,0,.15)}
 
 .live-hd{background:var(--bg1);border:1px solid var(--line);border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:10px}
 .live-ses-tag{font-family:var(--mono);font-size:9px;color:var(--cyan);text-transform:uppercase;letter-spacing:1px;margin-bottom:1px}
 .live-name{font-size:13px;font-weight:600;color:#fff}
 .live-name.empty{color:var(--txt3);font-weight:400;font-style:italic;font-size:12px}
 
-/* ── Selector de ejercicio en vivo ── */
-.ej-selector{background:var(--bg1);border:1px solid var(--line);border-radius:10px;padding:11px 14px;display:flex;flex-direction:column;gap:8px}
-.ej-sel-title{font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--txt2)}
-.ej-sel-row{display:flex;gap:8px;align-items:center}
-.ej-sel-row select{flex:1;background:var(--bg3);border:1px solid var(--line2);border-radius:5px;color:var(--txt);font-family:var(--head);font-size:12px;padding:7px 10px;outline:none;-webkit-appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236a88aa'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
-.ej-sel-row select:focus{border-color:var(--cyan)}
-.ej-apply-btn{font-family:var(--mono);font-size:9px;padding:7px 12px;border-radius:5px;border:1px solid rgba(0,229,204,.3);background:var(--cyan-d);color:var(--cyan);cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;outline:none;flex-shrink:0}
-.ej-apply-btn:active{background:rgba(0,229,204,.15)}
-.ej-desc{font-family:var(--mono);font-size:9px;color:var(--txt3);line-height:1.5;display:none}
-.ej-desc.show{display:block}
-
-/* ── Control de pausa entre series ── */
-.pausa-bar{display:flex;gap:8px;align-items:center}
-.pausa-btn{flex:1;padding:10px;border-radius:8px;font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer;border:none;text-align:center;-webkit-tap-highlight-color:transparent;outline:none;letter-spacing:.5px;text-transform:uppercase}
-.pausa-btn.iniciar{background:var(--yellow-d);color:var(--yellow);border:1px solid rgba(255,180,0,.3)}
-.pausa-btn.iniciar:active{background:rgba(255,180,0,.15)}
-.pausa-btn.reanudar{background:var(--cyan-d);color:var(--cyan);border:1px solid rgba(0,229,204,.3);animation:pulse-c .8s infinite alternate}
-@keyframes pulse-c{from{border-color:rgba(0,229,204,.2)}to{border-color:rgba(0,229,204,.6)}}
-.pausa-timer{font-family:var(--mono);font-size:22px;font-weight:500;color:var(--yellow);min-width:48px;text-align:center;flex-shrink:0}
-
 /* ── Stats grid ── */
 .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .stat{background:var(--bg1);border:1px solid var(--line);border-radius:8px;padding:9px 10px;display:flex;flex-direction:column;gap:2px}
-.stat.ok  {border-color:rgba(0,229,204,.3);background:rgba(0,229,204,.04)}
-.stat.warn{border-color:rgba(255,180,0,.35);background:rgba(255,180,0,.05)}
-.stat.bad {border-color:rgba(255,68,102,.35);background:rgba(255,68,102,.05)}
 .sl{font-family:var(--mono);font-size:7.5px;letter-spacing:1px;text-transform:uppercase;color:var(--txt3)}
 .sv{font-family:var(--mono);font-size:22px;font-weight:500;line-height:1.1;color:#fff}
-.sv.c{color:var(--cyan)}.sv.b{color:var(--blue)}.sv.r{color:var(--red)}.sv.y{color:var(--yellow)}
-.sv.ok{color:var(--cyan)}.sv.warn{color:var(--yellow)}.sv.bad{color:var(--red)}
+.sv.c{color:var(--cyan)}.sv.b{color:var(--blue)}.sv.r{color:var(--red)}
 .su{font-family:var(--mono);font-size:7.5px;color:var(--txt3)}
-.rango{font-family:var(--mono);font-size:8px;color:var(--txt3);margin-top:1px}
-.rango.ok{color:var(--cyan2)}.rango.warn{color:var(--yellow)}.rango.bad{color:var(--red)}
 
 /* ── Section ── */
 .section{background:var(--bg1);border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -140,7 +111,6 @@ header{height:var(--hd);background:var(--bg1);border-bottom:1px solid var(--line
 .badge{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:99px}
 .badge.c{background:var(--cyan-d);color:var(--cyan);border:1px solid rgba(0,229,204,.2)}
 .badge.r{background:var(--red-d);color:var(--red);border:1px solid rgba(255,68,102,.25)}
-.badge.y{background:var(--yellow-d);color:var(--yellow);border:1px solid rgba(255,180,0,.25)}
 
 /* ── Bars ── */
 .bars{padding:12px 14px;display:flex;flex-direction:column;gap:9px}
@@ -151,28 +121,26 @@ header{height:var(--hd);background:var(--bg1);border-bottom:1px solid var(--line
 .bf.i{background:linear-gradient(90deg,#1a6fb0,var(--blue))}
 .bf.e{background:linear-gradient(90deg,var(--cyan2),var(--cyan))}
 .bf.a{background:linear-gradient(90deg,#b02040,var(--red))}
-.bf.p{background:linear-gradient(90deg,#4a3a90,var(--purple))}
 .bv{font-family:var(--mono);font-size:9.5px;color:var(--txt2);width:32px;text-align:right;flex-shrink:0}
 .no-apnea{padding:10px 14px;font-family:var(--mono);font-size:10px;color:var(--txt3)}
 
-/* ── Stream de ciclos en vivo ── */
-.ev-stream{max-height:220px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+/* ── Event stream (live) ── */
+.ev-stream{max-height:210px;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .ev-row{padding:8px 12px;border-bottom:1px solid rgba(28,38,64,.5);display:flex;align-items:center;gap:8px}
 .ev-row:last-child{border-bottom:none}
 .tag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:8.5px;font-weight:500;flex-shrink:0}
-.tag.none{background:var(--cyan-d);color:var(--cyan);border:1px solid rgba(0,229,204,.2)}
-.tag.terap{background:var(--yellow-d);color:var(--yellow);border:1px solid rgba(255,180,0,.3)}
-.tag.patol{background:var(--red-d);color:var(--red);border:1px solid rgba(255,68,102,.35);font-weight:700}
-.tag.rt{background:var(--red);color:#fff;font-weight:700}
-.ev-ts{font-family:var(--mono);font-size:9px;color:var(--txt3);flex-shrink:0}
-.ev-detail{flex:1;font-family:var(--mono);font-size:9px;color:var(--txt3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ev-rpm{font-family:var(--mono);font-size:11px;color:#fff;white-space:nowrap;flex-shrink:0}
+.tag.inhala{background:var(--blue-d);color:var(--blue);border:1px solid rgba(77,184,255,.2)}
+.tag.exhala{background:var(--cyan-d);color:var(--cyan);border:1px solid rgba(0,229,204,.2)}
+.tag.apnea_terap{background:var(--yellow-d);color:var(--yellow);border:1px solid rgba(255,180,0,.3)}
+.tag.apnea_patol{background:var(--red-d);color:var(--red);border:1px solid rgba(255,68,102,.35);font-weight:700}
+.ev-ts{font-family:var(--mono);font-size:9px;color:var(--txt3);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev-val{font-family:var(--mono);font-size:12px;color:#fff;white-space:nowrap}
 
 /* ── Alert bar ── */
 .alert-bar{display:flex;align-items:center;gap:10px;padding:9px 13px;background:var(--red-d);border-bottom:1px solid rgba(255,68,102,.2);font-size:11px}
 .alert-bar strong{color:var(--red)}
 
-/* ── Tabla ── */
+/* ── Table ── */
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse}
 thead th{padding:7px 10px;text-align:left;font-family:var(--mono);font-size:7.5px;letter-spacing:1px;text-transform:uppercase;color:var(--txt3);background:var(--bg2);border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;z-index:2}
@@ -180,14 +148,14 @@ tbody tr{border-bottom:1px solid rgba(28,38,64,.5)}
 tbody tr:last-child{border-bottom:none}
 td{padding:7px 10px;font-size:11px;color:var(--txt);white-space:nowrap}
 
-/* ── Botones ── */
+/* ── Buttons ── */
 .btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:6px;font-family:var(--head);font-size:11px;font-weight:600;cursor:pointer;border:1px solid transparent;-webkit-tap-highlight-color:transparent;outline:none}
 .btn-p{background:var(--cyan);color:#000;border-color:var(--cyan)}.btn-p:active{background:var(--cyan2)}
 .btn-g{background:transparent;color:var(--txt2);border-color:var(--line2)}.btn-g:active{background:var(--bg3)}
 .btn-danger{background:var(--red-d);color:var(--red);border-color:rgba(255,68,102,.3);width:100%;justify-content:center;margin-top:4px}
 .btn-danger:active{background:rgba(255,68,102,.15)}
 
-/* ── Sheet ── */
+/* ── Sheet overlay ── */
 .sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;display:none;flex-direction:column;justify-content:flex-end;opacity:0;transition:opacity .25s}
 .sheet-overlay.open{display:flex}
 .sheet-overlay.visible{opacity:1}
@@ -196,6 +164,8 @@ td{padding:7px 10px;font-size:11px;color:var(--txt);white-space:nowrap}
 .sheet-handle-wrap{padding:10px;display:flex;justify-content:center;flex-shrink:0;cursor:pointer}
 .sheet-handle{width:36px;height:4px;background:var(--line2);border-radius:2px}
 .sheet-scroll{flex:1;overflow-y:auto;padding:0 14px 32px;-webkit-overflow-scrolling:touch}
+
+/* ── Sheet content ── */
 .sheet-hd{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .ses-num{flex-shrink:0;width:42px;height:42px;border-radius:9px;background:var(--cyan-d);border:1px solid rgba(0,229,204,.2);display:flex;flex-direction:column;align-items:center;justify-content:center}
 .sn-lbl{font-family:var(--mono);font-size:7px;color:var(--cyan);letter-spacing:1px;text-transform:uppercase}
@@ -217,7 +187,20 @@ td{padding:7px 10px;font-size:11px;color:var(--txt);white-space:nowrap}
 .field textarea{resize:none;min-height:64px}
 .field select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236a88aa'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
 .fbtns{display:flex;gap:7px}
-
+/* ── Ejercicio badge en lista de sesiones ── */
+.pill.ej{color:var(--blue);background:var(--blue-d);border:1px solid rgba(77,184,255,.2)}
+/* ── Métricas clínicas con semáforo ── */
+.stat.ok  {border-color:rgba(0,229,204,.3);background:rgba(0,229,204,.04)}
+.stat.warn{border-color:rgba(255,180,0,.35);background:rgba(255,180,0,.05)}
+.stat.bad {border-color:rgba(255,68,102,.35);background:rgba(255,68,102,.05)}
+.sv.ok  {color:var(--cyan)}
+.sv.warn{color:var(--yellow)}
+.sv.bad {color:var(--red)}
+/* ── Rango objetivo badge ── */
+.rango{font-family:var(--mono);font-size:8px;color:var(--txt3);margin-top:1px}
+.rango.ok  {color:var(--cyan2)}
+.rango.warn{color:var(--yellow)}
+.rango.bad {color:var(--red)}
 /* ── Ejercicio info card ── */
 .ej-card{background:var(--bg2);border:1px solid var(--line2);border-radius:8px;padding:10px 12px;margin-bottom:10px;display:flex;flex-direction:column;gap:4px}
 .ej-card-title{font-family:var(--mono);font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--blue)}
@@ -228,9 +211,7 @@ td{padding:7px 10px;font-size:11px;color:var(--txt);white-space:nowrap}
 .apnea-toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;border-radius:8px;padding:9px 18px;font-family:var(--mono);font-size:11px;font-weight:700;z-index:200;display:none;white-space:nowrap;box-shadow:0 4px 24px rgba(255,68,102,.5);animation:pulse-r .8s infinite alternate}
 @keyframes pulse-r{from{box-shadow:0 4px 15px rgba(255,68,102,.3)}to{box-shadow:0 4px 28px rgba(255,68,102,.7)}}
 
-/* ── Pausa toast ── */
-.pausa-overlay{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:var(--yellow);color:#000;border-radius:8px;padding:8px 16px;font-family:var(--mono);font-size:11px;font-weight:700;z-index:199;display:none;white-space:nowrap}
-
+/* ── Scrollbars ── */
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:3px}
@@ -310,8 +291,6 @@ td{padding:7px 10px;font-size:11px;color:var(--txt);white-space:nowrap}
 
 <!-- Apnea toast -->
 <div class="apnea-toast" id="apneaToast">🚨 APNEA PATOLÓGICA</div>
-<!-- Pausa overlay -->
-<div class="pausa-overlay" id="pausaOverlay">⏸ PAUSA</div>
 
 <!-- Session detail sheet -->
 <div class="sheet-overlay" id="sheetOverlay" onclick="onOverlayClick(event)">
@@ -321,31 +300,32 @@ td{padding:7px 10px;font-size:11px;color:var(--txt);white-space:nowrap}
   </div>
 </div>
 
+<!-- Hidden file input for import -->
 <input type="file" id="fileInput" accept=".json" style="display:none" onchange="handleImport(event)">
 
 <script>
 'use strict';
-
-// ════════════════════════════════════════════════════════════════
-//  API
-// ════════════════════════════════════════════════════════════════
+//  API — Turso via PHP backend
 const API_URL = 'https://backendresp.onrender.com/api/sesiones.php';
-const API_KEY = '-xK9mP3qL7nR2wT8v';
+const API_KEY = '-xK9mP3qL7nR2wT8v';   
 const AH = { 'X-API-Key': API_KEY };
 
 async function apiFetch(path, opts={}) {
   try {
     const r = await fetch(API_URL + path, {
-      ...opts, headers: { ...AH, ...(opts.headers||{}) }
+      ...opts,
+      headers: { ...AH, ...(opts.headers||{}) }
     });
     if (!r.ok) { console.error('[API]', r.status, path); return null; }
     return r.json();
   } catch(e) { console.error('[API]', e, path); return null; }
 }
 
+// Cache en memoria para la sesión actual (evita refetch constante)
 const cache = { sessions: null, events: {} };
 
 const DB = {
+  // ── Sesiones ──
   async getSessions() {
     if (cache.sessions) return cache.sessions;
     const d = await apiFetch('');
@@ -353,6 +333,13 @@ const DB = {
     return cache.sessions;
   },
   invalidateSessions() { cache.sessions = null; },
+
+  async saveSessions(arr) {
+    // No usado directamente — las mutaciones van por métodos específicos
+    cache.sessions = arr;
+  },
+
+  // ── Eventos ──
   async getEvents(sid) {
     if (cache.events[sid]) return cache.events[sid];
     const d = await apiFetch('?sid='+sid+'&action=events');
@@ -360,6 +347,12 @@ const DB = {
     return cache.events[sid];
   },
   invalidateEvents(sid) { delete cache.events[sid]; },
+
+  async saveEvents(sid, arr) {
+    cache.events[sid] = arr; // solo actualiza cache local
+  },
+
+  // ── IDs ──
   async nextSessionId() {
     const d = await apiFetch('?action=nextid');
     return d ? d.nextId : 1;
@@ -368,6 +361,8 @@ const DB = {
     const d = await apiFetch('?action=nexteventid');
     return d ? d.nextId : 1;
   },
+
+  // ── Mutaciones ──
   async createSession(ses) {
     const r = await apiFetch('', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(ses) });
     this.invalidateSessions();
@@ -382,49 +377,45 @@ const DB = {
     this.invalidateSessions();
     this.invalidateEvents(sid);
   },
-  // Guarda un ciclo como único evento tipo CICLO
-  async addCiclo(sid, ciclo) {
-    await apiFetch('?sid='+sid+'&action=event', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(ciclo)
-    });
+  async addEvent(sid, ev) {
+    await apiFetch('?sid='+sid+'&action=event', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(ev) });
     this.invalidateEvents(sid);
   },
 };
 
-// ════════════════════════════════════════════════════════════════
-//  BLE
-// ════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+//  BLE CONSTANTS
+// ══════════════════════════════════════════════════
 const BLE_DEVICE_NAME = 'RespMonitor';
 const NUS_SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
 const NUS_TX_UUID      = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
-const NUS_RX_UUID      = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+const TIPOS_VALIDOS    = ['INHALA','EXHALA','APNEA_TERAP','APNEA_PATOL','CICLO'];
 
+// ══════════════════════════════════════════════════
+//  APP STATE
+// ══════════════════════════════════════════════════
 const app = {
-  bleDevice:    null,
-  bleChar:      null,   // TX (notify)
-  bleRxChar:    null,   // RX (write)
-  connected:    false,
-  currentSid:   null,
-  buffer:       '',
-  liveCiclos:   [],     // últimos 50 ciclos para el stream
-  liveStats:    null,   // stats calculados de liveCiclos
-  searchQuery:  '',
-  modoEj:       0,      // ejercicio seleccionado en vivo
-  enPausa:      false,
-  pausaStart:   0,
-  pausaTimer:   null,
+  bleDevice:   null,
+  bleChar:     null,
+  connected:   false,
+  currentSid:  null,
+  buffer:      '',
+  liveEvents:  [],   // newest first, max 100
+  liveStats:   { ciclos:0, apneas:0, avgTi:'—', avgTe:'—', avgIe:'—', avgAp:null, maxAp:null, bpm:'—', rpmActivo:'—', rpmCiclo:'—', avgPausa:null },
+  searchQuery: '',
 };
 
+// ══════════════════════════════════════════════════
+//  BLE
+// ══════════════════════════════════════════════════
 async function toggleBLE() {
-  if (app.connected) disconnectBLE();
-  else await connectBLE();
+  if (app.connected) { disconnectBLE(); }
+  else               { await connectBLE(); }
 }
 
 async function connectBLE() {
   if (!navigator.bluetooth) {
-    alert('Web Bluetooth no disponible.\nUsá Chrome en Android.');
+    alert('Web Bluetooth no está disponible.\nUsá Chrome en Android (no Samsung Internet ni Firefox).');
     return;
   }
   setBLEUI('connecting');
@@ -438,50 +429,46 @@ async function connectBLE() {
 
     const server  = await device.gatt.connect();
     const service = await server.getPrimaryService(NUS_SERVICE_UUID);
-    const txChar  = await service.getCharacteristic(NUS_TX_UUID);
-    app.bleChar   = txChar;
+    const char    = await service.getCharacteristic(NUS_TX_UUID);
+    app.bleChar   = char;
 
-    // RX para mandar comandos al ESP
-    try {
-      app.bleRxChar = await service.getCharacteristic(NUS_RX_UUID);
-    } catch(e) {
-      console.warn('[BLE] RX char no disponible:', e.message);
-    }
+    char.addEventListener('characteristicvaluechanged', onBLEData);
+    await char.startNotifications();
 
-    txChar.addEventListener('characteristicvaluechanged', onBLEData);
-    await txChar.startNotifications();
-
-    app.connected  = true;
-    app.buffer     = '';
+    app.connected = true;
+    app.buffer    = '';
     setBLEUI('connected', device.name || BLE_DEVICE_NAME);
     renderLivePanel();
   } catch(e) {
     console.error('[BLE]', e);
     setBLEUI('disconnected');
-    if (!e.message?.includes('cancelled') && !e.message?.includes('chosen'))
+    if (!e.message?.includes('cancelled') && !e.message?.includes('chosen')) {
       alert('Error al conectar:\n' + e.message);
+    }
   }
 }
 
 function disconnectBLE() {
-  try { if (app.bleDevice?.gatt?.connected) app.bleDevice.gatt.disconnect(); } catch{}
+  try {
+    if (app.bleDevice?.gatt?.connected) app.bleDevice.gatt.disconnect();
+  } catch{}
   onBLEDisconnected();
 }
 
 function onBLEDisconnected() {
-  if (app.currentSid !== null) closeCurrentSession();
-  app.connected   = false;
-  app.liveCiclos  = [];
-  app.liveStats   = null;
-  app.enPausa     = false;
-  clearInterval(app.pausaTimer);
+  if (app.currentSid !== null) {
+    closeCurrentSession();
+  }
+  app.connected  = false;
+  app.liveEvents = [];
+  app.liveStats  = { ciclos:0, apneas:0, avgTi:'—', avgTe:'—', avgIe:'—', avgAp:null, maxAp:null, bpm:'—', rpmActivo:'—', rpmCiclo:'—', avgPausa:null };
   setBLEUI('disconnected');
   renderLivePanel();
   renderSessionList();
 }
 
 function onBLEData(event) {
-  const chunk = new TextDecoder('utf-8', { fatal:false }).decode(event.target.value);
+  const chunk = new TextDecoder('utf-8', { fatal: false }).decode(event.target.value);
   app.buffer += chunk;
   let nl;
   while ((nl = app.buffer.indexOf('\n')) !== -1) {
@@ -491,343 +478,447 @@ function onBLEData(event) {
   }
 }
 
-// ── Enviar comando al ESP ─────────────────────────────────────
-async function bleWrite(cmd) {
-  if (!app.bleRxChar || !app.connected) return;
-  try {
-    const enc = new TextEncoder().encode(cmd + '\n');
-    await app.bleRxChar.writeValue(enc);
-    console.log('[BLE TX]', cmd);
-  } catch(e) {
-    console.error('[BLE TX Error]', e);
-  }
-}
-
-// ── Enviar ejercicio al ESP ───────────────────────────────────
-async function enviarEjercicio(ej) {
-  app.modoEj = parseInt(ej) || 0;
-  await bleWrite('EJ:' + app.modoEj);
-}
-
-// ── Pausa / Resume ────────────────────────────────────────────
-async function iniciarPausa() {
-  app.enPausa   = true;
-  app.pausaStart = Date.now();
-  await bleWrite('PAUSA');
-  document.getElementById('pausaOverlay').style.display = 'block';
-  renderPausaBtn();
-  // Timer visual
-  app.pausaTimer = setInterval(() => {
-    const el = document.getElementById('pausaTimerVal');
-    if (el) el.textContent = ((Date.now() - app.pausaStart) / 1000).toFixed(0) + 's';
-  }, 500);
-}
-
-async function reanudarSesion() {
-  app.enPausa = false;
-  clearInterval(app.pausaTimer);
-  await bleWrite('RESUME');
-  document.getElementById('pausaOverlay').style.display = 'none';
-  renderPausaBtn();
-}
-
-function renderPausaBtn() {
-  const el = document.getElementById('pausaControls');
-  if (!el) return;
-  if (app.enPausa) {
-    el.innerHTML = `
-      <div class="pausa-bar">
-        <button class="pausa-btn reanudar" onclick="reanudarSesion()">▶ Reanudar sesión</button>
-        <div class="pausa-timer" id="pausaTimerVal">0s</div>
-      </div>`;
-  } else {
-    el.innerHTML = `
-      <button class="pausa-btn iniciar" onclick="iniciarPausa()" style="width:100%">⏸ Pausa entre series</button>`;
-  }
-}
-
-// ════════════════════════════════════════════════════════════════
-//  PROCESAMIENTO DE LÍNEAS BLE
-//  Nuevo protocolo — solo dos tipos de paquetes:
-//    CICLO,ti,te,pausa,rpm_activo,rpm_ciclo,ie,apnea_tipo,apnea_s
-//    APNEA_PATOL_RT,dur_s
-//    INICIO,EJ:N
-// ════════════════════════════════════════════════════════════════
 async function processLine(line) {
   const parts = line.split(',');
-  const tipo  = parts[0].trim().toUpperCase();
+  const tipo = parts[0].trim().toUpperCase();
 
-  // ── INICIO: calibración completa ─────────────────────────────
+  // ═══════════════════════════════════════════════════
+  // 1. INICIO DE SESIÓN
+  // ═══════════════════════════════════════════════════
   if (tipo === 'INICIO') {
     if (app.currentSid !== null) await closeCurrentSession();
     app.currentSid = await createSession();
-    app.liveCiclos = [];
-    app.liveStats  = null;
+    app.liveEvents = [];
+    app.liveStats = { ciclos:0, apneas:0, avgTi:'—', avgTe:'—', avgIe:'—', avgAp:null, maxAp:null, bpm:'—', rpmActivo:'—', rpmCiclo:'—', avgPausa:null };
     renderLivePanel();
     renderSessionList();
     return;
   }
 
-  // ── APNEA_PATOL_RT: alerta inmediata ─────────────────────────
-  if (tipo === 'APNEA_PATOL_RT') {
-    triggerApneaAlert();
-    return;
-  }
-
-  // ── CICLO: paquete clínico completo ──────────────────────────
-  // Formato: CICLO,ti_s,te_s,pausa_s,rpm_activo,rpm_ciclo,ie,apnea_tipo,apnea_s
+  // ═══════════════════════════════════════════════════
+  // 2. CICLO COMPLETO (INHALA + EXHALA + METADATOS)
+  // ═══════════════════════════════════════════════════
   if (tipo === 'CICLO') {
-    if (parts.length < 9) {
-      console.warn('[CICLO] Paquete incompleto:', line);
-      return;
-    }
+    if (parts.length < 7) return;
+    
+    const [, tiStr, teStr, pausaStr, rpmAStr, rpmCStr, ieStr] = parts;
+    const ti_s = parseFloat(tiStr);
+    const te_s = parseFloat(teStr);
+    const pausa_s = parseFloat(pausaStr);
+    const rpm_activo = parseFloat(rpmAStr);
+    const rpm_ciclo = parseFloat(rpmCStr);
+    const ie = parseFloat(ieStr);
+    
+    if (isNaN(ti_s) || isNaN(te_s)) return;
 
-    const ti_s       = parseFloat(parts[1]);
-    const te_s       = parseFloat(parts[2]);
-    const pausa_s    = parseFloat(parts[3]);
-    const rpm_activo = parseFloat(parts[4]);
-    const rpm_ciclo  = parseFloat(parts[5]);
-    const ie         = parseFloat(parts[6]);
-    const apnea_tipo = parts[7].trim().toUpperCase(); // NONE | TERAP | PATOL
-    const apnea_s    = parseFloat(parts[8]);
-
-    // Validación básica — el ESP ya validó, esto es defensa extra
-    if (isNaN(ti_s) || isNaN(te_s) || ti_s <= 0 || te_s <= 0) {
-      console.warn('[CICLO] Valores inválidos:', line);
-      return;
-    }
-
-    // Crear sesión si no hay una activa (por si INICIO no llegó)
     if (app.currentSid === null) {
       app.currentSid = await createSession();
-      app.liveCiclos = [];
+      app.liveEvents = [];
       renderLivePanel();
     }
 
     const ts = new Date().toLocaleTimeString('es', { hour12: false });
 
-    // Evento único en DB — tipo CICLO con todos los datos
-    const evId = await DB.nextEventId();
-    const ev = {
-      id:          evId,
-      sesion_id:   app.currentSid,
-      timestamp:   ts,
-      tipo:        'CICLO',
-      // Campos clínicos directos del ESP
-      ti_s:        Math.round(ti_s * 100) / 100,
-      te_s:        Math.round(te_s * 100) / 100,
-      pausa_s:     Math.round(pausa_s * 100) / 100,
-      rpm_activo:  Math.round(rpm_activo * 10) / 10,
-      rpm_ciclo:   Math.round(rpm_ciclo * 10) / 10,
-      ie:          Math.round(ie * 100) / 100,
-      apnea_tipo,
-      apnea_s:     Math.round(apnea_s * 10) / 10,
-      // Campos legacy para compatibilidad con backend existente
-      valor_s:     Math.round(ti_s * 100) / 100,
-      ie_ratio:    Math.round(ie * 100) / 100,
+    // Guardar evento INHALA
+    const evInhalaId = await DB.nextEventId();
+    const evInhala = {
+      id: evInhalaId,
+      sesion_id: app.currentSid,
+      timestamp: ts,
+      tipo: 'INHALA',
+      valor_s: Math.round(ti_s * 1000) / 1000,
+      ie_ratio: Math.round(ie * 1000) / 1000
     };
+    await DB.addEvent(app.currentSid, evInhala);
 
-    await DB.addCiclo(app.currentSid, ev);
+    // Guardar evento EXHALA
+    const evExhalaId = await DB.nextEventId();
+    const evExhala = {
+      id: evExhalaId,
+      sesion_id: app.currentSid,
+      timestamp: ts,
+      tipo: 'EXHALA',
+      valor_s: Math.round(te_s * 1000) / 1000,
+      ie_ratio: Math.round(ie * 1000) / 1000
+    };
+    await DB.addEvent(app.currentSid, evExhala);
+
+    // Guardar metadatos del ciclo (pausa y RPMs)
+    if (pausa_s > 0 || !isNaN(rpm_ciclo)) {
+      const evMetaId = await DB.nextEventId();
+      const evMeta = {
+        id: evMetaId,
+        sesion_id: app.currentSid,
+        timestamp: ts,
+        tipo: 'CICLO_META',
+        valor_s: Math.round(pausa_s * 1000) / 1000,
+        ie_ratio: Math.round(rpm_ciclo * 100) / 100
+      };
+      await DB.addEvent(app.currentSid, evMeta);
+
+      // Detectar apnea desde la pausa del ciclo
+      if (pausa_s >= 3.0) {
+        const tipoApnea = pausa_s >= 10.0 ? 'APNEA_PATOL' : 'APNEA_TERAP';
+        const evApneaId = await DB.nextEventId();
+        const evApnea = {
+          id: evApneaId,
+          sesion_id: app.currentSid,
+          timestamp: ts,
+          tipo: tipoApnea,
+          valor_s: Math.round(pausa_s * 1000) / 1000,
+          ie_ratio: 0
+        };
+        await DB.addEvent(app.currentSid, evApnea);
+        app.liveEvents.unshift(evApnea);
+        if (app.liveEvents.length > 100) app.liveEvents.pop();
+        if (tipoApnea === 'APNEA_PATOL') triggerApneaAlert();
+      }
+    }
 
     // Actualizar contadores de sesión
     const events = await DB.getEvents(app.currentSid);
-    const totalCiclos = events.filter(e => e.tipo === 'CICLO').length;
-    const totalApneas = events.filter(e => e.tipo === 'CICLO' && e.apnea_tipo && e.apnea_tipo !== 'NONE').length;
-    await DB.updateSession(app.currentSid, {
-      total_ciclos: totalCiclos,
-      total_apneas: totalApneas
-    });
+    const ciclos = events.filter(e => e.tipo === 'INHALA').length;
+    const apneas = events.filter(e => e.tipo.startsWith('APNEA')).length;
+    await DB.updateSession(app.currentSid, { total_ciclos: ciclos, total_apneas: apneas });
 
-    // Alerta visual si hay apnea patológica en este ciclo
-    if (apnea_tipo === 'PATOL') triggerApneaAlert();
+    // Agregar eventos al stream visual
+    app.liveEvents.unshift(evInhala);
+    app.liveEvents.unshift(evExhala);
+    if (app.liveEvents.length > 100) app.liveEvents.splice(100);
 
-    // Actualizar stream en vivo
-    app.liveCiclos.unshift(ev);
-    if (app.liveCiclos.length > 50) app.liveCiclos.splice(50);
-    recomputeLiveStats(events);
+    // Recalcular estadísticas
+    recomputeLiveStats(events, rpm_activo, rpm_ciclo);
+
     updateLiveUI();
-
-    if (document.getElementById('panel-sessions').classList.contains('active'))
-      renderSessionList();
+    if (document.getElementById('panel-sessions').classList.contains('active')) renderSessionList();
     return;
   }
 
-  // Ignorar cualquier otro tipo — protocolo limpio
-  console.log('[BLE] Paquete ignorado:', tipo);
+  // ═══════════════════════════════════════════════════
+  // 3. APNEAS INDIVIDUALES (APNEA_TERAP / APNEA_PATOL)
+  // ═══════════════════════════════════════════════════
+  if (!['APNEA_TERAP', 'APNEA_PATOL'].includes(tipo)) return;
+  if (parts.length < 3) return;
+
+  const valor_s = parseFloat(parts[1]);
+  const ie = parseFloat(parts[2]);
+  if (isNaN(valor_s)) return;
+
+  if (app.currentSid === null) {
+    app.currentSid = await createSession();
+    app.liveEvents = [];
+    renderLivePanel();
+  }
+
+  const ts = new Date().toLocaleTimeString('es', { hour12: false });
+  const evId = await DB.nextEventId();
+  const ev = {
+    id: evId,
+    sesion_id: app.currentSid,
+    timestamp: ts,
+    tipo,
+    valor_s: Math.round(valor_s * 1000) / 1000,
+    ie_ratio: isNaN(ie) ? 0 : Math.round(ie * 1000) / 1000
+  };
+
+  await DB.addEvent(app.currentSid, ev);
+
+  const events = await DB.getEvents(app.currentSid);
+  const ciclos = events.filter(e => e.tipo === 'INHALA').length;
+  const apneas = events.filter(e => e.tipo.startsWith('APNEA')).length;
+  await DB.updateSession(app.currentSid, { total_ciclos: ciclos, total_apneas: apneas });
+
+  app.liveEvents.unshift(ev);
+  if (app.liveEvents.length > 100) app.liveEvents.pop();
+  recomputeLiveStats(events, null, null);
+
+  if (tipo === 'APNEA_PATOL') triggerApneaAlert();
+
+  updateLiveUI();
+  if (document.getElementById('panel-sessions').classList.contains('active')) renderSessionList();
 }
 
-// ════════════════════════════════════════════════════════════════
-//  STATS — solo promedios, el ESP calculó todo lo demás
-// ════════════════════════════════════════════════════════════════
-function recomputeLiveStats(events) {
-  const ciclos = events
-    .filter(e => e.tipo === 'CICLO' || e.tipo === 'INHALA')
-    .map(normalizarCiclo)
-    .filter(c => c.ti_s > 0);
-  if (!ciclos.length) { app.liveStats = null; return; }
+function updateLiveUI() {
+  const statsEl  = document.getElementById('liveStats');
+  const barsEl   = document.getElementById('liveBars');
+  const streamEl = document.getElementById('liveStream');
+  const cntEl    = document.getElementById('liveEvBadge');
+  if (statsEl && barsEl && streamEl) {
+    statsEl.innerHTML  = buildStatsHTML(app.liveStats);
+    barsEl.innerHTML   = buildBarsHTML(app.liveStats);
+    streamEl.innerHTML = buildStreamHTML();
+    if (cntEl) cntEl.textContent = app.liveEvents.length;
+  } else {
+    renderLivePanel();
+  }
+}
 
-  const avg = arr => arr.length ? arr.reduce((s,v)=>s+v,0)/arr.length : null;
+// ══════════════════════════════════════════════════
+//  SESSION MANAGEMENT
+// ══════════════════════════════════════════════════
+async function createSession() {
+  const id  = await DB.nextSessionId();
+  const now = new Date();
+  const ts  = now.toLocaleDateString('es',{day:'2-digit',month:'2-digit',year:'numeric'}) + ' '
+             + now.toLocaleTimeString('es',{hour12:false,hour:'2-digit',minute:'2-digit'});
+  const ses = { id, paciente:'', notas:'', inicio:ts, fin:null, total_ciclos:0, total_apneas:0 };
+  await DB.createSession(ses);
+  cache.sessions = null;
+  return id;
+}
 
-  const avg_ti        = avg(ciclos.map(c => c.ti_s));
-  const avg_te        = avg(ciclos.map(c => c.te_s));
-  const avg_ie        = avg(ciclos.map(c => c.ie));
-  const avg_rpm_ciclo = avg(ciclos.map(c => c.rpm_ciclo));
-  const avg_rpm_activo= avg(ciclos.map(c => c.rpm_activo));
+async function closeCurrentSession() {
+  const sid = app.currentSid;
+  if (sid === null) return;
+  const now = new Date();
+  const ts  = now.toLocaleDateString('es',{day:'2-digit',month:'2-digit',year:'numeric'}) + ' '
+             + now.toLocaleTimeString('es',{hour12:false,hour:'2-digit',minute:'2-digit'});
+  const evs = await DB.getEvents(sid);
+  const ciclos = evs.filter(e => e.tipo === 'INHALA').length;
+  const apneas = evs.filter(e => e.tipo.startsWith('APNEA')).length;
+  await DB.updateSession(sid, { fin: ts, total_ciclos: ciclos, total_apneas: apneas });
+  app.currentSid = null;
+  renderSessionList();
+}
 
-  // Pausas: solo ciclos con pausa real (>0)
-  const pausas = ciclos.filter(c => c.pausa_s > 0).map(c => c.pausa_s);
-  const avg_pausa = avg(pausas);
+function recomputeLiveStats(events, rpmActivoEsp, rpmCicloEsp) {
+  const inhales  = events.filter(e => e.tipo === 'INHALA');
+  const exhales  = events.filter(e => e.tipo === 'EXHALA');
+  const apneas   = events.filter(e => e.tipo.startsWith('APNEA'));
+  const metas    = events.filter(e => e.tipo === 'CICLO_META');
 
-  // Apneas
-  const apneas = ciclos.filter(c => c.apnea_tipo && c.apnea_tipo !== 'NONE');
-  const avg_ap = avg(apneas.map(c => c.apnea_s));
-  const max_ap = apneas.length ? Math.max(...apneas.map(c => c.apnea_s)) : null;
+  const avg = arr => arr.length ? arr.reduce((s,e)=>s+e.valor_s,0)/arr.length : 0;
+  const max = arr => arr.length ? Math.max(...arr.map(e=>e.valor_s)) : 0;
+
+  const avgTi = avg(inhales);
+  const avgTe = avg(exhales);
+  const avgAp = avg(apneas);
+  const maxAp = max(apneas);
+
+  const ieVals = events.filter(e=>e.ie_ratio>0 && e.tipo==='INHALA').map(e=>e.ie_ratio);
+  const avgIe  = ieVals.length ? ieVals.reduce((s,v)=>s+v,0)/ieVals.length : 0;
+
+  // RPM: usar los valores más recientes enviados por la ESP (fuente de verdad)
+  // Si no hay aún (primer ciclo), mostrar '—'
+  let rpmActivo = '—', rpmCiclo = '—';
+  if (rpmActivoEsp != null && !isNaN(rpmActivoEsp)) {
+    rpmActivo = rpmActivoEsp.toFixed(1);
+  } else if (app.liveStats.rpmActivo && app.liveStats.rpmActivo !== '—') {
+    rpmActivo = app.liveStats.rpmActivo; // mantener el último
+  }
+  if (rpmCicloEsp != null && !isNaN(rpmCicloEsp)) {
+    rpmCiclo = rpmCicloEsp.toFixed(1);
+  } else if (app.liveStats.rpmCiclo && app.liveStats.rpmCiclo !== '—') {
+    rpmCiclo = app.liveStats.rpmCiclo;
+  }
+
+  // Pausa promedio (desde CICLO_META: valor_s = pausa_s)
+  const avgPausa = metas.length ? avg(metas) : null;
+
+  // bpm legacy = rpmCiclo (para compatibilidad con el resto del código)
+  const bpm = rpmCiclo;
 
   app.liveStats = {
-    n_ciclos:     ciclos.length,
-    n_apneas:     apneas.length,
-    avg_ti:       avg_ti  != null ? +avg_ti.toFixed(2)  : null,
-    avg_te:       avg_te  != null ? +avg_te.toFixed(2)  : null,
-    avg_ie:       avg_ie  != null ? +avg_ie.toFixed(2)  : null,
-    avg_rpm_ciclo:avg_rpm_ciclo != null ? +avg_rpm_ciclo.toFixed(1) : null,
-    avg_rpm_activo:avg_rpm_activo != null ? +avg_rpm_activo.toFixed(1) : null,
-    avg_pausa:    avg_pausa != null ? +avg_pausa.toFixed(1) : null,
-    avg_ap:       avg_ap  != null ? +avg_ap.toFixed(1)  : null,
-    max_ap:       max_ap  != null ? +max_ap.toFixed(1)  : null,
-    // Último ciclo para display inmediato
-    last_rpm_ciclo:  ciclos[0]?.rpm_ciclo  ?? null,
-    last_rpm_activo: ciclos[0]?.rpm_activo ?? null,
+    ciclos:    inhales.length,
+    apneas:    apneas.length,
+    avgTi:     avgTi ? avgTi.toFixed(2) : '—',
+    avgTe:     avgTe ? avgTe.toFixed(2) : '—',
+    avgIe:     avgIe ? avgIe.toFixed(2) : '—',
+    avgAp:     avgAp ? avgAp.toFixed(1) : null,
+    maxAp:     maxAp ? maxAp.toFixed(1) : null,
+    avgPausa:  avgPausa ? avgPausa.toFixed(1) : null,
+    rpmActivo,
+    rpmCiclo,
+    bpm,
   };
 }
 
-// ── Normaliza un evento al formato nuevo independientemente de su origen ──
-// Formato nuevo:  { tipo:'CICLO', ti_s, te_s, pausa_s, rpm_activo, rpm_ciclo, ie, apnea_tipo, apnea_s }
-// Formato legacy: { tipo:'CICLO'|'INHALA', valor_s, ie_ratio }  ← firmware viejo
-function normalizarCiclo(e) {
-  // Ya tiene formato nuevo — solo verificar que los campos no sean undefined/NaN
-  if (e.ti_s != null && !isNaN(e.ti_s)) {
-    return {
-      ...e,
-      ti_s:       +e.ti_s       || 0,
-      te_s:       +e.te_s       || 0,
-      pausa_s:    +e.pausa_s    || 0,
-      rpm_activo: +e.rpm_activo || 0,
-      rpm_ciclo:  +e.rpm_ciclo  || 0,
-      ie:         +e.ie         || 0,
-      apnea_tipo: e.apnea_tipo  || 'NONE',
-      apnea_s:    +e.apnea_s    || 0,
-    };
-  }
-  // Formato legacy: tipo INHALA/EXHALA/CICLO con solo valor_s e ie_ratio
-  // valor_s = ti_s (se guardaba el Ti en valor_s)
-  // ie_ratio = ie
-  // No tenemos Te — estimamos Te = Ti * ie (ie = Te/Ti)
-  const ti  = +e.valor_s  || 0;
-  const ie  = +e.ie_ratio || 0;
-  const te  = ie > 0 ? +(ti * ie).toFixed(2) : 0;
-  const rpm = (ti + te) > 0 ? +(60 / (ti + te)).toFixed(1) : 0;
-  return {
-    ...e,
-    tipo:       'CICLO',
-    ti_s:       ti,
-    te_s:       te,
-    pausa_s:    0,
-    rpm_activo: rpm,
-    rpm_ciclo:  rpm,
-    ie:         ie,
-    apnea_tipo: 'NONE',
-    apnea_s:    0,
-    _legacy:    true,   // marcar para debug
-  };
-}
-
-// La misma función usada para el sheet de detalle de sesión
 function computeStatsFromEvents(events) {
-  // Normalizar todos los eventos antes de calcular
-  const ciclos = events
-    .filter(e => e.tipo === 'CICLO' || e.tipo === 'INHALA')
-    .map(normalizarCiclo)
-    .filter(c => c.ti_s > 0);
-  if (!ciclos.length) return null;
+  const inhales = events.filter(e=>e.tipo==='INHALA');
+  const exhales = events.filter(e=>e.tipo==='EXHALA');
+  const apneas  = events.filter(e=>e.tipo.startsWith('APNEA'));
+  const metas   = events.filter(e=>e.tipo==='CICLO_META');
 
-  const avg = arr => arr.length ? arr.reduce((s,v)=>s+v,0)/arr.length : null;
+  const avg = arr => arr.length ? arr.reduce((s,e)=>s+e.valor_s,0)/arr.length : null;
+  const max = arr => arr.length ? Math.max(...arr.map(e=>e.valor_s)) : null;
+  const ieVals = inhales.filter(e=>e.ie_ratio>0).map(e=>e.ie_ratio);
 
-  const apneas   = ciclos.filter(c => c.apnea_tipo && c.apnea_tipo !== 'NONE');
-  const n_terap  = ciclos.filter(c => c.apnea_tipo === 'TERAP').length;
-  const n_patol  = ciclos.filter(c => c.apnea_tipo === 'PATOL').length;
-  const pausas   = ciclos.filter(c => c.pausa_s > 0).map(c => c.pausa_s);
+  // RPM ciclo completo: promedio de los rpm_ciclo guardados en ie_ratio de CICLO_META
+  const rpmCicloVals = metas.filter(e=>e.ie_ratio>0).map(e=>e.ie_ratio);
+  const avg_rpm_ciclo = rpmCicloVals.length
+    ? +(rpmCicloVals.reduce((s,v)=>s+v,0)/rpmCicloVals.length).toFixed(1)
+    : null;
+
+  // RPM ventilatorio activo: 60/(avgTi+avgTe) — solo tiempo respirando
+  const avgTi = avg(inhales);
+  const avgTe = avg(exhales);
+  const avg_rpm_activo = (avgTi && avgTe)
+    ? +(60/(avgTi+avgTe)).toFixed(1)
+    : null;
+
+  // Pausa promedio
+  const avg_pausa = avg(metas) != null ? +avg(metas).toFixed(1) : null;
 
   return {
-    n_ciclos:      ciclos.length,
-    n_apneas:      apneas.length,
-    n_terap,
-    n_patol,
-    avg_ti:        avg(ciclos.map(c=>c.ti_s))       != null ? +avg(ciclos.map(c=>c.ti_s)).toFixed(2)       : null,
-    avg_te:        avg(ciclos.map(c=>c.te_s))       != null ? +avg(ciclos.map(c=>c.te_s)).toFixed(2)       : null,
-    avg_ie:        avg(ciclos.map(c=>c.ie))         != null ? +avg(ciclos.map(c=>c.ie)).toFixed(2)         : null,
-    avg_rpm_ciclo: avg(ciclos.map(c=>c.rpm_ciclo))  != null ? +avg(ciclos.map(c=>c.rpm_ciclo)).toFixed(1)  : null,
-    avg_rpm_activo:avg(ciclos.map(c=>c.rpm_activo)) != null ? +avg(ciclos.map(c=>c.rpm_activo)).toFixed(1) : null,
-    avg_pausa:     avg(pausas)                      != null ? +avg(pausas).toFixed(1)                      : null,
-    avg_ap:        avg(apneas.map(c=>c.apnea_s))    != null ? +avg(apneas.map(c=>c.apnea_s)).toFixed(1)    : null,
-    max_ap:        apneas.length ? +Math.max(...apneas.map(c=>c.apnea_s)).toFixed(1) : null,
+    avg_ti:       avgTi != null ? +avgTi.toFixed(2) : null,
+    avg_te:       avgTe != null ? +avgTe.toFixed(2) : null,
+    avg_ap:       avg(apneas) != null ? +avg(apneas).toFixed(1) : null,
+    max_ap:       max(apneas) != null ? +max(apneas).toFixed(1) : null,
+    avg_ie:       ieVals.length ? +(ieVals.reduce((s,v)=>s+v,0)/ieVals.length).toFixed(2) : null,
+    n_terap:      events.filter(e=>e.tipo==='APNEA_TERAP').length,
+    n_patol:      events.filter(e=>e.tipo==='APNEA_PATOL').length,
+    avg_rpm_ciclo,
+    avg_rpm_activo,
+    avg_pausa,
   };
 }
 
-// ════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  DEFINICIÓN DE EJERCICIOS Y RANGOS CLÍNICOS
-// ════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 const EJERCICIOS = {
-  1: { nombre:'Apnea controlada en sedestación',      objetivo:'Tolerancia a hipercapnia y control ventilatorio',
-       rangos:{ ti:{min:1.5,max:4.0,label:'Inhal. profunda',unidad:'s'}, te:{min:2.0,max:6.0,label:'Espir. lenta ~4s',unidad:'s'}, apnea:{min:3.0,max:8.0,label:'Apnea objetivo',unidad:'s'}, rpm:null, ie:null }, nota:'RPM no aplica — apneas alargan el ciclo por diseño.' },
-  2: { nombre:'Ventilación dirigida diafragmática',   objetivo:'Reclutamiento basal y patrón diafragmático',
-       rangos:{ ti:{min:2.5,max:5.0,label:'Inhal. diafragmática',unidad:'s'}, te:{min:3.5,max:7.0,label:'Espir. labios fruncidos',unidad:'s'}, apnea:null, rpm:{min:6.0,max:10.0,label:'Cadencia lenta',unidad:'rpm'}, ie:{min:0.5,max:1.2,label:'Rel. I:E',unidad:''} }, nota:'RPM >12 indica respiración apresurada.' },
-  3: { nombre:'Apnea intermitente con control postural', objetivo:'Musculatura inspiratoria y tolerancia al esfuerzo',
-       rangos:{ ti:{min:2.0,max:5.0,label:'Inhal. profunda',unidad:'s'}, te:{min:2.0,max:5.0,label:'Espir. activa',unidad:'s'}, apnea:{min:6.0,max:8.0,label:'Apnea objetivo',unidad:'s'}, rpm:null, ie:null }, nota:'Apnea más larga que Ej.1. Postura trípode.' },
-  4: { nombre:'Respiración fraccionada inspiratoria',  objetivo:'Capacidad inspiratoria y control motor respiratorio',
-       rangos:{ ti:{min:3.0,max:8.0,label:'Inhal. fraccionada (3t)',unidad:'s'}, te:{min:3.0,max:6.0,label:'Espir. continua',unidad:'s'}, apnea:null, rpm:{min:5.0,max:9.0,label:'Cadencia',unidad:'rpm'}, ie:null }, nota:'Ti largo esperado por los 3 tiempos fraccionados.' },
-  5: { nombre:'Respiración fraccionada espiratoria',   objetivo:'Vaciamiento pulmonar (atrapamiento aéreo)',
-       rangos:{ ti:{min:2.0,max:4.5,label:'Inhal. profunda',unidad:'s'}, te:{min:4.0,max:10.0,label:'Espir. en fases',unidad:'s'}, apnea:null, rpm:{min:4.0,max:8.0,label:'Cadencia',unidad:'rpm'}, ie:{min:1.2,max:3.5,label:'I:E (Te > Ti)',unidad:''} }, nota:'Te elevado es positivo. I:E >1 es el objetivo.' },
-  6: { nombre:'Apnea con contracción glótica',         objetivo:'Músculos inspiratorios y coordinación glótica',
-       rangos:{ ti:{min:1.5,max:4.0,label:'Inhal.',unidad:'s'}, te:{min:2.5,max:5.0,label:'Espir. controlada',unidad:'s'}, apnea:{min:6.0,max:8.0,label:'Apnea glótica',unidad:'s'}, rpm:null, ie:null }, nota:'Apnea con cierre glótico es el parámetro clave.' },
-  7: { nombre:'Respiración con resistencia espiratoria', objetivo:'Fortalecer músculos espiratorios',
-       rangos:{ ti:{min:1.5,max:3.5,label:'Inhal. por nariz',unidad:'s'}, te:{min:4.0,max:15.0,label:'Espir. contra resistencia',unidad:'s'}, apnea:null, rpm:{min:3.0,max:8.0,label:'Cadencia',unidad:'rpm'}, ie:{min:1.5,max:8.0,label:'I:E (Te largo)',unidad:''} }, nota:'Te largo es el objetivo. En EPOC puede llegar a 15s.' },
-  8: { nombre:'Apnea alternada con respiración rítmica', objetivo:'Tolerancia respiratoria y capacidad vital',
-       rangos:{ ti:{min:2.0,max:5.0,label:'Inhal. profunda',unidad:'s'}, te:{min:2.0,max:5.0,label:'Espir. controlada',unidad:'s'}, apnea:{min:4.0,max:12.0,label:'Apnea máxima voluntaria',unidad:'s'}, rpm:null, ie:null }, nota:'Apnea máxima voluntaria. 3 respir → apnea → 3 respir.' },
+  1: {
+    nombre: 'Apnea controlada en sedestación',
+    objetivo: 'Mejorar tolerancia a la hipercapnia y control ventilatorio',
+    rangos: {
+      ti:    { min:1.5, max:4.0,  label:'Inhal. profunda',           unidad:'s' },
+      te:    { min:3.5, max:5.0,  label:'Espir. lenta ~4s',          unidad:'s' },
+      apnea: { min:3.0, max:8.0,  label:'Apnea objetivo',            unidad:'s' },
+      rpm:   null,
+      ie:    null,
+    },
+    nota: 'RPM no aplicable: las apneas alargan el ciclo por diseño.'
+  },
+  2: {
+    nombre: 'Ventilación dirigida diafragmática',
+    objetivo: 'Reclutamiento basal y patrón diafragmático',
+    rangos: {
+      ti:    { min:2.5, max:5.0,  label:'Inhal. diafragmática',      unidad:'s' },
+      te:    { min:3.5, max:7.0,  label:'Espir. labios fruncidos',   unidad:'s' },
+      apnea: null,
+      rpm:   { min:6.0, max:10.0, label:'Cadencia lenta',            unidad:'rpm' },
+      ie:    { min:0.5, max:1.2,  label:'Rel. I:E',                  unidad:'' },
+    },
+    nota: 'RPM >12 indica respiración apresurada.'
+  },
+  3: {
+    nombre: 'Apnea intermitente con control postural',
+    objetivo: 'Entrenar musculatura inspiratoria y tolerancia al esfuerzo',
+    rangos: {
+      ti:    { min:2.0, max:5.0,  label:'Inhal. profunda',           unidad:'s' },
+      te:    { min:2.0, max:5.0,  label:'Espir. activa',             unidad:'s' },
+      apnea: { min:6.0, max:8.0,  label:'Apnea objetivo',            unidad:'s' },
+      rpm:   null,
+      ie:    null,
+    },
+    nota: 'Apnea más larga que Ej. 1. Observar tolerancia postural.'
+  },
+  4: {
+    nombre: 'Respiración fraccionada inspiratoria',
+    objetivo: 'Mejorar capacidad inspiratoria y control motor respiratorio',
+    rangos: {
+      ti:    { min:3.0, max:7.0,  label:'Inhal. fraccionada (3t)',   unidad:'s' },
+      te:    { min:3.0, max:6.0,  label:'Espir. continua',           unidad:'s' },
+      apnea: null,
+      rpm:   { min:5.0, max:9.0,  label:'Cadencia',                  unidad:'rpm' },
+      ie:    null,
+    },
+    nota: 'Ti largo por los 3 tiempos fraccionados. Normal >Ej. 2.'
+  },
+  5: {
+    nombre: 'Respiración fraccionada espiratoria',
+    objetivo: 'Favorecer vaciamiento pulmonar (atrapamiento aéreo)',
+    rangos: {
+      ti:    { min:2.0, max:4.5,  label:'Inhal. profunda',           unidad:'s' },
+      te:    { min:4.0, max:9.0,  label:'Espir. en fases',           unidad:'s' },
+      apnea: null,
+      rpm:   { min:4.0, max:8.0,  label:'Cadencia',                  unidad:'rpm' },
+      ie:    { min:1.2, max:3.5,  label:'Rel. I:E (Te > Ti)',        unidad:'' },
+    },
+    nota: 'Te elevado es positivo. I:E >1 es el objetivo terapéutico.'
+  },
+  6: {
+    nombre: 'Apnea con contracción glótica',
+    objetivo: 'Entrenar músculos inspiratorios y coordinación glótica',
+    rangos: {
+      ti:    { min:1.5, max:4.0,  label:'Inhal.',                    unidad:'s' },
+      te:    { min:2.5, max:5.0,  label:'Espir. controlada',         unidad:'s' },
+      apnea: { min:6.0, max:8.0,  label:'Apnea glótica',             unidad:'s' },
+      rpm:   null,
+      ie:    null,
+    },
+    nota: 'La apnea con cierre glótico es el parámetro clave.'
+  },
+  7: {
+    nombre: 'Respiración con resistencia espiratoria',
+    objetivo: 'Fortalecer músculos espiratorios',
+    rangos: {
+      ti:    { min:1.5, max:3.5,  label:'Inhal. por nariz',          unidad:'s' },
+      te:    { min:4.0, max:10.0, label:'Espir. contra resistencia', unidad:'s' },
+      apnea: null,
+      rpm:   { min:4.0, max:8.0,  label:'Cadencia',                  unidad:'rpm' },
+      ie:    { min:1.5, max:5.0,  label:'Rel. I:E (Te largo)',       unidad:'' },
+    },
+    nota: 'Te largo es el objetivo. En EPOC puede llegar a 10s o más.'
+  },
+  8: {
+    nombre: 'Apnea alternada con respiración rítmica',
+    objetivo: 'Entrenar tolerancia respiratoria y capacidad vital',
+    rangos: {
+      ti:    { min:2.0, max:5.0,  label:'Inhal. profunda',           unidad:'s' },
+      te:    { min:2.0, max:5.0,  label:'Espir. controlada',         unidad:'s' },
+      apnea: { min:4.0, max:10.0, label:'Apnea máxima voluntaria',   unidad:'s' },
+      rpm:   null,
+      ie:    null,
+    },
+    nota: 'Apnea máxima voluntaria. Progresión: reducir respiraciones previas.'
+  },
 };
 
 function evalRango(val, rango) {
   if (!rango || val == null) return '';
-  const margen = (rango.max - rango.min) * 0.20;
-  if (val >= rango.min && val <= rango.max) return 'ok';
-  if (val >= rango.min - margen && val <= rango.max + margen) return 'warn';
+  const { min, max } = rango;
+  if (val >= min && val <= max) return 'ok';
+  const margen = (max - min) * 0.20;
+  if (val >= min - margen && val <= max + margen) return 'warn';
   return 'bad';
 }
 
 function parseSessionMeta(s) {
-  try { if (s.notas?.startsWith('{')) return JSON.parse(s.notas); } catch(e) {}
+  try {
+    if (s.notas && s.notas.startsWith('{')) return JSON.parse(s.notas);
+  } catch(e) {}
   return { ej: 0, notas: s.notas || '' };
 }
+
 function serializeSessionMeta(ej, notas) {
   if (!ej || ej === '0') return notas;
   return JSON.stringify({ ej: parseInt(ej), notas });
 }
 
-// ════════════════════════════════════════════════════════════════
-//  BLE UI
-// ════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+//  BLE UI HELPERS
+// ══════════════════════════════════════════════════
 function setBLEUI(status, name) {
   const btn = document.getElementById('bleBtn');
   const dot = document.getElementById('dot');
   const txt = document.getElementById('bleStatus');
-  btn.className = 'ble-btn'; dot.className = 'dot';
-  if (status === 'connecting') { btn.classList.add('connecting'); dot.classList.add('warn'); txt.textContent = 'Conectando...'; }
-  else if (status === 'connected') { btn.classList.add('connected'); dot.classList.add('on'); txt.textContent = name || 'Conectado'; }
-  else { txt.textContent = 'Conectar'; }
+  btn.className = 'ble-btn';
+  dot.className = 'dot';
+  if (status === 'connecting') {
+    btn.classList.add('connecting'); dot.classList.add('warn');
+    txt.textContent = 'Conectando...';
+  } else if (status === 'connected') {
+    btn.classList.add('connected'); dot.classList.add('on');
+    txt.textContent = name || 'Conectado';
+  } else {
+    txt.textContent = 'Conectar';
+  }
 }
 
-// ════════════════════════════════════════════════════════════════
-//  TABS
-// ════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+//  TAB NAVIGATION
+// ══════════════════════════════════════════════════
 function switchTab(name) {
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -837,98 +928,65 @@ function switchTab(name) {
   if (name === 'sessions') renderSessionList();
 }
 
-// ════════════════════════════════════════════════════════════════
-//  SESSION MANAGEMENT
-// ════════════════════════════════════════════════════════════════
-async function createSession() {
-  const id  = await DB.nextSessionId();
-  const now = new Date();
-  const ts  = now.toLocaleDateString('es',{day:'2-digit',month:'2-digit',year:'numeric'})
-            + ' ' + now.toLocaleTimeString('es',{hour12:false,hour:'2-digit',minute:'2-digit'});
-  const ejDef = EJERCICIOS[app.modoEj];
-  const notas = app.modoEj ? JSON.stringify({ ej: app.modoEj, notas: '' }) : '';
-  await DB.createSession({ id, paciente:'', notas, inicio:ts, fin:null, total_ciclos:0, total_apneas:0 });
-  cache.sessions = null;
-  return id;
-}
-
-async function closeCurrentSession() {
-  const sid = app.currentSid;
-  if (sid === null) return;
-  const now = new Date();
-  const ts  = now.toLocaleDateString('es',{day:'2-digit',month:'2-digit',year:'numeric'})
-            + ' ' + now.toLocaleTimeString('es',{hour12:false,hour:'2-digit',minute:'2-digit'});
-  const evs = await DB.getEvents(sid);
-  const ciclos = evs.filter(e=>e.tipo==='CICLO'||e.tipo==='INHALA').length;
-  const apneas = evs.filter(e=>e.tipo==='CICLO' && e.apnea_tipo && e.apnea_tipo!=='NONE').length;
-  await DB.updateSession(sid, { fin:ts, total_ciclos:ciclos, total_apneas:apneas });
-  app.currentSid = null;
-  renderSessionList();
-}
-
-// ════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  SESSIONS LIST
-// ════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 async function renderSessionList() {
   const sessions = await DB.getSessions();
   const q = app.searchQuery.toLowerCase();
   const list = q ? sessions.filter(s=>(s.paciente||'').toLowerCase().includes(q)) : sessions;
-  document.getElementById('sesCount').textContent = list.length + ' sesión' + (list.length!==1?'es':'');
+
+  document.getElementById('sesCount').textContent =
+    list.length + ' sesión' + (list.length!==1?'es':'');
+
   const el = document.getElementById('sesList');
   if (!list.length) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-icon">🫁</div>
-      <div class="empty-title">${q?'Sin resultados':'Sin sesiones aún'}</div>
-      <div class="empty-sub">${q?'Probá con otro nombre':'Conectá el ESP32 para<br>empezar a monitorear'}</div></div>`;
+    el.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🫁</div>
+        <div class="empty-title">${q ? 'Sin resultados' : 'Sin sesiones aún'}</div>
+        <div class="empty-sub">${q ? 'Probá con otro nombre' : 'Conectá el ESP32 para<br>empezar a monitorear'}</div>
+      </div>`;
     return;
   }
   el.innerHTML = list.map(s => {
     const meta = parseSessionMeta(s);
     const ejNum = meta.ej || 0;
     const ejDef = EJERCICIOS[ejNum];
-    return `<div class="si-item" onclick="openSheet(${s.id})">
+    return `
+    <div class="si-item" onclick="openSheet(${s.id})">
       <div class="si-top">
         <span class="si-id">#${s.id}</span>
-        ${!s.fin?'<span class="pill live"><span class="pd"></span>EN VIVO</span>':''}
-        ${ejDef?`<span class="pill ej">Ej.${ejNum}</span>`:''}
-        ${s.total_apneas>0?`<span class="pill apnea">⚠ ${s.total_apneas}</span>`:''}
+        ${!s.fin ? '<span class="pill live"><span class="pd"></span>EN VIVO</span>' : ''}
+        ${ejDef ? `<span class="pill ej">Ej.${ejNum}</span>` : ''}
+        ${s.total_apneas > 0 ? `<span class="pill apnea">⚠ ${s.total_apneas}</span>` : ''}
       </div>
       <div class="si-name ${!s.paciente?'empty':''}">${s.paciente||'Sin asignar'}</div>
       <div class="si-meta">${s.inicio||'—'} · ${s.total_ciclos} ciclos${ejDef?' · '+ejDef.nombre.split(' ').slice(0,3).join(' ')+'…':''}</div>
-    </div>`;
-  }).join('');
+    </div>
+  `}).join('');
 }
 
 let searchTimer;
 function onSearch(v) {
   clearTimeout(searchTimer);
-  searchTimer = setTimeout(()=>{ app.searchQuery=v; renderSessionList(); }, 250);
+  searchTimer = setTimeout(() => { app.searchQuery = v; renderSessionList(); }, 250);
 }
 
-// ════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  LIVE PANEL
-// ════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 async function renderLivePanel() {
   const el = document.getElementById('livePanel');
   if (!el) return;
-
-  // Opciones del selector de ejercicio
-  const ejOpts = `<option value="0">— Sin ejercicio —</option>`
-    + Object.entries(EJERCICIOS).map(([k,v])=>`<option value="${k}" ${app.modoEj==k?'selected':''}>${k}. ${v.nombre}</option>`).join('');
 
   if (!app.connected && app.currentSid === null) {
     el.innerHTML = `
       <div class="connect-card">
         <div class="cc-icon">📡</div>
         <div class="cc-title">Sin dispositivo</div>
-        <div class="cc-sub">Conectá el <strong style="color:var(--txt)">RespMonitor</strong><br>para comenzar</div>
+        <div class="cc-sub">Conectá el ESP32 <strong style="color:var(--txt)">"RespMonitor"</strong><br>para comenzar a monitorear en tiempo real</div>
         <button class="big-btn cyan" onclick="connectBLE()">Conectar por BLE</button>
-      </div>
-      <div class="ej-selector">
-        <div class="ej-sel-title">Ejercicio a realizar</div>
-        <div class="ej-sel-row">
-          <select id="ejPreSelect" onchange="preSelectEj(this.value)">${ejOpts}</select>
-        </div>
-        <div class="ej-desc ${app.modoEj?'show':''}" id="ejPreDesc">${app.modoEj&&EJERCICIOS[app.modoEj]?'🎯 '+EJERCICIOS[app.modoEj].objetivo:''}</div>
       </div>`;
     return;
   }
@@ -938,22 +996,15 @@ async function renderLivePanel() {
       <div class="connect-card">
         <div class="cc-icon" style="animation:blink 1.5s infinite">🫁</div>
         <div class="cc-title" style="color:var(--cyan)">Conectado</div>
-        <div class="cc-sub">Calibrando... (~8 segundos)</div>
+        <div class="cc-sub">Esperando que el ESP32 termine<br>la calibración (~8 segundos)...</div>
         <button class="big-btn red" onclick="disconnectBLE()">Desconectar</button>
-      </div>
-      <div class="ej-selector">
-        <div class="ej-sel-title">Ejercicio</div>
-        <div class="ej-sel-row">
-          <select id="ejLiveSelect">${ejOpts}</select>
-          <button class="ej-apply-btn" onclick="applyEjLive()">Aplicar</button>
-        </div>
       </div>`;
     return;
   }
 
   const sessions = await DB.getSessions();
-  const ses = sessions.find(s=>s.id===app.currentSid);
-  const s   = app.liveStats;
+  const ses = sessions.find(s => s.id === app.currentSid);
+  const s = app.liveStats;
 
   el.innerHTML = `
     <div class="live-hd">
@@ -961,25 +1012,13 @@ async function renderLivePanel() {
         <div class="live-ses-tag">SES #${app.currentSid} · ${app.connected?'<span style="color:var(--cyan)">EN VIVO</span>':'FINALIZADA'}</div>
         <div class="live-name ${ses?.paciente?'':'empty'}">${ses?.paciente||'Sin paciente asignado'}</div>
       </div>
-      ${app.connected?`<button class="big-btn red" style="font-size:11px;padding:7px 12px;flex-shrink:0" onclick="disconnectBLE()">Detener</button>`:''}
+      ${app.connected ? `<button class="big-btn red" style="font-size:11px;padding:7px 12px;flex-shrink:0" onclick="disconnectBLE()">Desconectar</button>` : ''}
     </div>
-
-    <div class="ej-selector">
-      <div class="ej-sel-title">Ejercicio activo</div>
-      <div class="ej-sel-row">
-        <select id="ejLiveSelect">${ejOpts}</select>
-        <button class="ej-apply-btn" onclick="applyEjLive()">Aplicar al ESP</button>
-      </div>
-      ${app.modoEj&&EJERCICIOS[app.modoEj]?`<div class="ej-desc show">🎯 ${EJERCICIOS[app.modoEj].objetivo}${EJERCICIOS[app.modoEj].nota?'<br>ℹ '+EJERCICIOS[app.modoEj].nota:''}</div>`:''}
-    </div>
-
-    <div id="pausaControls"></div>
 
     <div class="stats-grid" id="liveStats">
-      ${s ? buildStatsHTML(s) : '<div style="grid-column:1/-1;text-align:center;font-family:var(--mono);font-size:10px;color:var(--txt3);padding:20px">Esperando ciclos...</div>'}
+      ${buildStatsHTML(s)}
     </div>
 
-    ${s ? `
     <div class="section">
       <div class="sechd"><div class="sectitle">Distribución de tiempos</div></div>
       <div id="liveBars">${buildBarsHTML(s)}</div>
@@ -987,183 +1026,154 @@ async function renderLivePanel() {
 
     <div class="section">
       <div class="sechd">
-        <div class="sectitle">Ciclos recibidos</div>
-        <div class="badge ${s.n_apneas>0?'r':'c'}" id="liveCnt">${app.liveCiclos.length}</div>
+        <div class="sectitle">Últimos eventos</div>
+        <div class="badge c" id="liveEvBadge">${app.liveEvents.length}</div>
       </div>
       <div class="ev-stream" id="liveStream">${buildStreamHTML()}</div>
-    </div>` : ''}
+    </div>
   `;
-
-  renderPausaBtn();
-}
-
-function preSelectEj(val) {
-  app.modoEj = parseInt(val) || 0;
-  const desc = document.getElementById('ejPreDesc');
-  if (desc) {
-    const ej = EJERCICIOS[app.modoEj];
-    desc.textContent = ej ? '🎯 ' + ej.objetivo : '';
-    desc.classList.toggle('show', !!ej);
-  }
-}
-
-async function applyEjLive() {
-  const sel = document.getElementById('ejLiveSelect');
-  if (!sel) return;
-  const ej = parseInt(sel.value) || 0;
-  app.modoEj = ej;
-  await enviarEjercicio(ej);
-  // Feedback visual
-  const btn = sel.nextElementSibling;
-  if (btn) { btn.textContent = '✓ Aplicado'; setTimeout(()=>{ btn.textContent='Aplicar al ESP'; },1500); }
-  renderLivePanel();
-}
-
-function updateLiveUI() {
-  const statsEl  = document.getElementById('liveStats');
-  const barsEl   = document.getElementById('liveBars');
-  const streamEl = document.getElementById('liveStream');
-  const cntEl    = document.getElementById('liveCnt');
-  const s = app.liveStats;
-  if (statsEl && s) statsEl.innerHTML  = buildStatsHTML(s);
-  if (barsEl  && s) barsEl.innerHTML   = buildBarsHTML(s);
-  if (streamEl)     streamEl.innerHTML = buildStreamHTML();
-  if (cntEl)        cntEl.textContent  = app.liveCiclos.length;
-  if (!statsEl) renderLivePanel();
 }
 
 function buildStatsHTML(s) {
-  const ejDef = EJERCICIOS[app.modoEj];
-  const rpmVal = s.avg_rpm_ciclo ?? s.avg_rpm_activo;
-  const rpmRango = ejDef?.rangos?.rpm;
-  const rpmEstado = rpmRango ? evalRango(rpmVal, rpmRango) : '';
-
-  function sc(label, val, rango, unidad, sub) {
-    const est = ejDef && rango ? evalRango(val, rango) : '';
-    const valStr = val != null ? val : '—';
-    const below = rango && ejDef
-      ? `<div class="rango ${est}">${rango.min}–${rango.max} ${rango.unidad||unidad}</div>`
-      : `<div class="su">${sub||'&nbsp;'}</div>`;
-    return `<div class="stat ${est}"><div class="sl">${label}</div><div class="sv ${est}">${valStr}</div>${below}</div>`;
-  }
-
+  // Colorear RPM según rangos clínicos
+  const rpmColor = v => {
+    const n = parseFloat(v);
+    if (isNaN(n)) return '';
+    if (n < 10 || n > 28) return 'r';   // fuera de rango → rojo
+    if (n > 20) return 'b';             // zona de alerta → azul
+    return 'c';                         // normal → cyan
+  };
   return `
-    ${sc('Ciclos', s.n_ciclos, null, '', 'completados')}
-    <div class="stat ${rpmEstado}">
-      <div class="sl">RPM ciclo</div>
-      <div class="sv ${rpmEstado||'c'}">${rpmVal??'—'}</div>
-      <div class="${rpmRango&&ejDef?'rango '+rpmEstado:'su'}">${rpmRango&&ejDef?rpmRango.min+'–'+rpmRango.max+' rpm':'prom ciclo'}</div>
-    </div>
-    <div class="stat ${s.n_apneas>0?'bad':''}">
-      <div class="sl">Apneas</div>
-      <div class="sv ${s.n_apneas>0?'bad':''}">${s.n_apneas}</div>
-      <div class="su">${s.max_ap?'máx '+s.max_ap+' s':'sin eventos ✓'}</div>
-    </div>
-    ${sc('T. Inhal.', s.avg_ti, ejDef?.rangos?.ti, 's', 'seg prom')}
-    ${sc('T. Exhal.', s.avg_te, ejDef?.rangos?.te, 's', 'seg prom')}
-    ${sc('Rel. I:E', s.avg_ie!=null?'1:'+s.avg_ie:null, ejDef?.rangos?.ie, '', '')}
+    <div class="stat"><div class="sl">Ciclos</div><div class="sv c">${s.ciclos||0}</div><div class="su">completados</div></div>
+    <div class="stat"><div class="sl">RPM activo</div><div class="sv ${rpmColor(s.rpmActivo)}">${s.rpmActivo||'—'}</div><div class="su">sin pausas</div></div>
+    <div class="stat"><div class="sl">Apneas</div><div class="sv ${(s.apneas||0)>0?'r':''}">${s.apneas||0}</div><div class="su">${s.maxAp?'máx '+s.maxAp+'s':''}&nbsp;</div></div>
+    <div class="stat"><div class="sl">T. Inhal.</div><div class="sv">${s.avgTi||'—'}</div><div class="su">seg prom</div></div>
+    <div class="stat"><div class="sl">T. Exhal.</div><div class="sv c">${s.avgTe||'—'}</div><div class="su">seg prom</div></div>
+    <div class="stat"><div class="sl">Rel. I:E</div><div class="sv">${s.avgIe&&s.avgIe!=='—'?'1:'+s.avgIe:'—'}</div><div class="su">&nbsp;</div></div>
   `;
 }
 
 function buildBarsHTML(s) {
-  if (!s?.avg_ti && !s?.avg_te) return '<div class="no-apnea">Esperando datos...</div>';
-  const mx = Math.max(s.avg_ti||0, s.avg_te||0, s.avg_pausa||0, s.avg_ap||0, 0.1);
-  const pct = v => (((v||0)/mx)*100).toFixed(1)+'%';
+  const ti = parseFloat(s.avgTi) || 0;
+  const te = parseFloat(s.avgTe) || 0;
+  const ap = parseFloat(s.avgAp) || 0;
+  const pa = parseFloat(s.avgPausa) || 0;
+  if (!ti && !te) return '<div class="no-apnea">Esperando datos...</div>';
+  const mx = Math.max(ti, te, ap, pa, 0.1);
+  const pct = v => ((v/mx)*100).toFixed(1)+'%';
   return `<div class="bars">
-    ${s.avg_ti ?`<div class="br"><div class="bl">Inhalación</div><div class="bt"><div class="bf i" style="width:${pct(s.avg_ti)}"></div></div><div class="bv">${s.avg_ti} s</div></div>`:''}
-    ${s.avg_te ?`<div class="br"><div class="bl">Exhalación</div><div class="bt"><div class="bf e" style="width:${pct(s.avg_te)}"></div></div><div class="bv">${s.avg_te} s</div></div>`:''}
-    ${s.avg_pausa?`<div class="br"><div class="bl">Pausa prom</div><div class="bt"><div class="bf p" style="width:${pct(s.avg_pausa)}"></div></div><div class="bv">${s.avg_pausa} s</div></div>`:''}
-    ${s.avg_ap  ?`<div class="br"><div class="bl">Apnea prom</div><div class="bt"><div class="bf a" style="width:${pct(s.avg_ap)}"></div></div><div class="bv">${s.avg_ap} s</div></div>`
-               :'<div class="no-apnea">Sin apneas ✓</div>'}
+    ${ti?`<div class="br"><div class="bl">Inhalación</div><div class="bt"><div class="bf i" style="width:${pct(ti)}"></div></div><div class="bv">${ti} s</div></div>`:''}
+    ${te?`<div class="br"><div class="bl">Exhalación</div><div class="bt"><div class="bf e" style="width:${pct(te)}"></div></div><div class="bv">${te} s</div></div>`:''}
+    ${pa?`<div class="br"><div class="bl">Pausa prom</div><div class="bt"><div class="bf" style="width:${pct(pa)};background:linear-gradient(90deg,#4a3a90,#8b7fd4)"></div></div><div class="bv">${pa} s</div></div>`:''}
+    ${ap?`<div class="br"><div class="bl">Apnea prom</div><div class="bt"><div class="bf a" style="width:${pct(ap)}"></div></div><div class="bv">${ap} s</div></div>`:'<div class="no-apnea">Sin apneas ✓</div>'}
   </div>`;
 }
 
 function buildStreamHTML() {
-  if (!app.liveCiclos.length)
-    return '<div style="padding:20px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--txt3)">Sin ciclos aún</div>';
-  return app.liveCiclos.slice(0,30).map(raw => {
-    const c  = normalizarCiclo(raw);
-    const at = c.apnea_tipo||'NONE';
-    const tagClass = at==='PATOL'?'patol':at==='TERAP'?'terap':'none';
-    const tagLabel = at==='PATOL'?'🚨 PATOL':at==='TERAP'?'⏸ TERAP':'CICLO';
-    return `<div class="ev-row">
-      <span class="tag ${tagClass}">${tagLabel}</span>
-      <span class="ev-ts">${c.timestamp}</span>
-      <span class="ev-detail">Ti:${c.ti_s}s Te:${c.te_s}s${c.pausa_s>0?' P:'+c.pausa_s+'s':''}</span>
-      <span class="ev-rpm">${c.rpm_ciclo??'—'}<span style="font-size:8px;color:var(--txt3)"> rpm</span></span>
-    </div>`;
-  }).join('');
+  if (!app.liveEvents.length) {
+    return '<div style="padding:20px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--txt3)">Sin eventos aún</div>';
+  }
+  return app.liveEvents.slice(0, 30).map(e => `
+    <div class="ev-row">
+      <span class="tag ${e.tipo.toLowerCase()}">${
+        e.tipo==='APNEA_TERAP'?'⏸ TERAP':
+        e.tipo==='APNEA_PATOL'?'🚨 PATOL':e.tipo
+      }</span>
+      <span class="ev-ts">${e.timestamp}</span>
+      <span class="ev-val">${e.valor_s.toFixed(2)}<span style="font-size:9px;color:var(--txt3)"> s</span></span>
+    </div>
+  `).join('');
 }
 
-// ════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  APNEA ALERT
-// ════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 let apneaTimer;
 function triggerApneaAlert() {
   const el = document.getElementById('apneaToast');
   el.style.display = 'block';
   clearTimeout(apneaTimer);
-  apneaTimer = setTimeout(()=>{ el.style.display='none'; }, 6000);
-  if (navigator.vibrate) navigator.vibrate([400,150,400,150,400]);
+  apneaTimer = setTimeout(() => { el.style.display = 'none'; }, 6000);
+  if (navigator.vibrate) navigator.vibrate([400, 150, 400, 150, 400]);
 }
 
-// ════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  SESSION DETAIL SHEET
-// ════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 let currentSheetSid = null;
 let assignOpen = false;
 
 function openSheet(sid) {
-  currentSheetSid = sid; assignOpen = false;
+  currentSheetSid = sid;
+  assignOpen = false;
   const overlay = document.getElementById('sheetOverlay');
   overlay.classList.add('open');
   renderSheetContent(sid);
-  requestAnimationFrame(()=>requestAnimationFrame(()=>overlay.classList.add('visible')));
+  requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('visible')));
 }
+
 function closeSheet() {
   const overlay = document.getElementById('sheetOverlay');
   overlay.classList.remove('visible');
-  setTimeout(()=>{ overlay.classList.remove('open'); currentSheetSid=null; }, 280);
+  setTimeout(() => { overlay.classList.remove('open'); currentSheetSid = null; }, 280);
 }
+
 function onOverlayClick(e) {
-  if (e.target===document.getElementById('sheetOverlay')) closeSheet();
+  if (e.target === document.getElementById('sheetOverlay')) closeSheet();
 }
 
 async function renderSheetContent(sid) {
   const sessions = await DB.getSessions();
-  const s = sessions.find(s=>s.id===sid);
+  const s = sessions.find(s => s.id === sid);
   if (!s) return;
   const events = await DB.getEvents(sid);
   const st = computeStatsFromEvents(events);
+  const ciclos = events.filter(e=>e.tipo==='INHALA').length || s.total_ciclos;
+  const nAp = st.n_terap + st.n_patol;
+  const mx  = Math.max(st.avg_ti||0, st.avg_te||0, st.avg_ap||0, st.avg_pausa||0, 0.1);
+  const pct = v => ((v||0)/mx*100).toFixed(1)+'%';
+
+  // Leer ejercicio y notas desde metadatos
   const meta = parseSessionMeta(s);
   const ejNum = meta.ej || 0;
   const ejDef = EJERCICIOS[ejNum] || null;
   const notasTexto = meta.notas || '';
 
-  const ejOpts = `<option value="0" ${!ejNum?'selected':''}>— Sin ejercicio —</option>`
-    + Object.entries(EJERCICIOS).map(([k,v])=>`<option value="${k}" ${ejNum==k?'selected':''}>${k}. ${v.nombre}</option>`).join('');
+  // Generar opciones del selector con el ejercicio actual seleccionado
+  const ejOpciones = `
+    <option value="0" ${!ejNum?'selected':''}>— Sin ejercicio asignado —</option>
+    ${Object.entries(EJERCICIOS).filter(([k])=>k!='0').map(([k,v])=>
+      `<option value="${k}" ${ejNum==k?'selected':''}>${k}. ${v.nombre}</option>`
+    ).join('')}
+  `;
 
+  // Construir métricas con semáforo clínico
   function statCard(label, val, rango, unidad, sub) {
-    const est = ejDef && rango ? evalRango(val, rango) : '';
+    const estado = ejDef ? evalRango(val, rango) : '';
     const valStr = val != null ? val : '—';
-    const below = rango && ejDef
-      ? `<div class="rango ${est}">${rango.min}–${rango.max} ${rango.unidad||unidad}</div>`
+    const rangoStr = rango && ejDef
+      ? `<div class="rango ${estado}">${rango.min}–${rango.max} ${rango.unidad||unidad}</div>`
       : `<div class="su">${sub||'&nbsp;'}</div>`;
-    return `<div class="stat ${est}"><div class="sl">${label}</div><div class="sv ${est}">${valStr}</div>${below}</div>`;
+    return `<div class="stat ${estado}">
+      <div class="sl">${label}</div>
+      <div class="sv ${estado}">${valStr}</div>
+      ${rangoStr}
+    </div>`;
   }
 
-  const rpmVal = st?.avg_rpm_ciclo ?? st?.avg_rpm_activo ?? null;
+  // RPM: si el ejercicio tiene RPM como métrica relevante, mostrar con semáforo
+  // Si no (ej. 1, 3, 6, 8), mostrar con nota explicativa
+  const rpmVal   = st.avg_rpm_ciclo ?? st.avg_rpm_activo ?? null;
+  const rpmLabel = st.avg_rpm_ciclo ? 'RPM real' : 'RPM activo';
   const rpmRango = ejDef?.rangos?.rpm || null;
-  const rpmEstado = ejDef && rpmRango ? evalRango(rpmVal, rpmRango) : '';
-  const nAp = st?.n_apneas || 0;
-  const ciclos = st?.n_ciclos || s.total_ciclos;
-
-  const mx = Math.max(st?.avg_ti||0, st?.avg_te||0, st?.avg_pausa||0, st?.avg_ap||0, 0.1);
-  const pct = v => (((v||0)/mx)*100).toFixed(1)+'%';
+  const rpmEstado = ejDef ? (rpmRango ? evalRango(rpmVal, rpmRango) : '') : '';
 
   document.getElementById('sheetContent').innerHTML = `
     <div class="sheet-hd">
-      <div class="ses-num"><span class="sn-lbl">SES</span><span class="sn-val">${s.id}</span></div>
+      <div class="ses-num">
+        <span class="sn-lbl">SES</span>
+        <span class="sn-val">${s.id}</span>
+      </div>
       <div class="ses-info">
         <div class="ses-big ${!s.paciente?'empty':''}">${s.paciente||'Sin paciente asignado'}</div>
         <div class="ses-dates">${s.inicio||'—'}${s.fin?' → '+s.fin:' → <span style="color:var(--cyan)">EN CURSO</span>'}</div>
@@ -1178,7 +1188,7 @@ async function renderSheetContent(sid) {
         <input id="fn" type="text" placeholder="Ej: Juan García" value="${(s.paciente||'').replace(/"/g,'&quot;')}">
       </div>
       <div class="field"><label>Ejercicio realizado</label>
-        <select id="fej">${ejOpts}</select>
+        <select id="fej">${ejOpciones}</select>
       </div>
       <div class="field"><label>Notas clínicas</label>
         <textarea id="fno" placeholder="Diagnóstico, observaciones...">${notasTexto}</textarea>
@@ -1189,19 +1199,19 @@ async function renderSheetContent(sid) {
       </div>
     </div>
 
-    ${ejDef?`<div class="ej-card">
+    ${ejDef ? `
+    <div class="ej-card">
       <div class="ej-card-title">Ejercicio ${ejNum}</div>
       <div class="ej-card-name">${ejDef.nombre}</div>
       <div class="ej-card-obj">🎯 ${ejDef.objetivo}</div>
-      ${ejDef.nota?`<div class="ej-card-obj" style="border-top:1px solid var(--line);padding-top:4px;margin-top:2px">ℹ ${ejDef.nota}</div>`:''}
-    </div>`:''}
+      ${ejDef.nota ? `<div class="ej-card-obj" style="color:var(--txt3);border-top:1px solid var(--line);padding-top:4px;margin-top:2px">ℹ ${ejDef.nota}</div>` : ''}
+    </div>` : ''}
 
-    ${st ? `
     <div class="stats-grid" style="margin-bottom:10px">
       ${statCard('Ciclos', ciclos, null, '', 'completados')}
       ${ejDef && !rpmRango
-        ?`<div class="stat"><div class="sl">RPM ciclo</div><div class="sv" style="font-size:16px">${rpmVal??'—'}</div><div class="rango" style="color:var(--txt3)">no aplica</div></div>`
-        :statCard('RPM ciclo', rpmVal, rpmRango, 'rpm', 'prom ciclo')
+        ? `<div class="stat"><div class="sl">${rpmLabel}</div><div class="sv" style="font-size:16px">${rpmVal??'—'}</div><div class="rango" style="color:var(--txt3)">no aplica</div></div>`
+        : statCard(rpmLabel, rpmVal, rpmRango, 'rpm', rpmRango?`${rpmRango.min}–${rpmRango.max} rpm`:'')
       }
       <div class="stat ${nAp>0?'bad':''}">
         <div class="sl">Apneas</div>
@@ -1210,7 +1220,7 @@ async function renderSheetContent(sid) {
       </div>
       ${statCard('T. Inhal.', st.avg_ti, ejDef?.rangos?.ti, 's', 'seg prom')}
       ${statCard('T. Exhal.', st.avg_te, ejDef?.rangos?.te, 's', 'seg prom')}
-      ${statCard('Rel. I:E', st.avg_ie!=null?'1:'+st.avg_ie:null, ejDef?.rangos?.ie, '', '')}
+      ${statCard('Rel. I:E', st.avg_ie ? '1:'+st.avg_ie : null, ejDef?.rangos?.ie, '', '')}
     </div>
 
     <div class="section" style="margin-bottom:10px">
@@ -1218,44 +1228,49 @@ async function renderSheetContent(sid) {
       <div class="bars">
         <div class="br"><div class="bl">Inhalación</div><div class="bt"><div class="bf i" style="width:${pct(st.avg_ti)}"></div></div><div class="bv">${st.avg_ti??0} s</div></div>
         <div class="br"><div class="bl">Exhalación</div><div class="bt"><div class="bf e" style="width:${pct(st.avg_te)}"></div></div><div class="bv">${st.avg_te??0} s</div></div>
-        ${st.avg_pausa?`<div class="br"><div class="bl">Pausa prom</div><div class="bt"><div class="bf p" style="width:${pct(st.avg_pausa)}"></div></div><div class="bv">${st.avg_pausa} s</div></div>`:''}
-        ${st.avg_ap?`<div class="br"><div class="bl">Apnea prom</div><div class="bt"><div class="bf a" style="width:${pct(st.avg_ap)}"></div></div><div class="bv">${st.avg_ap} s</div></div>`
-                  :'<div class="no-apnea">Sin apneas ✓</div>'}
+        ${st.avg_pausa
+          ? `<div class="br"><div class="bl">Pausa prom</div><div class="bt"><div class="bf" style="width:${pct(st.avg_pausa)};background:linear-gradient(90deg,#4a3a90,#8b7fd4)"></div></div><div class="bv">${st.avg_pausa} s</div></div>`
+          : ''
+        }
+        ${st.avg_ap
+          ? `<div class="br"><div class="bl">Apnea prom</div><div class="bt"><div class="bf a" style="width:${pct(st.avg_ap)}"></div></div><div class="bv">${st.avg_ap} s</div></div>`
+          : '<div class="no-apnea">Sin apneas ✓</div>'
+        }
         ${st.n_terap>0?`<div style="padding:4px 0 0;font-family:var(--mono);font-size:9px;color:var(--yellow)">⏸ Terapéuticas: ${st.n_terap}</div>`:''}
         ${st.n_patol>0?`<div style="padding:2px 0 0;font-family:var(--mono);font-size:9px;color:var(--red)">🚨 Patológicas: ${st.n_patol}</div>`:''}
       </div>
-    </div>` : `<div style="padding:20px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--txt3)">Sin ciclos registrados aún</div>`}
+    </div>
 
     <div class="section" style="margin-bottom:10px">
       <div class="sechd">
-        <div class="sectitle">Ciclos registrados</div>
-        <div class="badge ${nAp>0?'r':'c'}">${events.filter(e=>e.tipo==='CICLO'||e.tipo==='INHALA').length}</div>
+        <div class="sectitle">Eventos registrados</div>
+        <div class="badge ${nAp>0?'r':'c'}">${events.length}</div>
       </div>
       ${nAp>0?`<div class="alert-bar">
-        <span style="font-size:15px">${st?.n_patol>0?'🚨':'⏸'}</span>
-        <div><strong>Apneas: ${nAp}</strong> — Máx: ${st?.max_ap} s · Prom: ${st?.avg_ap} s
-        ${st?.n_terap>0?`· <span style="color:var(--yellow)">Terap: ${st.n_terap}</span>`:''}
-        ${st?.n_patol>0?`· <span style="color:var(--red)">Patol: ${st.n_patol}</span>`:''}
+        <span style="font-size:15px">${st.n_patol>0?'🚨':'⏸'}</span>
+        <div><strong>Apneas: ${nAp}</strong> — Máx: ${st.max_ap} s · Prom: ${st.avg_ap} s
+        ${st.n_terap>0?`· <span style="color:var(--yellow)">Terap: ${st.n_terap}</span>`:''}
+        ${st.n_patol>0?`· <span style="color:var(--red)">Patol: ${st.n_patol}</span>`:''}
         </div></div>`:''}
       <div class="tbl-wrap">
         <table>
-          <thead><tr><th>Hora</th><th>Ti</th><th>Te</th><th>Pausa</th><th>RPM</th><th>I:E</th><th>Apnea</th></tr></thead>
+          <thead><tr><th>Hora</th><th>Tipo</th><th>Duración</th><th>I:E</th></tr></thead>
           <tbody>
-            ${events.filter(e=>e.tipo==='CICLO').length
-              ? events.filter(e=>e.tipo==='CICLO'||e.tipo==='INHALA').map(normalizarCiclo).filter(c=>c.ti_s>0).slice().reverse().slice(0,200).map(c=>`
-                <tr style="${c.apnea_tipo==='PATOL'?'background:rgba(255,68,102,.05)':c.apnea_tipo==='TERAP'?'background:rgba(255,180,0,.04)':''}">
-                  <td style="font-family:var(--mono);font-size:9.5px;color:var(--txt3)">${c.timestamp}</td>
-                  <td style="font-family:var(--mono);font-size:12px">${c.ti_s}<span style="font-size:9px;color:var(--txt3)"> s</span></td>
-                  <td style="font-family:var(--mono);font-size:12px">${c.te_s}<span style="font-size:9px;color:var(--txt3)"> s</span></td>
-                  <td style="font-family:var(--mono);font-size:12px;color:var(--purple)">${c.pausa_s>0?c.pausa_s+' s':'—'}</td>
-                  <td style="font-family:var(--mono);font-size:11px;color:var(--cyan)">${c.rpm_ciclo??'—'}</td>
-                  <td><span style="font-family:var(--mono);font-size:9px;padding:2px 5px;border-radius:3px;background:var(--blue-d);color:var(--blue);border:1px solid rgba(77,184,255,.15)">1:${c.ie??'—'}</span></td>
-                  <td>${c.apnea_tipo&&c.apnea_tipo!=='NONE'
-                    ?`<span class="tag ${c.apnea_tipo==='PATOL'?'patol':'terap'}">${c.apnea_tipo==='PATOL'?'🚨':''} ${c.apnea_s}s</span>`
-                    :'<span style="color:var(--txt3);font-family:var(--mono);font-size:9px">—</span>'
-                  }</td>
-                </tr>`).join('')
-              : '<tr><td colspan="7" style="text-align:center;padding:24px;font-family:var(--mono);font-size:10px;color:var(--txt3)">Sin ciclos registrados</td></tr>'
+            ${events.length
+              ? events.slice().reverse().slice(0,200).map(e=>`
+                  <tr style="${e.tipo==='APNEA_PATOL'?'background:rgba(255,68,102,.05)':e.tipo==='APNEA_TERAP'?'background:rgba(255,180,0,.04)':''}">
+                    <td style="font-family:var(--mono);font-size:9.5px;color:var(--txt3)">${e.timestamp}</td>
+                    <td><span class="tag ${e.tipo.toLowerCase()}">${
+                      e.tipo==='APNEA_TERAP'?'⏸ TERAP':
+                      e.tipo==='APNEA_PATOL'?'🚨 PATOL':e.tipo
+                    }</span></td>
+                    <td style="font-family:var(--mono);font-size:13px;color:#fff">${e.valor_s.toFixed(2)}<span style="font-size:9px;color:var(--txt3)"> s</span></td>
+                    <td>${e.ie_ratio>0
+                      ?`<span style="font-family:var(--mono);font-size:9px;padding:2px 5px;border-radius:3px;background:var(--blue-d);color:var(--blue);border:1px solid rgba(77,184,255,.15)">1:${e.ie_ratio.toFixed(2)}</span>`
+                      :'<span style="color:var(--txt3)">—</span>'
+                    }</td>
+                  </tr>`).join('')
+              : '<tr><td colspan="4" style="text-align:center;padding:24px;font-family:var(--mono);font-size:10px;color:var(--txt3)">Sin eventos registrados</td></tr>'
             }
           </tbody>
         </table>
@@ -1270,18 +1285,23 @@ async function renderSheetContent(sid) {
 function toggleAssignForm() {
   assignOpen = !assignOpen;
   const f = document.getElementById('assignForm');
-  if (f) { f.classList.toggle('open', assignOpen); if (assignOpen) setTimeout(()=>document.getElementById('fn')?.focus(),50); }
+  if (f) {
+    f.classList.toggle('open', assignOpen);
+    if (assignOpen) setTimeout(() => document.getElementById('fn')?.focus(), 50);
+  }
 }
+
 async function saveAssign(sid) {
-  const paciente = document.getElementById('fn')?.value.trim()||'';
-  const ejVal    = document.getElementById('fej')?.value||'0';
-  const notasRaw = document.getElementById('fno')?.value.trim()||'';
+  const paciente = document.getElementById('fn')?.value.trim() || '';
+  const ejVal    = document.getElementById('fej')?.value || '0';
+  const notasRaw = document.getElementById('fno')?.value.trim() || '';
   const notas    = serializeSessionMeta(ejVal, notasRaw);
   await DB.updateSession(sid, { paciente, notas });
   assignOpen = false;
   renderSheetContent(sid);
   renderSessionList();
 }
+
 async function deleteSession(sid) {
   if (!confirm(`¿Eliminar sesión #${sid}?\nEsta acción no se puede deshacer.`)) return;
   await DB.deleteSession(sid);
@@ -1289,49 +1309,73 @@ async function deleteSession(sid) {
   renderSessionList();
 }
 
-// ════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  EXPORT / IMPORT
-// ════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 async function exportJSON() {
   const sessions = await DB.getSessions();
   if (!sessions.length) { alert('No hay sesiones para exportar.'); return; }
-  const full = await Promise.all(sessions.map(async s=>({ ...s, eventos: await DB.getEvents(s.id) })));
-  const data = { version:3, exportDate:new Date().toISOString(), app:'Monitor Respiratorio BLE', sessions:full };
-  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const full = await Promise.all(sessions.map(async s => ({ ...s, eventos: await DB.getEvents(s.id) })));
+  const data = {
+    version:    2,
+    exportDate: new Date().toISOString(),
+    app:        'Monitor Respiratorio BLE',
+    sessions:   full
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
-  const a    = Object.assign(document.createElement('a'),{ href:url, download:'monitor_resp_'+new Date().toISOString().slice(0,10)+'.json' });
-  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  const a    = Object.assign(document.createElement('a'), {
+    href:     url,
+    download: 'monitor_resp_' + new Date().toISOString().slice(0,10) + '.json'
+  });
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
-function importJSON() { document.getElementById('fileInput').click(); }
+
+function importJSON() {
+  document.getElementById('fileInput').click();
+}
+
 function handleImport(event) {
-  const file = event.target.files[0]; if (!file) return;
+  const file = event.target.files[0];
+  if (!file) return;
   const reader = new FileReader();
   reader.onload = async e => {
     try {
       const data = JSON.parse(e.target.result);
-      if (!Array.isArray(data.sessions)) { alert('Archivo inválido.'); return; }
+      if (!Array.isArray(data.sessions)) { alert('Archivo inválido: falta el campo "sessions".'); return; }
+
       const existing    = await DB.getSessions();
-      const existingIds = new Set(existing.map(s=>s.id));
+      const existingIds = new Set(existing.map(s => s.id));
       let imported = 0;
+
       for (const item of data.sessions) {
         const { eventos, ...sesData } = item;
         if (!existingIds.has(sesData.id)) {
           await DB.createSession(sesData);
-          if (Array.isArray(eventos)) for (const ev of eventos) await DB.addCiclo(sesData.id, ev);
+          if (Array.isArray(eventos)) {
+            for (const ev of eventos) await DB.addEvent(sesData.id, ev);
+          }
           imported++;
         }
       }
-      DB.invalidateSessions(); renderSessionList();
-      alert(`✅ Importadas ${imported} sesiones.${imported<data.sessions.length?`\n(${data.sessions.length-imported} ya existían)`:''}`);
-    } catch(err) { alert('Error:\n'+err.message); }
-    event.target.value='';
+
+      DB.invalidateSessions();
+      renderSessionList();
+      alert(`✅ Importadas ${imported} sesiones nuevas.${imported < data.sessions.length ? `\n(${data.sessions.length-imported} ya existían)` : ''}`);
+    } catch(err) {
+      alert('Error al leer el archivo:\n' + err.message);
+    }
+    event.target.value = '';
   };
   reader.readAsText(file);
 }
 
-// ════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  INIT
-// ════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 renderSessionList();
 renderLivePanel();
 </script>
