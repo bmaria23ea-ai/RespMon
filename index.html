@@ -174,7 +174,6 @@ td{padding:7px 10px;font-size:11px;color:var(--txt);white-space:nowrap}
 </head>
 <body>
 <div class="app">
-
 <header>
   <div class="logo-mark">
     <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round">
@@ -192,7 +191,6 @@ td{padding:7px 10px;font-size:11px;color:var(--txt);white-space:nowrap}
     </button>
   </div>
 </header>
-
 <div class="content">
   <div class="tab-panel active" id="panel-sessions">
     <div class="search-bar">
@@ -214,12 +212,10 @@ td{padding:7px 10px;font-size:11px;color:var(--txt);white-space:nowrap}
     </div>
     <div class="ses-list" id="sesList"></div>
   </div>
-
   <div class="tab-panel" id="panel-live">
     <div class="live-panel" id="livePanel"></div>
   </div>
 </div>
-
 <div class="tabs">
   <div class="tab active" id="tab-sessions" onclick="switchTab('sessions')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -235,28 +231,20 @@ td{padding:7px 10px;font-size:11px;color:var(--txt);white-space:nowrap}
   </div>
 </div>
 </div>
-
 <div class="apnea-toast" id="apneaToast">🚨 APNEA PATOLÓGICA</div>
-
 <div class="sheet-overlay" id="sheetOverlay" onclick="onOverlayClick(event)">
   <div class="sheet" id="sheet">
     <div class="sheet-handle-wrap" onclick="closeSheet()"><div class="sheet-handle"></div></div>
     <div class="sheet-scroll" id="sheetContent"></div>
   </div>
 </div>
-
 <input type="file" id="fileInput" accept=".json" style="display:none" onchange="handleImport(event)">
-
 <script>
 'use strict';
-
-// ══════════════════════════════════════════════════
 //  API
-// ══════════════════════════════════════════════════
 const API_URL = 'https://backendresp.onrender.com/api/sesiones.php';
 const API_KEY = '-xK9mP3qL7nR2wT8v';
 const AH = { 'X-API-Key': API_KEY };
-
 async function apiFetch(path, opts={}) {
   try {
     const r = await fetch(API_URL + path, { ...opts, headers: { ...AH, ...(opts.headers||{}) } });
@@ -264,9 +252,7 @@ async function apiFetch(path, opts={}) {
     return r.json();
   } catch(e) { console.error('[API]', e, path); return null; }
 }
-
 const cache = { sessions: null, events: {} };
-
 const DB = {
   async getSessions() {
     if (cache.sessions) return cache.sessions;
@@ -309,14 +295,10 @@ const DB = {
     this.invalidateEvents(sid);
   },
 };
-
-// ══════════════════════════════════════════════════
 //  BLE
-// ══════════════════════════════════════════════════
 const BLE_DEVICE_NAME = 'RespMonitor';
 const NUS_SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
 const NUS_TX_UUID      = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
-
 const app = {
   bleDevice:  null,
   bleChar:    null,
@@ -328,12 +310,10 @@ const app = {
                 rpmActivo:'—', rpmCiclo:'—', avgPausa:null },
   searchQuery:'',
 };
-
 async function toggleBLE() {
   if (app.connected) disconnectBLE();
   else await connectBLE();
 }
-
 async function connectBLE() {
   if (!navigator.bluetooth) { alert('Web Bluetooth no disponible.\nUsá Chrome en Android.'); return; }
   setBLEUI('connecting');
@@ -361,12 +341,10 @@ async function connectBLE() {
       alert('Error al conectar:\n' + e.message);
   }
 }
-
 function disconnectBLE() {
   try { if (app.bleDevice?.gatt?.connected) app.bleDevice.gatt.disconnect(); } catch{}
   onBLEDisconnected();
 }
-
 function onBLEDisconnected() {
   if (app.currentSid !== null) closeCurrentSession();
   app.connected   = false;
@@ -377,7 +355,6 @@ function onBLEDisconnected() {
   renderLivePanel();
   renderSessionList();
 }
-
 function onBLEData(event) {
   const chunk = new TextDecoder('utf-8', { fatal:false }).decode(event.target.value);
   app.buffer += chunk;
@@ -388,26 +365,10 @@ function onBLEData(event) {
     if (line) processLine(line);
   }
 }
-
-// ══════════════════════════════════════════════════
-//  PROCESS LINE — adaptado al nuevo .ino
-//
-//  Mensajes posibles:
-//    INICIO,0.00,0.00
-//    CICLO,ti,te,pausa,rpm_activo,rpm_ciclo,ie
-//    APNEA_TERAP,dur,0.00   ← ahora llega en tiempo real desde handleApnea()
-//    APNEA_PATOL,dur,0.00   ← igual que antes
-//
-//  ELIMINADO del HTML:
-//    - Generación de APNEA_TERAP/PATOL a partir de pausa_s en bloque CICLO
-//      (el .ino viejo lo hacía, el nuevo no: las apneas vienen siempre
-//       como mensajes independientes APNEA_TERAP / APNEA_PATOL)
-// ══════════════════════════════════════════════════
 async function processLine(line) {
   const parts = line.split(',');
   const tipo  = parts[0].trim().toUpperCase();
-
-  // ── INICIO ──────────────────────────────────────
+  // INICIO 
   if (tipo === 'INICIO') {
     if (app.currentSid !== null) await closeCurrentSession();
     app.currentSid = await createSession();
@@ -418,11 +379,8 @@ async function processLine(line) {
     renderSessionList();
     return;
   }
-
-  // ── CICLO ───────────────────────────────────────
-  // Formato: CICLO,ti_s,te_s,pausa_s,rpm_activo,rpm_ciclo,ie
-  // CAMBIO: ya NO se generan eventos de apnea desde aquí.
-  // Las apneas llegan siempre como mensajes APNEA_TERAP / APNEA_PATOL separados.
+  // CICLO,ti_s,te_s,pausa_s,rpm_activo,rpm_ciclo,ie
+  // Mensajes de APNEA_TERAP / APNEA_PATOL separados.
   if (tipo === 'CICLO') {
     if (parts.length < 7) return;
     const ti_s      = parseFloat(parts[1]);
@@ -432,15 +390,12 @@ async function processLine(line) {
     const rpm_ciclo = parseFloat(parts[5]);
     const ie        = parseFloat(parts[6]);
     if (isNaN(ti_s) || isNaN(te_s)) return;
-
     if (app.currentSid === null) {
       app.currentSid = await createSession();
       app.liveEvents = [];
       renderLivePanel();
     }
-
     const ts = new Date().toLocaleTimeString('es', { hour12:false });
-
     // Guardar INHALA
     const evInhala = {
       id: await DB.nextEventId(),
@@ -451,7 +406,6 @@ async function processLine(line) {
       ie_ratio: Math.round(ie * 1000) / 1000
     };
     await DB.addEvent(app.currentSid, evInhala);
-
     // Guardar EXHALA
     const evExhala = {
       id: await DB.nextEventId(),
@@ -462,55 +416,42 @@ async function processLine(line) {
       ie_ratio: Math.round(ie * 1000) / 1000
     };
     await DB.addEvent(app.currentSid, evExhala);
-
-    // Guardar CICLO_META (pausa_s real + rpm_ciclo)
-    // pausa_s viene calculada correctamente por el .ino (ciclo_s - Ti - Te)
     const evMeta = {
       id: await DB.nextEventId(),
       sesion_id: app.currentSid,
       timestamp: ts,
-      tipo: 'CICLO_META',
+      tipo: 'CICLO_META',  // Guarda pausa_s real y rpm_ciclo de ESP
       valor_s: Math.round(pausa_s * 1000) / 1000,
       ie_ratio: Math.round(rpm_ciclo * 100) / 100
     };
     await DB.addEvent(app.currentSid, evMeta);
-
-    // Actualizar contadores (apneas se actualizan en el bloque APNEA_*)
+    // Actualizar contadores 
     const events = await DB.getEvents(app.currentSid);
     const ciclos  = events.filter(e => e.tipo === 'INHALA').length;
     const apneas  = events.filter(e => e.tipo.startsWith('APNEA')).length;
     await DB.updateSession(app.currentSid, { total_ciclos: ciclos, total_apneas: apneas });
-
-    // Agregar al stream visual (solo INHALA/EXHALA para no saturar)
+    // 
     app.liveEvents.unshift(evExhala);
     app.liveEvents.unshift(evInhala);
     if (app.liveEvents.length > 100) app.liveEvents.splice(100);
-
-    // Recalcular stats con los RPMs frescos del ESP32
+    // Recalcular stats con los RPMs  del ESP32
     recomputeLiveStats(events, rpm_activo, rpm_ciclo);
     updateLiveUI();
     if (document.getElementById('panel-sessions').classList.contains('active'))
       renderSessionList();
     return;
   }
-
-  // ── APNEA_TERAP / APNEA_PATOL ───────────────────
-  // CAMBIO: APNEA_TERAP ahora llega en tiempo real desde handleApnea()
-  // del nuevo .ino. Antes solo llegaba si se superaba APNEA_PATOL_MS.
-  // La lógica de recepción es idéntica — solo cambia la frecuencia/timing.
+//
   if (!['APNEA_TERAP', 'APNEA_PATOL'].includes(tipo)) return;
   if (parts.length < 2) return;
-
   const valor_s = parseFloat(parts[1]);
   const ie      = parseFloat(parts[2]) || 0;
   if (isNaN(valor_s)) return;
-
   if (app.currentSid === null) {
     app.currentSid = await createSession();
     app.liveEvents = [];
     renderLivePanel();
   }
-
   const ts = new Date().toLocaleTimeString('es', { hour12:false });
   const ev = {
     id: await DB.nextEventId(),
@@ -521,24 +462,18 @@ async function processLine(line) {
     ie_ratio: Math.round(ie * 1000) / 1000
   };
   await DB.addEvent(app.currentSid, ev);
-
   const events = await DB.getEvents(app.currentSid);
   const ciclos  = events.filter(e => e.tipo === 'INHALA').length;
   const apneas  = events.filter(e => e.tipo.startsWith('APNEA')).length;
   await DB.updateSession(app.currentSid, { total_ciclos: ciclos, total_apneas: apneas });
-
   app.liveEvents.unshift(ev);
   if (app.liveEvents.length > 100) app.liveEvents.pop();
-
   recomputeLiveStats(events, null, null);
-
   if (tipo === 'APNEA_PATOL') triggerApneaAlert();
-
   updateLiveUI();
   if (document.getElementById('panel-sessions').classList.contains('active'))
     renderSessionList();
 }
-
 function updateLiveUI() {
   const statsEl  = document.getElementById('liveStats');
   const barsEl   = document.getElementById('liveBars');
@@ -553,10 +488,7 @@ function updateLiveUI() {
     renderLivePanel();
   }
 }
-
-// ══════════════════════════════════════════════════
-//  SESSION MANAGEMENT
-// ══════════════════════════════════════════════════
+//
 async function createSession() {
   const id  = await DB.nextSessionId();
   const now = new Date();
@@ -567,7 +499,6 @@ async function createSession() {
   cache.sessions = null;
   return id;
 }
-
 async function closeCurrentSession() {
   const sid = app.currentSid;
   if (sid === null) return;
@@ -581,31 +512,25 @@ async function closeCurrentSession() {
   app.currentSid = null;
   renderSessionList();
 }
-
 function recomputeLiveStats(events, rpmActivoEsp, rpmCicloEsp) {
   const inhales = events.filter(e => e.tipo === 'INHALA');
   const exhales = events.filter(e => e.tipo === 'EXHALA');
   const apneas  = events.filter(e => e.tipo.startsWith('APNEA'));
   const metas   = events.filter(e => e.tipo === 'CICLO_META');
-
   const avg = arr => arr.length ? arr.reduce((s,e)=>s+e.valor_s,0)/arr.length : 0;
   const max = arr => arr.length ? Math.max(...arr.map(e=>e.valor_s)) : 0;
-
   const avgTi = avg(inhales);
   const avgTe = avg(exhales);
   const avgAp = avg(apneas);
   const maxAp = max(apneas);
   const ieVals = inhales.filter(e=>e.ie_ratio>0).map(e=>e.ie_ratio);
   const avgIe  = ieVals.length ? ieVals.reduce((s,v)=>s+v,0)/ieVals.length : 0;
-
   let rpmActivo = '—', rpmCiclo = '—';
   if (rpmActivoEsp != null && !isNaN(rpmActivoEsp)) rpmActivo = rpmActivoEsp.toFixed(1);
   else if (app.liveStats.rpmActivo && app.liveStats.rpmActivo !== '—') rpmActivo = app.liveStats.rpmActivo;
   if (rpmCicloEsp != null && !isNaN(rpmCicloEsp)) rpmCiclo = rpmCicloEsp.toFixed(1);
   else if (app.liveStats.rpmCiclo && app.liveStats.rpmCiclo !== '—') rpmCiclo = app.liveStats.rpmCiclo;
-
   const avgPausa = metas.length ? avg(metas) : null;
-
   app.liveStats = {
     ciclos:    inhales.length,
     apneas:    apneas.length,
@@ -618,27 +543,22 @@ function recomputeLiveStats(events, rpmActivoEsp, rpmCicloEsp) {
     rpmActivo, rpmCiclo,
   };
 }
-
 function computeStatsFromEvents(events) {
   const inhales = events.filter(e=>e.tipo==='INHALA');
   const exhales = events.filter(e=>e.tipo==='EXHALA');
   const apneas  = events.filter(e=>e.tipo.startsWith('APNEA'));
   const metas   = events.filter(e=>e.tipo==='CICLO_META');
-
   const avg = arr => arr.length ? arr.reduce((s,e)=>s+e.valor_s,0)/arr.length : null;
   const max = arr => arr.length ? Math.max(...arr.map(e=>e.valor_s)) : null;
   const ieVals = inhales.filter(e=>e.ie_ratio>0).map(e=>e.ie_ratio);
-
   // rpm_ciclo guardado en ie_ratio de CICLO_META
   const rpmCicloVals = metas.filter(e=>e.ie_ratio>0).map(e=>e.ie_ratio);
   const avg_rpm_ciclo = rpmCicloVals.length
     ? +(rpmCicloVals.reduce((s,v)=>s+v,0)/rpmCicloVals.length).toFixed(1) : null;
-
   const avgTi = avg(inhales);
   const avgTe = avg(exhales);
   const avg_rpm_activo = (avgTi && avgTe) ? +(60/(avgTi+avgTe)).toFixed(1) : null;
   const avg_pausa = avg(metas) != null ? +avg(metas).toFixed(1) : null;
-
   return {
     avg_ti:        avgTi != null ? +avgTi.toFixed(2) : null,
     avg_te:        avgTe != null ? +avgTe.toFixed(2) : null,
@@ -650,10 +570,7 @@ function computeStatsFromEvents(events) {
     avg_rpm_ciclo, avg_rpm_activo, avg_pausa,
   };
 }
-
-// ══════════════════════════════════════════════════
 //  EJERCICIOS
-// ══════════════════════════════════════════════════
 const EJERCICIOS = {
   1:{nombre:'Apnea controlada en sedestación',objetivo:'Mejorar tolerancia a la hipercapnia y control ventilatorio',rangos:{ti:{min:1.5,max:4.0,label:'Inhal. profunda',unidad:'s'},te:{min:3.5,max:5.0,label:'Espir. lenta ~4s',unidad:'s'},apnea:{min:3.0,max:8.0,label:'Apnea objetivo',unidad:'s'},rpm:null,ie:null},nota:'RPM no aplicable: las apneas alargan el ciclo por diseño.'},
   2:{nombre:'Ventilación dirigida diafragmática',objetivo:'Reclutamiento basal y patrón diafragmático',rangos:{ti:{min:2.5,max:5.0,label:'Inhal. diafragmática',unidad:'s'},te:{min:3.5,max:7.0,label:'Espir. labios fruncidos',unidad:'s'},apnea:null,rpm:{min:6.0,max:10.0,label:'Cadencia lenta',unidad:'rpm'},ie:{min:0.5,max:1.2,label:'Rel. I:E',unidad:''}},nota:'RPM >12 indica respiración apresurada.'},
@@ -664,7 +581,6 @@ const EJERCICIOS = {
   7:{nombre:'Respiración con resistencia espiratoria',objetivo:'Fortalecer músculos espiratorios',rangos:{ti:{min:1.5,max:3.5,label:'Inhal. por nariz',unidad:'s'},te:{min:4.0,max:10.0,label:'Espir. contra resistencia',unidad:'s'},apnea:null,rpm:{min:4.0,max:8.0,label:'Cadencia',unidad:'rpm'},ie:{min:1.5,max:5.0,label:'Rel. I:E (Te largo)',unidad:''}},nota:'Te largo es el objetivo.'},
   8:{nombre:'Apnea alternada con respiración rítmica',objetivo:'Entrenar tolerancia respiratoria y capacidad vital',rangos:{ti:{min:2.0,max:5.0,label:'Inhal. profunda',unidad:'s'},te:{min:2.0,max:5.0,label:'Espir. controlada',unidad:'s'},apnea:{min:4.0,max:10.0,label:'Apnea máxima voluntaria',unidad:'s'},rpm:null,ie:null},nota:'Apnea máxima voluntaria.'},
 };
-
 function evalRango(val, rango) {
   if (!rango || val == null) return '';
   const { min, max } = rango;
@@ -673,20 +589,15 @@ function evalRango(val, rango) {
   if (val >= min - margen && val <= max + margen) return 'warn';
   return 'bad';
 }
-
 function parseSessionMeta(s) {
   try { if (s.notas && s.notas.startsWith('{')) return JSON.parse(s.notas); } catch(e) {}
   return { ej:0, notas: s.notas || '' };
 }
-
 function serializeSessionMeta(ej, notas) {
   if (!ej || ej === '0') return notas;
   return JSON.stringify({ ej: parseInt(ej), notas });
 }
-
-// ══════════════════════════════════════════════════
-//  BLE UI
-// ══════════════════════════════════════════════════
+//  BLE
 function setBLEUI(status, name) {
   const btn = document.getElementById('bleBtn');
   const dot = document.getElementById('dot');
@@ -696,10 +607,7 @@ function setBLEUI(status, name) {
   else if (status === 'connected') { btn.classList.add('connected'); dot.classList.add('on'); txt.textContent = name || 'Conectado'; }
   else { txt.textContent = 'Conectar'; }
 }
-
-// ══════════════════════════════════════════════════
-//  TAB NAVIGATION
-// ══════════════════════════════════════════════════
+// Navegación
 function switchTab(name) {
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -708,10 +616,7 @@ function switchTab(name) {
   if (name === 'live') renderLivePanel();
   if (name === 'sessions') renderSessionList();
 }
-
-// ══════════════════════════════════════════════════
-//  SESSIONS LIST
-// ══════════════════════════════════════════════════
+//  Lista de sesiones
 async function renderSessionList() {
   const sessions = await DB.getSessions();
   const q    = app.searchQuery.toLowerCase();
@@ -738,16 +643,12 @@ async function renderSessionList() {
     </div>`;
   }).join('');
 }
-
 let searchTimer;
 function onSearch(v) {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(()=>{ app.searchQuery=v; renderSessionList(); }, 250);
 }
-
-// ══════════════════════════════════════════════════
-//  LIVE PANEL
-// ══════════════════════════════════════════════════
+//  Panel en vivo
 async function renderLivePanel() {
   const el = document.getElementById('livePanel');
   if (!el) return;
@@ -760,11 +661,9 @@ async function renderLivePanel() {
     el.innerHTML = `<div class="connect-card"><div class="cc-icon" style="animation:blink 1.5s infinite">🫁</div><div class="cc-title" style="color:var(--cyan)">Conectado</div><div class="cc-sub">Esperando calibración del ESP32<br>(~6 segundos)...</div><button class="big-btn red" onclick="disconnectBLE()">Desconectar</button></div>`;
     return;
   }
-
   const sessions = await DB.getSessions();
   const ses = sessions.find(s=>s.id===app.currentSid);
   const s   = app.liveStats;
-
   el.innerHTML = `
     <div class="live-hd">
       <div style="flex:1;min-width:0">
@@ -786,7 +685,6 @@ async function renderLivePanel() {
       <div class="ev-stream" id="liveStream">${buildStreamHTML()}</div>
     </div>`;
 }
-
 function buildStatsHTML(s) {
   const rpmColor = v => { const n=parseFloat(v); if(isNaN(n)) return ''; if(n<10||n>28) return 'r'; if(n>20) return 'b'; return 'c'; };
   return `
@@ -797,7 +695,6 @@ function buildStatsHTML(s) {
     <div class="stat"><div class="sl">T. Exhal.</div><div class="sv c">${s.avgTe||'—'}</div><div class="su">seg prom</div></div>
     <div class="stat"><div class="sl">Rel. I:E</div><div class="sv">${s.avgIe&&s.avgIe!=='—'?'1:'+s.avgIe:'—'}</div><div class="su">&nbsp;</div></div>`;
 }
-
 function buildBarsHTML(s) {
   const ti = parseFloat(s.avgTi)||0;
   const te = parseFloat(s.avgTe)||0;
@@ -813,7 +710,6 @@ function buildBarsHTML(s) {
     ${ap?`<div class="br"><div class="bl">Apnea prom</div><div class="bt"><div class="bf a" style="width:${pct(ap)}"></div></div><div class="bv">${ap} s</div></div>`:'<div class="no-apnea">Sin apneas ✓</div>'}
   </div>`;
 }
-
 function buildStreamHTML() {
   if (!app.liveEvents.length)
     return '<div style="padding:20px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--txt3)">Sin eventos aún</div>';
@@ -827,10 +723,7 @@ function buildStreamHTML() {
       <span class="ev-val">${e.valor_s.toFixed(2)}<span style="font-size:9px;color:var(--txt3)"> s</span></span>
     </div>`).join('');
 }
-
-// ══════════════════════════════════════════════════
-//  APNEA ALERT
-// ══════════════════════════════════════════════════
+//  Alerta apnea
 let apneaTimer;
 function triggerApneaAlert() {
   const el = document.getElementById('apneaToast');
@@ -839,13 +732,8 @@ function triggerApneaAlert() {
   apneaTimer = setTimeout(()=>{ el.style.display='none'; }, 6000);
   if (navigator.vibrate) navigator.vibrate([400,150,400,150,400]);
 }
-
-// ══════════════════════════════════════════════════
-//  SESSION DETAIL SHEET
-// ══════════════════════════════════════════════════
 let currentSheetSid = null;
 let assignOpen = false;
-
 function openSheet(sid) {
   currentSheetSid = sid; assignOpen = false;
   const overlay = document.getElementById('sheetOverlay');
@@ -853,17 +741,14 @@ function openSheet(sid) {
   renderSheetContent(sid);
   requestAnimationFrame(()=>requestAnimationFrame(()=>overlay.classList.add('visible')));
 }
-
 function closeSheet() {
   const overlay = document.getElementById('sheetOverlay');
   overlay.classList.remove('visible');
   setTimeout(()=>{ overlay.classList.remove('open'); currentSheetSid=null; }, 280);
 }
-
 function onOverlayClick(e) {
   if (e.target===document.getElementById('sheetOverlay')) closeSheet();
 }
-
 async function renderSheetContent(sid) {
   const sessions = await DB.getSessions();
   const s = sessions.find(s=>s.id===sid);
@@ -874,16 +759,13 @@ async function renderSheetContent(sid) {
   const nAp    = st.n_terap + st.n_patol;
   const mx     = Math.max(st.avg_ti||0, st.avg_te||0, st.avg_ap||0, st.avg_pausa||0, 0.1);
   const pct    = v => ((v||0)/mx*100).toFixed(1)+'%';
-
   const meta      = parseSessionMeta(s);
   const ejNum     = meta.ej || 0;
   const ejDef     = EJERCICIOS[ejNum] || null;
   const notasTexto= meta.notas || '';
-
   const ejOpciones = `<option value="0" ${!ejNum?'selected':''}>— Sin ejercicio asignado —</option>
     ${Object.entries(EJERCICIOS).filter(([k])=>k!='0').map(([k,v])=>
       `<option value="${k}" ${ejNum==k?'selected':''}>${k}. ${v.nombre}</option>`).join('')}`;
-
   function statCard(label, val, rango, unidad, sub) {
     const estado  = ejDef ? evalRango(val, rango) : '';
     const valStr  = val != null ? val : '—';
@@ -892,11 +774,9 @@ async function renderSheetContent(sid) {
       : `<div class="su">${sub||'&nbsp;'}</div>`;
     return `<div class="stat ${estado}"><div class="sl">${label}</div><div class="sv ${estado}">${valStr}</div>${rangoStr}</div>`;
   }
-
   const rpmVal    = st.avg_rpm_ciclo ?? st.avg_rpm_activo ?? null;
   const rpmLabel  = st.avg_rpm_ciclo ? 'RPM real' : 'RPM activo';
   const rpmRango  = ejDef?.rangos?.rpm || null;
-
   document.getElementById('sheetContent').innerHTML = `
     <div class="sheet-hd">
       <div class="ses-num"><span class="sn-lbl">SES</span><span class="sn-val">${s.id}</span></div>
@@ -907,7 +787,6 @@ async function renderSheetContent(sid) {
       </div>
       <button class="btn btn-g" onclick="toggleAssignForm()" style="flex-shrink:0;padding:6px 10px">✏️</button>
     </div>
-
     <div class="abox ${assignOpen?'open':''}" id="assignForm">
       <div class="abox-title">Asignar — Sesión #${s.id}</div>
       <div class="field"><label>Nombre del paciente</label>
@@ -922,14 +801,12 @@ async function renderSheetContent(sid) {
         <button class="btn btn-g" onclick="toggleAssignForm()">Cancelar</button>
       </div>
     </div>
-
     ${ejDef?`<div class="ej-card">
       <div class="ej-card-title">Ejercicio ${ejNum}</div>
       <div class="ej-card-name">${ejDef.nombre}</div>
       <div class="ej-card-obj">🎯 ${ejDef.objetivo}</div>
       ${ejDef.nota?`<div class="ej-card-obj" style="color:var(--txt3);border-top:1px solid var(--line);padding-top:4px;margin-top:2px">ℹ ${ejDef.nota}</div>`:''}
     </div>`:''}
-
     <div class="stats-grid" style="margin-bottom:10px">
       ${statCard('Ciclos', ciclos, null, '', 'completados')}
       ${ejDef && !rpmRango
@@ -945,7 +822,6 @@ async function renderSheetContent(sid) {
       ${statCard('T. Exhal.', st.avg_te, ejDef?.rangos?.te, 's', 'seg prom')}
       ${statCard('Rel. I:E', st.avg_ie ? '1:'+st.avg_ie : null, ejDef?.rangos?.ie, '', '')}
     </div>
-
     <div class="section" style="margin-bottom:10px">
       <div class="sechd"><div class="sectitle">Distribución de tiempos</div></div>
       <div class="bars">
@@ -998,7 +874,6 @@ async function renderSheetContent(sid) {
     <button class="btn btn-danger" onclick="deleteSession(${s.id})">🗑 Eliminar sesión</button>
     <div style="height:8px"></div>`;
 }
-
 function toggleAssignForm() {
   assignOpen = !assignOpen;
   const f = document.getElementById('assignForm');
@@ -1007,7 +882,6 @@ function toggleAssignForm() {
     if (assignOpen) setTimeout(()=>document.getElementById('fn')?.focus(), 50);
   }
 }
-
 async function saveAssign(sid) {
   const paciente = document.getElementById('fn')?.value.trim() || '';
   const ejVal    = document.getElementById('fej')?.value || '0';
@@ -1018,17 +892,12 @@ async function saveAssign(sid) {
   renderSheetContent(sid);
   renderSessionList();
 }
-
 async function deleteSession(sid) {
   if (!confirm(`¿Eliminar sesión #${sid}?\nEsta acción no se puede deshacer.`)) return;
   await DB.deleteSession(sid);
   closeSheet();
   renderSessionList();
 }
-
-// ══════════════════════════════════════════════════
-//  EXPORT / IMPORT
-// ══════════════════════════════════════════════════
 async function exportJSON() {
   const sessions = await DB.getSessions();
   if (!sessions.length) { alert('No hay sesiones para exportar.'); return; }
@@ -1039,9 +908,7 @@ async function exportJSON() {
   const a    = Object.assign(document.createElement('a'), { href:url, download:'monitor_resp_'+new Date().toISOString().slice(0,10)+'.json' });
   document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
 }
-
 function importJSON() { document.getElementById('fileInput').click(); }
-
 function handleImport(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -1063,16 +930,12 @@ function handleImport(event) {
       }
       DB.invalidateSessions();
       renderSessionList();
-      alert(`✅ Importadas ${imported} sesiones nuevas.${imported<data.sessions.length?`\n(${data.sessions.length-imported} ya existían)`:''}`);
+      alert(`Importadas ${imported} sesiones nuevas.${imported<data.sessions.length?`\n(${data.sessions.length-imported} ya existían)`:''}`);
     } catch(err) { alert('Error al leer el archivo:\n'+err.message); }
     event.target.value = '';
   };
   reader.readAsText(file);
 }
-
-// ══════════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════════
 renderSessionList();
 renderLivePanel();
 </script>
