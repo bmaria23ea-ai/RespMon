@@ -112,7 +112,6 @@ header{height:var(--hd);background:var(--bg1);border-bottom:1px solid var(--line
 .tag.exhala{background:var(--cyan-d);color:var(--cyan);border:1px solid rgba(0,229,204,.2)}
 .tag.apnea_terap{background:var(--yellow-d);color:var(--yellow);border:1px solid rgba(255,180,0,.3)}
 .tag.apnea_patol{background:var(--red-d);color:var(--red);border:1px solid rgba(255,68,102,.35);font-weight:700}
-.tag.ciclo_meta{background:var(--bg3);color:var(--txt3);border:1px solid var(--line2)}
 .ev-ts{font-family:var(--mono);font-size:9px;color:var(--txt3);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ev-val{font-family:var(--mono);font-size:12px;color:#fff;white-space:nowrap}
 .alert-bar{display:flex;align-items:center;gap:10px;padding:9px 13px;background:var(--red-d);border-bottom:1px solid rgba(255,68,102,.2);font-size:11px}
@@ -617,7 +616,6 @@ function recomputeLiveStats(events, rpmActivoEsp, rpmCicloEsp) {
     maxAp:     maxAp ? maxAp.toFixed(1) : null,
     avgPausa:  avgPausa ? avgPausa.toFixed(1) : null,
     rpmActivo, rpmCiclo,
-    bpm:       rpmCiclo,
   };
 }
 
@@ -759,7 +757,7 @@ async function renderLivePanel() {
     return;
   }
   if (app.connected && app.currentSid === null) {
-    el.innerHTML = `<div class="connect-card"><div class="cc-icon" style="animation:blink 1.5s infinite">🫁</div><div class="cc-title" style="color:var(--cyan)">Conectado</div><div class="cc-sub">Esperando calibración del ESP32<br>(~8 segundos)...</div><button class="big-btn red" onclick="disconnectBLE()">Desconectar</button></div>`;
+    el.innerHTML = `<div class="connect-card"><div class="cc-icon" style="animation:blink 1.5s infinite">🫁</div><div class="cc-title" style="color:var(--cyan)">Conectado</div><div class="cc-sub">Esperando calibración del ESP32<br>(~6 segundos)...</div><button class="big-btn red" onclick="disconnectBLE()">Desconectar</button></div>`;
     return;
   }
 
