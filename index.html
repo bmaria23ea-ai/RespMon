@@ -246,11 +246,12 @@ const API_URL = 'https://backendresp.onrender.com/api/sesiones.php';
 const API_KEY = '-xK9mP3qL7nR2wT8v';
 const AH = { 'X-API-Key': API_KEY };
 async function apiFetch(path, opts={}) {
-  try {
-    const r = await fetch(API_URL + path, { ...opts, headers: { ...AH, ...(opts.headers||{}) } });
-    if (!r.ok) { console.error('[API]', r.status, path); return null; }
-    return r.json();
-  } catch(e) { console.error('[API]', e, path); return null; }
+  const r = await fetch(API_URL + path, { ...opts, headers: { ...AH, ...(opts.headers||{}) } });
+  if (!r.ok) {
+    const txt = await r.text().catch(()=>r.status);
+    throw new Error('HTTP '+r.status+' '+path+': '+txt);
+  }
+  return r.json();
 }
 const cache = { sessions: null, events: {} };
 const DB = {
@@ -928,19 +929,29 @@ function handleImport(event) {
 
       for (const item of data.sessions) {
         const { eventos, ...sesData } = item;
-
-        // Reasignar ID de sesión para evitar colisiones con cualquier backend
         const newSid = nextSid++;
-        await DB.createSession({ ...sesData, id: newSid });
+
+        try {
+          await DB.createSession({ ...sesData, id: newSid });
+        } catch(sesErr) {
+          console.error("[Import] sesion fallida:", newSid, sesErr.message);
+          alert("Error creando sesión " + newSid + ":
+" + sesErr.message);
+          continue;
+        }
 
         if (Array.isArray(eventos)) {
+          let evOk = 0, evFail = 0;
           for (const ev of eventos) {
             try {
               await DB.addEvent(newSid, { ...ev, id: nextEid++, sesion_id: newSid });
+              evOk++;
             } catch(evErr) {
-              console.warn("[Import] evento saltado:", ev.id, evErr);
+              evFail++;
+              console.error("[Import] evento fallido id="+(nextEid-1), evErr.message);
             }
           }
+          if (evFail > 0) console.warn("[Import] sesion "+newSid+": "+evOk+" ok, "+evFail+" fallidos");
         }
         imported++;
       }
