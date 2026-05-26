@@ -245,13 +245,21 @@ td{padding:7px 10px;font-size:11px;color:var(--txt);white-space:nowrap}
 const API_URL = 'https://backendresp.onrender.com/api/sesiones.php';
 const API_KEY = '-xK9mP3qL7nR2wT8v';
 const AH = { 'X-API-Key': API_KEY };
-async function apiFetch(path, opts={}) {
-  const r = await fetch(API_URL + path, { ...opts, headers: { ...AH, ...(opts.headers||{}) } });
-  if (!r.ok) {
-    const txt = await r.text().catch(()=>r.status);
-    throw new Error('HTTP '+r.status+' '+path+': '+txt);
+async function apiFetch(path, opts={}, throwOnError=false) {
+  try {
+    const r = await fetch(API_URL + path, { ...opts, headers: { ...AH, ...(opts.headers||{}) } });
+    if (!r.ok) {
+      if (throwOnError) {
+        const txt = await r.text().catch(()=>String(r.status));
+        throw new Error('HTTP '+r.status+': '+txt);
+      }
+      console.error('[API]', r.status, path); return null;
+    }
+    return r.json();
+  } catch(e) {
+    if (throwOnError) throw e;
+    console.error('[API]', e, path); return null;
   }
-  return r.json();
 }
 const cache = { sessions: null, events: {} };
 const DB = {
@@ -277,8 +285,8 @@ const DB = {
     const d = await apiFetch('?action=nexteventid');
     return d ? d.nextId : 1;
   },
-  async createSession(ses) {
-    const r = await apiFetch('', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(ses) });
+  async createSession(ses, strict=false) {
+    const r = await apiFetch('', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(ses) }, strict);
     this.invalidateSessions();
     return r?.ok;
   },
@@ -291,8 +299,8 @@ const DB = {
     this.invalidateSessions();
     this.invalidateEvents(sid);
   },
-  async addEvent(sid, ev) {
-    await apiFetch('?sid='+sid+'&action=event', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(ev) });
+  async addEvent(sid, ev, strict=false) {
+    await apiFetch('?sid='+sid+'&action=event', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(ev) }, strict);
     this.invalidateEvents(sid);
   },
 };
@@ -932,7 +940,7 @@ function handleImport(event) {
         const newSid = nextSid++;
 
         try {
-          await DB.createSession({ ...sesData, id: newSid });
+          await DB.createSession({ ...sesData, id: newSid }, true);
         } catch(sesErr) {
           console.error("[Import] sesion fallida:", newSid, sesErr.message);
           alert("Error creando sesión " + newSid + ":
@@ -944,7 +952,7 @@ function handleImport(event) {
           let evOk = 0, evFail = 0;
           for (const ev of eventos) {
             try {
-              await DB.addEvent(newSid, { ...ev, id: nextEid++, sesion_id: newSid });
+              await DB.addEvent(newSid, { ...ev, id: nextEid++, sesion_id: newSid }, true);
               evOk++;
             } catch(evErr) {
               evFail++;
