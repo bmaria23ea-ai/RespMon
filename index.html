@@ -685,6 +685,7 @@ async function renderLivePanel() {
       <div class="ev-stream" id="liveStream">${buildStreamHTML()}</div>
     </div>`;
 }
+//Tarjetas estadísticas
 function buildStatsHTML(s) {
   const rpmColor = v => { const n=parseFloat(v); if(isNaN(n)) return ''; if(n<10||n>28) return 'r'; if(n>20) return 'b'; return 'c'; };
   return `
@@ -695,6 +696,7 @@ function buildStatsHTML(s) {
     <div class="stat"><div class="sl">T. Exhal.</div><div class="sv c">${s.avgTe||'—'}</div><div class="su">seg prom</div></div>
     <div class="stat"><div class="sl">Rel. I:E</div><div class="sv">${s.avgIe&&s.avgIe!=='—'?'1:'+s.avgIe:'—'}</div><div class="su">&nbsp;</div></div>`;
 }
+// Barras comparativas Ti/Te
 function buildBarsHTML(s) {
   const ti = parseFloat(s.avgTi)||0;
   const te = parseFloat(s.avgTe)||0;
@@ -710,6 +712,7 @@ function buildBarsHTML(s) {
     ${ap?`<div class="br"><div class="bl">Apnea prom</div><div class="bt"><div class="bf a" style="width:${pct(ap)}"></div></div><div class="bv">${ap} s</div></div>`:'<div class="no-apnea">Sin apneas ✓</div>'}
   </div>`;
 }
+//Flujo de datos de últimos eventos
 function buildStreamHTML() {
   if (!app.liveEvents.length)
     return '<div style="padding:20px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--txt3)">Sin eventos aún</div>';
@@ -917,21 +920,35 @@ function handleImport(event) {
     try {
       const data = JSON.parse(e.target.result);
       if (!Array.isArray(data.sessions)) { alert('Archivo inválido: falta el campo "sessions".'); return; }
-      const existing    = await DB.getSessions();
-      const existingIds = new Set(existing.map(s=>s.id));
+
+      // Pedir el siguiente ID libre de sesión y evento UNA sola vez antes de empezar
+      let nextSid = await DB.nextSessionId();
+      let nextEid = await DB.nextEventId();
       let imported = 0;
+
       for (const item of data.sessions) {
         const { eventos, ...sesData } = item;
-        if (!existingIds.has(sesData.id)) {
-          await DB.createSession(sesData);
-          if (Array.isArray(eventos)) for (const ev of eventos) await DB.addEvent(sesData.id, ev);
-          imported++;
+
+        // Reasignar ID de sesión para evitar colisiones con cualquier backend
+        const newSid = nextSid++;
+        await DB.createSession({ ...sesData, id: newSid });
+
+        if (Array.isArray(eventos)) {
+          for (const ev of eventos) {
+            try {
+              await DB.addEvent(newSid, { ...ev, id: nextEid++, sesion_id: newSid });
+            } catch(evErr) {
+              console.warn("[Import] evento saltado:", ev.id, evErr);
+            }
+          }
         }
+        imported++;
       }
+
       DB.invalidateSessions();
       renderSessionList();
-      alert(`Importadas ${imported} sesiones nuevas.${imported<data.sessions.length?`\n(${data.sessions.length-imported} ya existían)`:''}`);
-    } catch(err) { alert('Error al leer el archivo:\n'+err.message); }
+      alert(`Importadas ${imported} sesiones correctamente.`);
+    } catch(err) { alert('Error al importar:\n'+err.message); }
     event.target.value = '';
   };
   reader.readAsText(file);
